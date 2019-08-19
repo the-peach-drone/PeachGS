@@ -3906,6 +3906,21 @@ void Vehicle::_mavlinkMessageStatus(int uasId, uint64_t totalSent, uint64_t tota
         _mavlinkLossCount       = totalLoss;
         _mavlinkLossPercent     = lossPercent;
         emit mavlinkStatusChanged();
+
+        mavlink_message_t msg;
+        mavlink_link_node_status_t node_status{};
+
+        node_status.messages_lost = _mavlinkLossCount;
+        node_status.messages_received = _mavlinkReceivedCount;
+        node_status.messages_sent = _mavlinkSentCount;
+
+        mavlink_msg_link_node_status_encode_chan(_mavlink->getSystemId(),
+                                                    _mavlink->getComponentId(),
+                                                    priorityLink()->mavlinkChannel(),
+                                                    &msg,
+                                                    &node_status);
+
+        sendMessageOnLink(priorityLink(), msg);
     }
 }
 
