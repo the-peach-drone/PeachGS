@@ -145,9 +145,11 @@ install:
     fi
 
   - if [[ "${SPEC}" = "macx-clang" ]]; then
-        wget --quiet https://qgroundcontrol.s3-us-west-2.amazonaws.com/dependencies/gstreamer-osx-1.18.1.tar.bz2 &&
-        sudo tar zxf gstreamer-osx-1.18.1.tar.bz2 -C /Library/Frameworks
-        ;
+        wget https://gstreamer.freedesktop.org/data/pkg/osx/1.18.1/gstreamer-1.0-1.18.1-x86_64.pkg;
+        wget https://gstreamer.freedesktop.org/data/pkg/osx/1.18.1/gstreamer-1.0-devel-1.18.1-x86_64.pkg;
+        sudo installer -verbose -pkg gstreamer-1.0-1.18.1-x86_64.pkg -target /;
+        sudo installer -verbose -pkg gstreamer-1.0-devel-1.18.1-x86_64.pkg -target /;
+        sudo ./tools/osxrelocator.py  -r /Library/Frameworks/GStreamer.framework/Versions/1.0/ @rpath /Library/Frameworks/GStreamer.framework/Versions/1.0/;
     fi
 
   - if [ "${SPEC}" = "macx-clang" ]; then
