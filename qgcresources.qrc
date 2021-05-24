@@ -57,6 +57,8 @@
         <file alias="3drradio.png">resources/firmware/3drradio.png</file>
         <file alias="apm.png">resources/firmware/apm.png</file>
         <file alias="px4.png">resources/firmware/px4.png</file>
+		<file alias="ThePeach_Black.png">resources/firmware/ThePeach_Black.png</file>
+        <file alias="ThePeach_White.png">resources/firmware/ThePeach_White.png</file>
     </qresource>
     <qresource prefix="/res/calibration">
         <file alias="accel_back.png">resources/calibration/accel_back.png</file>
