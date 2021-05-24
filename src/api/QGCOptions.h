@@ -32,7 +32,7 @@ public:
 protected:
     virtual bool    showMultiVehicleList        () const { return true; }
     virtual bool    showMapScale                () const { return true; }
-    virtual bool    showInstrumentPanel         () const { return true; }
+    virtual bool    showInstrumentPanel         () const { return false; }
     virtual bool    guidedBarShowEmergencyStop  () const { return true; }
     virtual bool    guidedBarShowOrbit          () const { return true; }
     virtual bool    guidedBarShowROI            () const { return true; }
