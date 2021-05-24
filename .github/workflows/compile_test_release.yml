@@ -96,6 +96,10 @@ jobs:
       - name: Install ccache Linux
         if:   ${{ matrix.config.os == 'ubuntu-latest' }}
         run:  sudo apt-get install ccache
+        
+      - name: Install ccache Linux
+        if:   ${{ matrix.config.os == 'ubuntu-latest' }}
+        run:  sudo apt-get install libusb-1.0-0-dev        
 
       - name: Prepare ccache timestamp
         id: ccache_cache_timestamp
