@@ -268,7 +268,7 @@ Item {
         anchors.bottom: parent.bottom
         height:         4
         width:          _controllerProgressPct * parent.width
-        color:          qgcPal.colorGreen
+        color:          qgcPal.brandThePeachPeach
         visible:        false
 
         onVisibleChanged: {
@@ -300,7 +300,7 @@ Item {
             anchors.top:    parent.top
             anchors.bottom: parent.bottom
             width:          _controllerProgressPct * parent.width
-            color:          qgcPal.colorGreen
+            color:          qgcPal.brandThePeachPeach
         }
 
         QGCLabel {

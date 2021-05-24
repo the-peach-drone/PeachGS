@@ -59,7 +59,7 @@ RowLayout {
                 } else {
                     if (_activeVehicle.readyToFlyAvailable) {
                         if (_activeVehicle.readyToFly) {
-                            _mainStatusBGColor = "green"
+                            _mainStatusBGColor = qgcPal.brandThePeachBlue
                             return mainStatusLabel._readyToFlyText
                         } else {
                             _mainStatusBGColor = "yellow"
@@ -68,7 +68,7 @@ RowLayout {
                     } else {
                         // Best we can do is determine readiness based on AutoPilot component setup and health indicators from SYS_STATUS
                         if (_activeVehicle.allSensorsHealthy && _activeVehicle.autopilot.setupComplete) {
-                            _mainStatusBGColor = "green"
+                            _mainStatusBGColor = qgcPal.brandThePeachBlue
                             return mainStatusLabel._readyToFlyText
                         } else {
                             _mainStatusBGColor = "yellow"
@@ -77,7 +77,7 @@ RowLayout {
                     }
                 }
             } else {
-                _mainStatusBGColor = qgcPal.brandingPurple
+                _mainStatusBGColor = qgcPal.brandThePeachPeach
                 return mainStatusLabel._disconnectedText
             }
         }

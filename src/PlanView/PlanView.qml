@@ -617,6 +617,7 @@ Item {
             z:                  QGroundControl.zOrderWidgets
             maxHeight:          parent.height - toolStrip.y
             title:              qsTr("Plan")
+			color:              qgcPal.Light ? qgcPal.brandThePeachBlue : qgcPal.toolbarBackground
 
             readonly property int flyButtonIndex:       0
             readonly property int fileButtonIndex:      1

@@ -341,7 +341,7 @@ ApplicationWindow {
 
         QGCPopupDialog {
             id:         toolSelectDialog
-            title:      qsTr("Select Tool")
+            title:      qsTr("Peach-GS Menu")
             buttons:    StandardButton.Close
 
             property real _toolButtonHeight:    ScreenTools.defaultFontPixelHeight * 3
@@ -392,7 +392,7 @@ ApplicationWindow {
                         height:             _toolButtonHeight
                         Layout.fillWidth:   true
                         text:               qsTr("Application Settings")
-                        imageResource:      "/res/QGCLogoFull"
+                        imageResource:      "/res/PGCLogoFull"
                         imageColor:         "transparent"
                         visible:            !QGroundControl.corePlugin.options.combineSettingsAndSetup
                         onClicked: {
