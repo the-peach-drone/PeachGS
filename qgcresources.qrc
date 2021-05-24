@@ -18,7 +18,7 @@
         <file alias="counter-clockwise-arrow.svg">resources/counter-clockwise-arrow.svg</file>
         <file alias="chevron-down.svg">resources/chevron-down.svg</file>
         <file alias="chevron-up.svg">resources/chevron-up.svg</file>
-		<file alias="DropArrow.svg">resources/DropArrow.svg</file>
+        <file alias="DropArrow.svg">resources/DropArrow.svg</file>
         <file alias="gear-black.svg">resources/gear-black.svg</file>
         <file alias="gear-white.svg">resources/gear-white.svg</file>
         <file alias="helicoptericon.svg">resources/helicoptericon.svg</file>
@@ -34,7 +34,7 @@
         <file alias="Play">resources/Play.svg</file>
         <file alias="PowerButton">resources/PowerButton.svg</file>
         <file alias="QGCLogoBlack">resources/QGCLogoBlack.svg</file>
-		<file alias="QGCLogoFull">resources/QGCLogoFull.svg</file>
+        <file alias="QGCLogoFull">resources/QGCLogoFull.svg</file>
         <file alias="QGCLogoWhite">resources/QGCLogoWhite.svg</file>
         <file alias="QGCLogoArrow">resources/QGCLogoArrow.svg</file>
         <file alias="QGroundControlConnect">resources/QGroundControlConnect.svg</file>
@@ -52,12 +52,14 @@
         <file alias="XDeleteBlack.svg">resources/XDeleteBlack.svg</file>
         <file alias="waypoint.svg">resources/waypoint.svg</file>
         <file>resources/icons/qgroundcontrol.ico</file>
+        <file alias="PGCLogoFull">resources/PLogoFull.svg</file>
+        <file alias="PGCLogoWhite">resources/PLogoWhite.svg</file>
     </qresource>
     <qresource prefix="/res/firmware">
         <file alias="3drradio.png">resources/firmware/3drradio.png</file>
         <file alias="apm.png">resources/firmware/apm.png</file>
         <file alias="px4.png">resources/firmware/px4.png</file>
-		<file alias="ThePeach_Black.png">resources/firmware/ThePeach_Black.png</file>
+        <file alias="ThePeach_Black.png">resources/firmware/ThePeach_Black.png</file>
         <file alias="ThePeach_White.png">resources/firmware/ThePeach_White.png</file>
     </qresource>
     <qresource prefix="/res/calibration">
