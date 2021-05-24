@@ -7,6 +7,7 @@
 #
 ################################################################################
 
+CONFIG += warn_off
 QMAKE_PROJECT_DEPTH = 0 # undocumented qmake flag to force absolute paths in makefiles
 
 # These are disabled until proven correct
@@ -25,7 +26,7 @@ message(Qt version $$[QT_VERSION])
 
 include(QGCCommon.pri)
 
-TARGET   = QGroundControl
+TARGET   = Peach-GS
 TEMPLATE = app
 QGCROOT  = $$PWD
 
@@ -37,33 +38,37 @@ QML_IMPORT_PATH += $$PWD/src/QmlControls
 
 MacBuild {
     QMAKE_INFO_PLIST    = Custom-Info.plist
-    ICON                = $${SOURCE_DIR}/resources/icons/macx.icns
+    ICON                = $${SOURCE_DIR}/resources/icons/PLogoFull.icns
     OTHER_FILES        += Custom-Info.plist
     LIBS               += -framework ApplicationServices
 }
 
 LinuxBuild {
     CONFIG  += qesp_linux_udev
+	LIBS += -lusb-1.0
 }
 
 WindowsBuild {
-    RC_ICONS = resources/icons/qgroundcontrol.ico
+    RC_ICONS = resources/icons/PLogoFull.ico
     CONFIG += resources_big
+	
+	INCLUDEPATH += $$PWD/libs/libusb_win
+    LIBS += $$PWD/libs/libusb_win/libusb-1.0.lib
 }
 
 #
 # Branding
 #
 
-QGC_APP_NAME        = "QGroundControl"
-QGC_ORG_NAME        = "QGroundControl.org"
-QGC_ORG_DOMAIN      = "org.qgroundcontrol"
-QGC_APP_DESCRIPTION = "Open source ground control app provided by QGroundControl dev team"
+QGC_APP_NAME        = "Peach-GS"
+QGC_ORG_NAME        = "thepeach.co.kr"
+QGC_ORG_DOMAIN      = "thepeach.co.kr"
+QGC_APP_DESCRIPTION = "Open source ground control app provided by QGroundControl dev team and ThePeach Team"
 QGC_APP_COPYRIGHT   = "Copyright (C) 2019 QGroundControl Development Team. All rights reserved."
 
 WindowsBuild {
-    QGC_INSTALLER_ICON          = "$$SOURCE_DIR\\windows\\WindowsQGC.ico"
-    QGC_INSTALLER_HEADER_BITMAP = "$$SOURCE_DIR\\windows\\installheader.bmp"
+    QGC_INSTALLER_ICON          = "$$SOURCE_DIR\\windows\\PLogoFull.ico"
+    QGC_INSTALLER_HEADER_BITMAP = "$$SOURCE_DIR\\windows\\installheader-Peach.bmp"
 }
 
 # Load additional config flags from user_config.pri
@@ -351,9 +356,9 @@ CustomBuild {
         RESOURCES += $$PWD/resources/InstrumentValueIcons/InstrumentValueIcons.qrc
     }
 } else {
-    DEFINES += QGC_APPLICATION_NAME=\"\\\"QGroundControl\\\"\"
-    DEFINES += QGC_ORG_NAME=\"\\\"QGroundControl.org\\\"\"
-    DEFINES += QGC_ORG_DOMAIN=\"\\\"org.qgroundcontrol\\\"\"
+    DEFINES += QGC_APPLICATION_NAME=\"\\\"Peach-GS\\\"\"
+    DEFINES += QGC_ORG_NAME=\"\\\"thepeach.co.kr\\\"\"
+    DEFINES += QGC_ORG_DOMAIN=\"\\\"thepeach.co.kr\\\"\"
     RESOURCES += \
         $$PWD/qgroundcontrol.qrc \
         $$PWD/qgcresources.qrc \
