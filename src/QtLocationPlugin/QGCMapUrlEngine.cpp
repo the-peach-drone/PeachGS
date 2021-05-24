@@ -85,6 +85,10 @@ UrlFactory::UrlFactory() : _timeout(5 * 1000) {
     _providersTable["LINZ Basemap"] = new LINZBasemapMapProvider(this);
     
     _providersTable["CustomURL Custom"] = new CustomURLMapProvider(this);
+
+    _providersTable["VWorld Street Map"] = new VWorldStreetMapProvider(this);
+    _providersTable["VWorld Satellite Map"] = new VWorldSatMapProvider(this);
+    _providersTable["VWorld Hybrid Map"] = new VWorldHybridMapProvider(this);
 }
 
 void UrlFactory::registerProvider(QString name, MapProvider* provider) {
