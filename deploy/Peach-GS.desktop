@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Peach-GS
+GenericName=Ground Control Station
+Comment=UAS ground control station
+Icon=PLogoFull
+Exec=Peach-GS-start.sh
+Terminal=false
+Categories=Utility;
+Name[ko_KR]=Peach-GS.desktop
