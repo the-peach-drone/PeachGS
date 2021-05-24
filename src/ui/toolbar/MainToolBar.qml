@@ -133,7 +133,7 @@ Rectangle {
                 return _userBrandImageIndoor
             } else {
                 if (_userBrandingOutdoor) {
-                    return _userBrandingOutdoor
+                    return _userBrandImageOutdoor
                 } else {
                     if (_corePluginBranding) {
                         return QGroundControl.corePlugin.brandImageIndoor
@@ -146,10 +146,10 @@ Rectangle {
 
         function brandImageOutdoor() {
             if (_userBrandingOutdoor) {
-                return _userBrandingOutdoor
+                return _userBrandImageOutdoor
             } else {
                 if (_userBrandingIndoor) {
-                    return _userBrandingIndoor
+                    return _userBrandImageIndoor
                 } else {
                     if (_corePluginBranding) {
                         return QGroundControl.corePlugin.brandImageOutdoor
