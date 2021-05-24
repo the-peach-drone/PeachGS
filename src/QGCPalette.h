@@ -135,6 +135,8 @@ public:
     DEFINE_QGC_COLOR(mapMissionTrajectory,          setMapMissionTrajectory)
     DEFINE_QGC_COLOR(brandingPurple,                setBrandingPurple)
     DEFINE_QGC_COLOR(brandingBlue,                  setBrandingBlue)
+	DEFINE_QGC_COLOR(brandThePeachBlue,             setBrandThePeachBlue)
+    DEFINE_QGC_COLOR(brandThePeachPeach,            setBrandThePeachPeach)
     DEFINE_QGC_COLOR(colorGreen,                    setColorGreen)
     DEFINE_QGC_COLOR(colorOrange,                   setColorOrange)
     DEFINE_QGC_COLOR(colorRed,                      setColorRed)
