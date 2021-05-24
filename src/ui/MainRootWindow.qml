@@ -402,57 +402,6 @@ ApplicationWindow {
                             }
                         }
                     }
-
-                    ColumnLayout {
-                        width:      innerLayout.width
-                        spacing:    0
-
-                        QGCLabel {
-                            id:                     versionLabel
-                            text:                   qsTr("%1 Version").arg(QGroundControl.appName)
-                            font.pointSize:         ScreenTools.smallFontPointSize
-                            wrapMode:               QGCLabel.WordWrap
-                            Layout.maximumWidth:    parent.width
-                            Layout.alignment:       Qt.AlignHCenter
-                        }
-
-                        QGCLabel {
-                            text:                   QGroundControl.qgcVersion
-                            font.pointSize:         ScreenTools.smallFontPointSize
-                            wrapMode:               QGCLabel.WrapAnywhere
-                            Layout.maximumWidth:    parent.width
-                            Layout.alignment:       Qt.AlignHCenter
-
-                            QGCMouseArea {
-                                id:                 easterEggMouseArea
-                                anchors.topMargin:  -versionLabel.height
-                                anchors.fill:       parent
-
-                                onClicked: {
-                                    if (mouse.modifiers & Qt.ControlModifier) {
-                                        QGroundControl.corePlugin.showTouchAreas = !QGroundControl.corePlugin.showTouchAreas
-                                    } else if (mouse.modifiers & Qt.ShiftModifier) {
-                                        if(!QGroundControl.corePlugin.showAdvancedUI) {
-                                            advancedModeConfirmation.open()
-                                        } else {
-                                            QGroundControl.corePlugin.showAdvancedUI = false
-                                        }
-                                    }
-                                }
-
-                                MessageDialog {
-                                    id:                 advancedModeConfirmation
-                                    title:              qsTr("Advanced Mode")
-                                    text:               QGroundControl.corePlugin.showAdvancedUIMessage
-                                    standardButtons:    StandardButton.Yes | StandardButton.No
-                                    onYes: {
-                                        QGroundControl.corePlugin.showAdvancedUI = true
-                                        advancedModeConfirmation.close()
-                                    }
-                                }
-                            }
-                        }
-                    }
                 }
             }
         }
