@@ -97,7 +97,7 @@ jobs:
         if:   ${{ matrix.config.os == 'ubuntu-latest' }}
         run:  sudo apt-get install ccache
         
-      - name: Install ccache Linux
+      - name: Install libusb Linux
         if:   ${{ matrix.config.os == 'ubuntu-latest' }}
         run:  sudo apt-get install libusb-1.0-0-dev        
 
