@@ -53,7 +53,7 @@ installer {
     LinuxBuild {
         #-- TODO: This uses hardcoded paths. It should use $${DESTDIR}
         QMAKE_POST_LINK += && mkdir -p package
-        QMAKE_POST_LINK += && tar -cj --exclude='package' -f package/QGroundControl.tar.bz2 staging --transform 's/$${DESTDIR}/qgroundcontrol/'
+        QMAKE_POST_LINK += && tar -cj --exclude='package' -f package/Peach-GS.bz2 staging --transform 's/$${DESTDIR}/Peach-GS/'
     }
     AndroidBuild {
         QMAKE_POST_LINK += && mkdir -p package
