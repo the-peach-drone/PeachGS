@@ -155,7 +155,7 @@ Item {
 
         function recalcXPosition() {
             // First try centered
-            var halfRootWidth   = _root.width / 2
+            var halfRootWidth   = _root.width * 0.75
             var halfPanelWidth  = telemetryPanel.width / 2
             var leftX           = (halfRootWidth - halfPanelWidth) - _toolsMargin
             var rightX          = (halfRootWidth + halfPanelWidth) + _toolsMargin

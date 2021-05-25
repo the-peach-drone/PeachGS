@@ -21,7 +21,8 @@ Rectangle {
     height:             telemetryLayout.height + (_toolsMargin * 2)
     width:              telemetryLayout.width + (_toolsMargin * 2)
     color:              qgcPal.window
-    radius:             ScreenTools.defaultFontPixelWidth / 2
+    radius:             width / 2
+    opacity:            0.8
 
     DeadMouseArea { anchors.fill: parent }
 
