@@ -60,11 +60,11 @@ Item {
     //--Compass Indicator
     Rectangle {
         id:                     compassBackground
-        anchors.bottom:         attitudeIndicator.bottom
+        anchors.top:            attitudeIndicator.top
         anchors.right:          attitudeIndicator.left
         anchors.rightMargin:    -attitudeIndicator.width / 2
         width:                  -anchors.rightMargin + compassBezel.width + (_toolsMargin * 2)
-        height:                 attitudeIndicator.height
+        height:                 attitudeIndicator.height / 1.8
         radius:                 2
         color:                  Qt.rgba(0,0,0,0)
 
