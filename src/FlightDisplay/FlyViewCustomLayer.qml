@@ -146,10 +146,10 @@ Item {
         height:                 ScreenTools.defaultFontPixelHeight * 9
         width:                  height
         radius:                 height * 0.5
-        color:                  qgcPal.windowShade
+        color:                  Qt.rgba(0,0,0,0.9)
 
         PeachAttitudeWidget {
-            size:               parent.height
+            size:               parent.height * 0.9
             vehicle:            _activeVehicle
             showHeading:        true
             anchors.centerIn:   parent
