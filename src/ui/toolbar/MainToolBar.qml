@@ -166,7 +166,7 @@ Rectangle {
         anchors.bottom: parent.bottom
         height:         _root.height * 0.05
         width:          _activeVehicle ? _activeVehicle.loadProgress * parent.width : 0
-        color:          qgcPal.colorGreen
+        color:          qgcPal.brandThePeachPeach
         visible:        !largeProgressBar.visible
     }
 
@@ -193,12 +193,12 @@ Rectangle {
             anchors.top:    parent.top
             anchors.bottom: parent.bottom
             width:          _activeVehicle ? _activeVehicle.loadProgress * parent.width : 0
-            color:          qgcPal.colorGreen
+            color:          qgcPal.brandThePeachPeach
         }
 
         QGCLabel {
             anchors.centerIn:   parent
-            text:               qsTr("Downloading")
+            text:               qsTr("Downloading Parameters")
             font.pointSize:     ScreenTools.largeFontPointSize
         }
 
