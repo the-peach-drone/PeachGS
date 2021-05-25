@@ -199,7 +199,7 @@ Item {
                                 QGCLabel { text: object.timeRemainingStr.value;                                             visible: batteryValuesAvailable.timeRemainingAvailable }
                                 QGCLabel { text: object.percentRemaining.valueString + " " + object.percentRemaining.units }
                                 QGCLabel { text: object.voltage.valueString + " " + object.voltage.units }
-                                QGCLabel { text: object.current.valueString + " " + object.mahConsumed.units;               visible: batteryValuesAvailable.currentAvailable }
+                                QGCLabel { text: object.current.valueString + " " + object.current.units;                   visible: batteryValuesAvailable.currentAvailable }
                                 QGCLabel { text: object.mahConsumed.valueString + " " + object.mahConsumed.units;           visible: batteryValuesAvailable.mahConsumedAvailable }
                                 QGCLabel { text: object.temperature.valueString + " " + object.temperature.units;           visible: batteryValuesAvailable.temperatureAvailable }
                                 QGCLabel { text: object.function.enumStringValue;                                           visible: batteryValuesAvailable.functionAvailable }
