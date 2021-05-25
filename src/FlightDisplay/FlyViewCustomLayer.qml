@@ -29,8 +29,6 @@ import QGroundControl.Palette       1.0
 import QGroundControl.ScreenTools   1.0
 import QGroundControl.Vehicle       1.0
 
-// To implement a custom overlay copy this code to your own control in your custom code source. Then override the
-// FlyViewCustomLayer.qml resource with your own qml. See the custom example and documentation for details.
 Item {
     id: _root
 
@@ -38,19 +36,124 @@ Item {
     property var totalToolInsets:   _toolInsets // These are the insets for your custom overlay additions
     property var mapControl
 
+    // Property of Tools
+    property real   _toolsMargin:           ScreenTools.defaultFontPixelWidth * 0.75
+    property color  _baseBGColor:           qgcPal.window
+
+    // Property of Active Vehicle
+    property var    _activeVehicle:         QGroundControl.multiVehicleManager.activeVehicle
+    property real   _heading:               _activeVehicle   ? _activeVehicle.heading.rawValue : 0
+
     QGCToolInsets {
-        id:                         _toolInsets
-        leftEdgeCenterInset:    0
-        leftEdgeTopInset:           0
-        leftEdgeBottomInset:        0
-        rightEdgeCenterInset:   0
-        rightEdgeTopInset:          0
-        rightEdgeBottomInset:       0
-        topEdgeCenterInset:       0
-        topEdgeLeftInset:           0
-        topEdgeRightInset:          0
-        bottomEdgeCenterInset:    0
-        bottomEdgeLeftInset:        0
-        bottomEdgeRightInset:       0
+        id:                     _totalToolInsets
+        leftEdgeBottomInset:    parentToolInsets.leftEdgeBottomInset
+        rightEdgeTopInset:      parentToolInsets.rightEdgeTopInset
+        rightEdgeCenterInset:   parentToolInsets.rightEdgeCenterInset
+        rightEdgeBottomInset:   parentToolInsets.rightEdgeBottomInset
+        topEdgeLeftInset:       parentToolInsets.topEdgeLeftInset
+        topEdgeCenterInset:     parentToolInsets.topEdgeCenterInset
+        topEdgeRightInset:      parentToolInsets.topEdgeRightInset
+        bottomEdgeLeftInset:    parentToolInsets.bottomEdgeLeftInset
     }
+
+    //-----------------------------------------------------------------------------------------------------
+    //--Compass Indicator
+    Rectangle {
+        id:                     compassBackground
+        anchors.bottom:         attitudeIndicator.bottom
+        anchors.right:          attitudeIndicator.left
+        anchors.rightMargin:    -attitudeIndicator.width / 2
+        width:                  -anchors.rightMargin + compassBezel.width + (_toolsMargin * 2)
+        height:                 attitudeIndicator.height
+        radius:                 2
+        color:                  Qt.rgba(0,0,0,0)
+
+        Rectangle {
+            id:                     compassBezel
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.leftMargin:     _toolsMargin
+            anchors.left:           parent.left
+            width:                  height
+            height:                 parent.height - (northLabelBackground.height / 2) - (headingLabelBackground.height / 2)
+            radius:                 height / 2
+            border.color:           qgcPal.text
+            border.width:           1
+            color:                  Qt.rgba(0,0,0,0)
+        }
+        Rectangle {
+            id:                         northLabelBackground
+            anchors.top:                compassBezel.top
+            anchors.topMargin:          -height / 2
+            anchors.horizontalCenter:   compassBezel.horizontalCenter
+            width:                      northLabel.contentWidth * 1.5
+            height:                     northLabel.contentHeight * 1.5
+            radius:                     ScreenTools.defaultFontPixelWidth  * 0.25
+            color:                      qgcPal.windowShade
+
+            QGCLabel {
+                id:                 northLabel
+                anchors.centerIn:   parent
+                text:               "N"
+                color:              qgcPal.text
+                font.pointSize:     ScreenTools.smallFontPointSize
+            }
+        }
+        Image {
+            id:                 headingNeedle
+            anchors.centerIn:   compassBezel
+            height:             compassBezel.height * 0.75
+            width:              height
+            source:             "qrc:/qmlimages/compassInstrumentArrow.svg"
+            fillMode:           Image.PreserveAspectFit
+            sourceSize.height:  height
+            transform: [
+                Rotation {
+                    origin.x:   headingNeedle.width  / 2
+                    origin.y:   headingNeedle.height / 2
+                    angle:      _heading
+                }
+            ]
+        }
+        Rectangle {
+            id:                         headingLabelBackground
+            anchors.top:                compassBezel.bottom
+            anchors.topMargin:          -height / 2
+            anchors.horizontalCenter:   compassBezel.horizontalCenter
+            width:                      headingLabel.contentWidth * 1.5
+            height:                     headingLabel.contentHeight * 1.5
+            radius:                     ScreenTools.defaultFontPixelWidth  * 0.25
+            color:                      qgcPal.windowShade
+
+            QGCLabel {
+                id:                 headingLabel
+                anchors.centerIn:   parent
+                text:               _heading
+                color:              qgcPal.text
+                font.pointSize:     ScreenTools.smallFontPointSize
+            }
+        }
+    }
+    //-----------------------------------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------------------------------
+    //--Attituede Indicator
+    Rectangle {
+        id:                     attitudeIndicator
+        anchors.bottomMargin:   _toolsMargin
+        anchors.rightMargin:    _toolsMargin
+        anchors.bottom:         parent.bottom
+        anchors.right:          parent.right
+        height:                 ScreenTools.defaultFontPixelHeight * 9
+        width:                  height
+        radius:                 height * 0.5
+        color:                  qgcPal.windowShade
+
+        PeachAttitudeWidget {
+            size:               parent.height
+            vehicle:            _activeVehicle
+            showHeading:        true
+            anchors.centerIn:   parent
+        }
+    }
+    //-----------------------------------------------------------------------------------------------------
 }
