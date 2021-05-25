@@ -147,6 +147,7 @@ Item {
         property bool _verticalCenter: !QGroundControl.settingsManager.flyViewSettings.alternateInstrumentPanel.rawValue
     }
 
+    /*
     TelemetryValuesBar {
         id:                 telemetryPanel
         x:                  recalcXPosition()
@@ -170,6 +171,7 @@ Item {
 
         property real bottomInset: height
     }
+    */
 
     //-- Virtual Joystick
     Loader {

@@ -76,7 +76,7 @@ Item {
             width:                  height
             height:                 parent.height - (northLabelBackground.height / 2) - (headingLabelBackground.height / 2)
             radius:                 height / 2
-            border.color:           qgcPal.text
+            border.color:           qgcPal.window
             border.width:           1
             color:                  Qt.rgba(0,0,0,0)
         }
@@ -154,6 +154,18 @@ Item {
             showHeading:        true
             anchors.centerIn:   parent
         }
+    }
+    //-----------------------------------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------------------------------
+    //--Custom Telemetry Values Bar------------------------------------------------------------------------
+    TelemetryValuesBar {
+        id:                 telemetryPanel
+        anchors.margins:    _toolsMargin
+        anchors.right:      attitudeIndicator.left
+        anchors.bottom:     parent.bottom
+
+        property real bottomInset: height
     }
     //-----------------------------------------------------------------------------------------------------
 }
