@@ -45,19 +45,19 @@ Item {
     property real   _heading:               _activeVehicle   ? _activeVehicle.heading.rawValue : 0
 
     QGCToolInsets {
-            id:                         _toolInsets
-            leftEdgeCenterInset:        0
-            leftEdgeTopInset:           0
-            leftEdgeBottomInset:        0
-            rightEdgeCenterInset:       0
-            rightEdgeTopInset:          0
-            rightEdgeBottomInset:       0
-            topEdgeCenterInset:         0
-            topEdgeLeftInset:           0
-            topEdgeRightInset:          0
-            bottomEdgeCenterInset:      0
-            bottomEdgeLeftInset:        0
-            bottomEdgeRightInset:       0
+        id:                         _toolInsets
+        leftEdgeCenterInset:        0
+        leftEdgeTopInset:           0
+        leftEdgeBottomInset:        0
+        rightEdgeCenterInset:       0
+        rightEdgeTopInset:          0
+        rightEdgeBottomInset:       0
+        topEdgeCenterInset:         0
+        topEdgeLeftInset:           0
+        topEdgeRightInset:          0
+        bottomEdgeCenterInset:      0
+        bottomEdgeLeftInset:        0
+        bottomEdgeRightInset:       0
     }
 
     //-----------------------------------------------------------------------------------------------------
