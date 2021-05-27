@@ -45,15 +45,19 @@ Item {
     property real   _heading:               _activeVehicle   ? _activeVehicle.heading.rawValue : 0
 
     QGCToolInsets {
-        id:                     _toolInsets
-        leftEdgeBottomInset:    parentToolInsets.leftEdgeBottomInset
-        rightEdgeTopInset:      parentToolInsets.rightEdgeTopInset
-        rightEdgeCenterInset:   parentToolInsets.rightEdgeCenterInset
-        rightEdgeBottomInset:   parentToolInsets.rightEdgeBottomInset
-        topEdgeLeftInset:       parentToolInsets.topEdgeLeftInset
-        topEdgeCenterInset:     parentToolInsets.topEdgeCenterInset
-        topEdgeRightInset:      parentToolInsets.topEdgeRightInset
-        bottomEdgeLeftInset:    parentToolInsets.bottomEdgeLeftInset
+            id:                         _toolInsets
+            leftEdgeCenterInset:        0
+            leftEdgeTopInset:           0
+            leftEdgeBottomInset:        0
+            rightEdgeCenterInset:       0
+            rightEdgeTopInset:          0
+            rightEdgeBottomInset:       0
+            topEdgeCenterInset:         0
+            topEdgeLeftInset:           0
+            topEdgeRightInset:          0
+            bottomEdgeCenterInset:      0
+            bottomEdgeLeftInset:        0
+            bottomEdgeRightInset:       0
     }
 
     //-----------------------------------------------------------------------------------------------------
@@ -166,4 +170,16 @@ Item {
         anchors.bottom:     parent.bottom
     }
     //-----------------------------------------------------------------------------------------------------
+
+    MapScale {
+        id:                 mapScale
+        anchors.margins:    _toolsMargin
+        anchors.right:       telemetryPanel.left
+        anchors.bottom:     parent.bottom
+        mapControl:         _mapControl
+        buttonsOnLeft:      false
+        visible:            !ScreenTools.isTinyScreen && QGroundControl.corePlugin.options.flyView.showMapScale && mapControl.pipState.state === mapControl.pipState.fullState
+
+        property real centerInset: visible ? parent.height - y : 0
+    }
 }

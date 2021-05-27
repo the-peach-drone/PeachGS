@@ -61,7 +61,7 @@ Item {
         topEdgeCenterInset:     parentToolInsets.topEdgeCenterInset
         topEdgeRightInset:      parentToolInsets.topEdgeRightInset
         bottomEdgeLeftInset:    parentToolInsets.bottomEdgeLeftInset
-        bottomEdgeCenterInset:  mapScale.centerInset
+        //bottomEdgeCenterInset:  mapScale.centerInset
     }
 
     FlyViewMissionCompleteDialog {
@@ -218,6 +218,7 @@ Item {
         z:                  QGroundControl.zOrderTopMost
     }
 
+    /*
     MapScale {
         id:                 mapScale
         anchors.margins:    _toolsMargin
@@ -229,6 +230,7 @@ Item {
 
         property real centerInset: visible ? parent.height - y : 0
     }
+    */
 
     Component {
         id: preFlightChecklistPopup
