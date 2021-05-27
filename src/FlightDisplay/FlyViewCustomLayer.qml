@@ -45,7 +45,7 @@ Item {
     property real   _heading:               _activeVehicle   ? _activeVehicle.heading.rawValue : 0
 
     QGCToolInsets {
-        id:                     _totalToolInsets
+        id:                     _toolInsets
         leftEdgeBottomInset:    parentToolInsets.leftEdgeBottomInset
         rightEdgeTopInset:      parentToolInsets.rightEdgeTopInset
         rightEdgeCenterInset:   parentToolInsets.rightEdgeCenterInset
@@ -60,7 +60,7 @@ Item {
     //--Compass Indicator
     Rectangle {
         id:                     compassBackground
-        anchors.top:            attitudeIndicator.top
+        anchors.bottom:         telemetryPanel.top
         anchors.right:          attitudeIndicator.left
         anchors.rightMargin:    -attitudeIndicator.width / 2
         width:                  -anchors.rightMargin + compassBezel.width + (_toolsMargin * 2)
@@ -164,8 +164,6 @@ Item {
         anchors.margins:    _toolsMargin
         anchors.right:      attitudeIndicator.left
         anchors.bottom:     parent.bottom
-
-        property real bottomInset: height
     }
     //-----------------------------------------------------------------------------------------------------
 }

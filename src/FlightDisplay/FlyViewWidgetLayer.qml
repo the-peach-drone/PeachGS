@@ -62,7 +62,6 @@ Item {
         topEdgeRightInset:      parentToolInsets.topEdgeRightInset
         bottomEdgeLeftInset:    parentToolInsets.bottomEdgeLeftInset
         bottomEdgeCenterInset:  mapScale.centerInset
-        bottomEdgeRightInset:   telemetryPanel.bottomInset
     }
 
     FlyViewMissionCompleteDialog {
