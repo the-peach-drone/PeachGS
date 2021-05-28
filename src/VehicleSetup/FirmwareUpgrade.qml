@@ -197,6 +197,41 @@ SetupPage {
                             var firmwareBuildType = firmwareBuildTypeCombo.model.get(firmwareBuildTypeCombo.currentIndex).firmwareType
                             var vehicleType = FirmwareUpgradeController.DefaultVehicleFirmware
 
+                            // ThePeach Firmware TEST
+                            if(thePeachStack.checked) {
+
+                                // Vehicle Type check
+                                var thePeachBoradType = thePeachTypeSelectionCombo.currentIndex
+
+                                // K1 - PX4
+                                if (controller.getBoardID === 212 && thePeachBoradType === 0) {
+                                    var thePeachfirmwareUrl = controller.currentDirPath + "/ThePeach_Firmware/thepeach_k1_default.px4"
+                                }
+                                // K1 - Ardupilot
+                                else if(controller.getBoardID === 212 && thePeachBoradType === 1) {
+                                    thePeachfirmwareUrl = controller.currentDirPath + "/ThePeach_Firmware/arducopter-K1.apj"
+                                }
+                                // R1 - PX4
+                                else if(controller.getBoardID === 213 && thePeachBoradType === 0) {
+                                    thePeachfirmwareUrl = controller.currentDirPath + "/ThePeach_Firmware/thepeach_r1_default.px4"
+                                }
+                                // R1 - Ardupilot
+                                else if(controller.getBoardID === 213 && thePeachBoradType === 1) {
+                                    thePeachfirmwareUrl = controller.currentDirPath + "/ThePeach_Firmware/arducopter-R1.apj"
+                                }
+                                // exception
+                                else {
+                                    statusTextArea.append(qsTr("This Board is not ThePeach Board. Please Check the Board."))
+                                    hideDialog()
+                                    cancelFlash()
+                                    return
+                                }
+
+                                controller.flashFirmwareUrl(thePeachfirmwareUrl)
+                                hideDialog()
+                                return
+                            }
+
                             if (px4Flow) {
                                 stack = px4FlowTypeSelectionCombo.model.get(px4FlowTypeSelectionCombo.currentIndex).stackType
                                 vehicleType = FirmwareUpgradeController.DefaultVehicleFirmware
@@ -295,6 +330,33 @@ SetupPage {
                         }
                     }
 
+                    // ThePeach K1 list model
+                    ListModel {
+                        id: thepeachK1FirmwareTypeList
+
+                        ListElement {
+                            text:           qsTr("K1 - PX4")
+                            firmwareType:   FirmwareUpgradeController.CustomFirmware
+                        }
+                        ListElement {
+                            text:           qsTr("K1 - Ardupilot")
+                            firmwareType:   FirmwareUpgradeController.CustomFirmware
+                        }
+                    }
+                    // ThePeach R1 list model
+                    ListModel {
+                        id: thepeachR1FirmwareTypeList
+
+                        ListElement {
+                            text:           qsTr("R1 - PX4")
+                            firmwareType:   FirmwareUpgradeController.CustomFirmware
+                        }
+                        ListElement {
+                            text:           qsTr("R1 - Ardupilot")
+                            firmwareType:   FirmwareUpgradeController.CustomFirmware
+                        }
+                    }
+
                     QGCFlickable {
                         anchors.fill:   parent
                         contentHeight:  mainColumn.height
@@ -351,6 +413,12 @@ SetupPage {
                                         firmwareVersionChanged(firmwareBuildTypeList)
                                     }
                                 }
+
+                                // ThePeach Firmware
+                                QGCRadioButton {
+                                    id:            thePeachStack
+                                    text:          qsTr("The Peach Firmware")
+                                }
                             }
 
                             FactComboBox {
@@ -392,7 +460,7 @@ SetupPage {
                                 anchors.right:  parent.right
                                 wrapMode:       Text.WordWrap
                                 text:           qsTr("No Firmware Available")
-                                visible:        !controller.downloadingFirmwareList && (QGroundControl.apmFirmwareSupported && controller.apmFirmwareNames.length === 0)
+                                visible:        !controller.downloadingFirmwareList && (QGroundControl.apmFirmwareSupported && controller.apmFirmwareNames.length === 0) && !thePeachStack.checked
                             }
 
                             QGCComboBox {
@@ -405,10 +473,23 @@ SetupPage {
                                 currentIndex:   _defaultFirmwareIsPX4 ? 0 : 1
                             }
 
+                            QGCComboBox {
+                                id:             thePeachTypeSelectionCombo
+                                anchors.left:   parent.left
+                                anchors.right:  parent.right
+                                visible:        thePeachStack.checked
+                                model :         controller.getBoardID === _thepeachK1boardID ? thepeachK1FirmwareTypeList : thepeachR1FirmwareTypeList
+                                textRole:       "text"
+                                currentIndex:   0
+
+                                readonly property int _thepeachK1boardID: 212
+                                readonly property int _thepeachR1boardID: 213
+                            }
+
                             Row {
                                 width:      parent.width
                                 spacing:    ScreenTools.defaultFontPixelWidth / 2
-                                visible:    !px4Flow
+                                visible:    !px4Flow && !thePeachStack.checked
 
                                 Rectangle {
                                     height:     1

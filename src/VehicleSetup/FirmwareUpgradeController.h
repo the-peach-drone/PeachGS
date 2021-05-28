@@ -97,6 +97,8 @@ public:
     Q_PROPERTY(QStringList          apmFirmwareUrls             MEMBER _apmFirmwareUrls                                             NOTIFY apmFirmwareNamesChanged)
     Q_PROPERTY(QString              px4StableVersion            READ px4StableVersion                                               NOTIFY px4StableVersionChanged)
     Q_PROPERTY(QString              px4BetaVersion              READ px4BetaVersion                                                 NOTIFY px4BetaVersionChanged)
+    Q_PROPERTY(QString              currentDirPath              READ currentDirPath                                                 CONSTANT)
+    Q_PROPERTY(int                  getBoardID                  READ getBoardID                                                     CONSTANT)
 
     /// TextArea for log output
     Q_PROPERTY(QQuickItem* statusLog READ statusLog WRITE setStatusLog)
@@ -141,7 +143,9 @@ public:
     QString firmwareTypeAsString(FirmwareBuildType_t type) const;
 
     QString     px4StableVersion    (void) { return _px4StableVersion; }
-    QString     px4BetaVersion  (void) { return _px4BetaVersion; }
+    QString     px4BetaVersion      (void) { return _px4BetaVersion; }
+    QString     currentDirPath      (void) { return QApplication::applicationDirPath(); }
+    uint32_t    getBoardID          (void) { return _bootloaderBoardID;}
 
     bool pixhawkBoard(void) const { return _boardType == QGCSerialPortInfo::BoardTypePixhawk; }
     bool px4FlowBoard(void) const { return _boardType == QGCSerialPortInfo::BoardTypePX4Flow; }
