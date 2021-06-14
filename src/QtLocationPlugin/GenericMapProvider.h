@@ -146,16 +146,3 @@ class VWorldSatMapProvider : public MapProvider {
   private:
     const QString _versionBingMaps = QStringLiteral("563");
 };
-
-class VWorldHybridMapProvider : public MapProvider {
-    Q_OBJECT
-  public:
-    VWorldHybridMapProvider(QObject* parent = nullptr)
-        : MapProvider(QStringLiteral("www.vworld.kr"), QStringLiteral("png"),
-                      AVERAGE_TILE_SIZE, QGeoMapType::HybridMap, parent) {}
-
-    QString _getURL(const int x, const int y, const int zoom, QNetworkAccessManager* networkManager) override;
-
-  private:
-    const QString _versionBingMaps = QStringLiteral("563");
-};
