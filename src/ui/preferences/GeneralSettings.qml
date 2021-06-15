@@ -43,6 +43,7 @@ Rectangle {
     property string _mapProvider:               QGroundControl.settingsManager.flightMapSettings.mapProvider.value
     property string _mapType:                   QGroundControl.settingsManager.flightMapSettings.mapType.value
     property Fact   _followTarget:              QGroundControl.settingsManager.appSettings.followTarget
+    property Fact   _openWeatherFact:           QGroundControl.settingsManager ? QGroundControl.settingsManager.appSettings.openWeatherApiKey : null
     property real   _panelWidth:                _root.width * _internalWidthRatio
     property real   _margins:                   ScreenTools.defaultFontPixelWidth
     property var    _planViewSettings:          QGroundControl.settingsManager.planViewSettings
@@ -1033,6 +1034,40 @@ Rectangle {
                                 fact:                   adsbGrid.adsbSettings.adsbServerPort
                                 visible:                adsbGrid.adsbSettings.adsbServerPort.visible
                                 Layout.preferredWidth:  _valueFieldWidth
+                            }
+                        }
+                    }
+
+                    Item { width: 1; height: _margins; visible: _openWeatherFact ? _openWeatherFact.visible : false }
+                    QGCLabel {
+                        id:         openWeatherLabel
+                        text:       qsTr("OpenWeather API Key")
+                        visible:    _openWeatherFact.visible
+                    }
+                    Rectangle {
+                        Layout.preferredHeight: openWeatherViewCol.height + (_margins * 2)
+                        Layout.preferredWidth:  openWeatherViewCol.width + (_margins * 2)
+                        color:                  qgcPal.windowShade
+                        visible:                openWeatherLabel.visible
+                        Layout.fillWidth:       true
+
+                        ColumnLayout {
+                            id:                         openWeatherViewCol
+                            anchors.margins:            _margins
+                            anchors.top:                parent.top
+                            anchors.horizontalCenter:   parent.horizontalCenter
+                            spacing:                    _margins
+
+                            GridLayout {
+                                columns:            2
+                                columnSpacing:      ScreenTools.defaultFontPixelWidth
+                                visible:           _openWeatherFact ? _openWeatherFact.visible : false
+
+                                QGCLabel { text: qsTr("Enter OpenWeather API Key") }
+                                FactTextField {
+                                    Layout.preferredWidth:  _valueFieldWidth * 4
+                                    fact:                   _openWeatherFact
+                                }
                             }
                         }
                     }

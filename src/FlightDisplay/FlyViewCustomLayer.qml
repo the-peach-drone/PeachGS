@@ -41,8 +41,60 @@ Item {
     property color  _baseBGColor:           qgcPal.window
 
     // Property of Active Vehicle
-    property var    _activeVehicle:         QGroundControl.multiVehicleManager.activeVehicle
+    //property var    _activeVehicle:         QGroundControl.multiVehicleManager.activeVehicle
+    property var    _activeVehicle:         QGroundControl.multiVehicleManager.activeVehicle ? QGroundControl.multiVehicleManager.activeVehicle : QGroundControl.multiVehicleManager.offlineEditingVehicle
     property real   _heading:               _activeVehicle   ? _activeVehicle.heading.rawValue : 0
+    property bool   _available:             !isNaN(_activeVehicle.vibration.xAxis.rawValue)
+    property real   _xValue:                _activeVehicle.vibration.xAxis.rawValue
+    property real   _yValue:                _activeVehicle.vibration.yAxis.rawValue
+    property real   _zValue:                _activeVehicle.vibration.zAxis.rawValue
+
+    // QGC Map Center Position
+    property var _mapCoordinate:            QGroundControl.flightMapPosition
+
+    // Property OpenWeather API Key
+    property string   _openWeatherAPIkey:   QGroundControl.settingsManager ? QGroundControl.settingsManager.appSettings.openWeatherApiKey.value : null
+
+    // Weather Function
+    function getWeatherJSON() {
+        var requestUrl = "http://api.openweathermap.org/data/2.5/weather?lat=" + QGroundControl.flightMapPosition.latitude + "&lon="
+                         + QGroundControl.flightMapPosition.longitude + "&appid=" + _openWeatherAPIkey + "&lang=kr&units=metric"
+
+        var openWeatherRequest = new XMLHttpRequest()
+        openWeatherRequest.open('GET', requestUrl, true);
+        openWeatherRequest.onreadystatechange = function() {
+            if (openWeatherRequest.readyState === XMLHttpRequest.DONE) {
+                if (openWeatherRequest.status && openWeatherRequest.status === 200) {
+                    var openWeatherText = JSON.parse(openWeatherRequest.responseText)
+
+                    // Parse TEST
+                    weatherLabel.text = openWeatherText.weather[0].main
+                    windLabel.text = getDirection(openWeatherText.wind.deg)
+                } else {
+                    if(!openWeatherRequest.status) {
+                        //Not Internet
+                        mainWindow.showMessageDialog(qsTr("Internet Not Connect."), qsTr("Check Your Internet Connection."))
+                    }
+                    else if(openWeatherRequest.status === 401) {
+                        // Key error
+                        mainWindow.showMessageDialog(qsTr("OpenWeather Key Error"), qsTr("OpenWeather Key Error. Check Your API Key."))
+                    }
+                    else if(openWeatherRequest.status === 429) {
+                        // Key use excess
+                        mainWindow.showMessageDialog(qsTr("OpenWeather API Use Excess."), qsTr("OpenWeather API Use Excess. Make your request a little bit slower."))
+                    }
+                }
+            }
+        }
+        openWeatherRequest.send()
+    }
+
+    // Degree Convert
+    function getDirection(angle) {
+        var directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+        var index = Math.round(((angle %= 360) < 0 ? angle + 360 : angle) / 45) % 8;
+        return directions[index];
+    }
 
     QGCToolInsets {
         id:                         _toolInsets
@@ -65,6 +117,7 @@ Item {
     Rectangle {
         id:                     compassBackground
         anchors.bottom:         telemetryPanel.top
+        anchors.bottomMargin:   ScreenTools.smallFontPointSize
         anchors.right:          attitudeIndicator.left
         anchors.rightMargin:    -attitudeIndicator.width / 2
         width:                  -anchors.rightMargin + compassBezel.width + (_toolsMargin * 2)
@@ -171,6 +224,8 @@ Item {
     }
     //-----------------------------------------------------------------------------------------------------
 
+    //-----------------------------------------------------------------------------------------------------
+    //--MapScale Bar---------------------------------------------------------------------------------------
     MapScale {
         id:                 mapScale
         anchors.margins:    _toolsMargin
@@ -182,4 +237,143 @@ Item {
 
         property real centerInset: visible ? parent.height - y : 0
     }
+    //-----------------------------------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------------------------------
+    //--Vibration Widget-----------------------------------------------------------------------------------
+    Rectangle {
+        id:                     vibrationBackground
+        anchors.bottom:         telemetryPanel.top
+        anchors.bottomMargin:   ScreenTools.smallFontPointSize
+        anchors.right:          compassBackground.left
+        width:                  -anchors.rightMargin + compassBezel.width + (_toolsMargin * 2)
+        height:                 attitudeIndicator.height / 1.5
+        radius:                 2
+        border.color:           qgcPal.window
+        color:                  qgcPal.window
+
+        ColumnLayout {
+            id:         vibrationValues
+            spacing:    ScreenTools.defaultFontPixelWidth
+            anchors.centerIn: parent
+
+            QGCLabel {
+                font.pointSize:     ScreenTools.smallFontPointSize
+                Layout.alignment:   Qt.AlignHCenter
+                text:               qsTr("Vibration")
+            }
+
+            Row {
+                QGCLabel {
+                    font.pointSize:     ScreenTools.smallFontPointSize
+                    Layout.alignment:   Qt.AlignHCenter
+                    text:               qsTr("X : ")
+                }
+
+                QGCLabel {
+                    font.pointSize:     ScreenTools.smallFontPointSize
+                    Layout.alignment:   Qt.AlignHCenter
+                    text:               Math.round(_xValue * 100) / 100
+                }
+            }
+
+            Row {
+                QGCLabel {
+                    font.pointSize:     ScreenTools.smallFontPointSize
+                    Layout.alignment:   Qt.AlignHCenter
+                    text:               qsTr("Y : ")
+                }
+
+                QGCLabel {
+                    font.pointSize:     ScreenTools.smallFontPointSize
+                    Layout.alignment:   Qt.AlignHCenter
+                    text:               Math.round(_yValue * 100) / 100
+                }
+            }
+
+            Row {
+                QGCLabel {
+                    font.pointSize:     ScreenTools.smallFontPointSize
+                    Layout.alignment:   Qt.AlignHCenter
+                    text:               qsTr("Z : ")
+                }
+
+                QGCLabel {
+                    font.pointSize:     ScreenTools.smallFontPointSize
+                    Layout.alignment:   Qt.AlignHCenter
+                    text:               Math.round(_zValue * 100) / 100
+                }
+            }
+        }
+    }
+    //-----------------------------------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------------------------------
+    //--Weather Widget-------------------------------------------------------------------------------------
+    Rectangle {
+        id:                     weatherBackground
+        anchors.bottom:         telemetryPanel.top
+        anchors.bottomMargin:   ScreenTools.smallFontPointSize
+        anchors.right:          vibrationBackground.left
+        anchors.rightMargin:    _toolsMargin
+        width:                  -anchors.rightMargin + compassBezel.width + (_toolsMargin * 6)
+        height:                 attitudeIndicator.height / 1.5
+        radius:                 2
+        border.color:           qgcPal.window
+        color:                  qgcPal.window
+
+        MouseArea {
+            anchors.fill: parent
+            onClicked: getWeatherJSON()
+        }
+
+        ColumnLayout {
+            id:         weatherValues
+            spacing:    ScreenTools.defaultFontPixelWidth
+            anchors.centerIn: parent
+
+            QGCLabel {
+                font.pointSize:     ScreenTools.smallFontPointSize
+                Layout.alignment:   Qt.AlignHCenter
+                text:               qsTr("Weather")
+            }
+
+            Row {
+                QGCLabel {
+                    font.pointSize:     ScreenTools.smallFontPointSize
+                    Layout.alignment:   Qt.AlignHCenter
+                    text:               qsTr("Wind : ")
+                }
+
+                QGCLabel {
+                    id:                 windLabel
+                    font.pointSize:     ScreenTools.smallFontPointSize
+                    Layout.alignment:   Qt.AlignHCenter
+                    text:               qsTr("TEST")
+                }
+            }
+
+            Row {
+                QGCLabel {
+                    font.pointSize:     ScreenTools.smallFontPointSize
+                    Layout.alignment:   Qt.AlignHCenter
+                    text:               qsTr("Weather : ")
+                }
+
+                QGCLabel {
+                    id:                 weatherLabel
+                    font.pointSize:     ScreenTools.smallFontPointSize
+                    Layout.alignment:   Qt.AlignHCenter
+                    text:               qsTr("TEST")
+                }
+            }
+
+            QGCLabel {
+                font.pointSize:     ScreenTools.smallFontPointSize
+                Layout.alignment:   Qt.AlignHCenter
+                text:               qsTr("(Click to Refresh)")
+            }
+        }
+    }
+    //-----------------------------------------------------------------------------------------------------
 }
