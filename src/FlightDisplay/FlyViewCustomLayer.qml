@@ -67,9 +67,13 @@ Item {
                 if (openWeatherRequest.status && openWeatherRequest.status === 200) {
                     var openWeatherText = JSON.parse(openWeatherRequest.responseText)
 
-                    // Parse TEST
-                    weatherLabel.text = openWeatherText.weather[0].main
-                    windLabel.text = getDirection(openWeatherText.wind.deg)
+                    // Weather Image Set
+                    console.log("http://openweathermap.org/img/wn/" + openWeatherText.weather[0].icon + "@2x.png")
+                    weatherImage.source = "http://openweathermap.org/img/wn/" + openWeatherText.weather[0].icon + "@2x.png"
+
+                    // Wind Label Set
+                    windDegreeLabel.text = getDirection(openWeatherText.wind.deg)
+                    windSpeedLabel.text = openWeatherText.wind.speed
                 } else {
                     if(!openWeatherRequest.status) {
                         //Not Internet
@@ -249,8 +253,7 @@ Item {
         width:                  -anchors.rightMargin + compassBezel.width + (_toolsMargin * 2)
         height:                 attitudeIndicator.height / 1.5
         radius:                 2
-        border.color:           qgcPal.window
-        color:                  qgcPal.window
+        color:                  Qt.rgba(0,0,0,0)
 
         ColumnLayout {
             id:         vibrationValues
@@ -307,20 +310,16 @@ Item {
         }
     }
     //-----------------------------------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------------------------------
-    //--Weather Widget-------------------------------------------------------------------------------------
     Rectangle {
-        id:                     weatherBackground
+        id:                     windBackground
         anchors.bottom:         telemetryPanel.top
         anchors.bottomMargin:   ScreenTools.smallFontPointSize
         anchors.right:          vibrationBackground.left
         anchors.rightMargin:    _toolsMargin
-        width:                  -anchors.rightMargin + compassBezel.width + (_toolsMargin * 6)
+        width:                  -anchors.rightMargin + compassBezel.width + (_toolsMargin * 2)
         height:                 attitudeIndicator.height / 1.5
         radius:                 2
-        border.color:           qgcPal.window
-        color:                  qgcPal.window
+        color:                  Qt.rgba(0,0,0,0)
 
         MouseArea {
             anchors.fill: parent
@@ -328,52 +327,49 @@ Item {
         }
 
         ColumnLayout {
-            id:         weatherValues
+            id:         windValues
             spacing:    ScreenTools.defaultFontPixelWidth
             anchors.centerIn: parent
 
             QGCLabel {
-                font.pointSize:     ScreenTools.smallFontPointSize
+                id:                 windDegreeLabel
+                font.pointSize:     ScreenTools.LargeFontPointSize
                 Layout.alignment:   Qt.AlignHCenter
-                text:               qsTr("Weather")
-            }
 
-            Row {
-                QGCLabel {
-                    font.pointSize:     ScreenTools.smallFontPointSize
-                    Layout.alignment:   Qt.AlignHCenter
-                    text:               qsTr("Wind : ")
-                }
-
-                QGCLabel {
-                    id:                 windLabel
-                    font.pointSize:     ScreenTools.smallFontPointSize
-                    Layout.alignment:   Qt.AlignHCenter
-                    text:               qsTr("TEST")
-                }
-            }
-
-            Row {
-                QGCLabel {
-                    font.pointSize:     ScreenTools.smallFontPointSize
-                    Layout.alignment:   Qt.AlignHCenter
-                    text:               qsTr("Weather : ")
-                }
-
-                QGCLabel {
-                    id:                 weatherLabel
-                    font.pointSize:     ScreenTools.smallFontPointSize
-                    Layout.alignment:   Qt.AlignHCenter
-                    text:               qsTr("TEST")
-                }
             }
 
             QGCLabel {
+                id:                 windSpeedLabel
                 font.pointSize:     ScreenTools.smallFontPointSize
                 Layout.alignment:   Qt.AlignHCenter
-                text:               qsTr("(Click to Refresh)")
+
             }
         }
     }
-    //-----------------------------------------------------------------------------------------------------
+
+    Rectangle {
+        id:                     weatherBackground
+        anchors.bottom:         telemetryPanel.top
+        anchors.bottomMargin:   ScreenTools.smallFontPointSize
+        anchors.right:          windBackground.left
+        anchors.rightMargin:    _toolsMargin
+        width:                  -anchors.rightMargin + compassBezel.width + (_toolsMargin * 2)
+        height:                 attitudeIndicator.height / 1.5
+        radius:                 2
+        color:                  Qt.rgba(0,0,0,0)
+
+        MouseArea {
+            anchors.fill: parent
+            onClicked: getWeatherJSON()
+        }
+
+        Image {
+            id:                 weatherImage
+            anchors.centerIn:   parent
+            width:              parent * 0.5
+            height:             parent * 0.5
+            source:             "http://openweathermap.org/img/wn/10d@2x.png"
+            fillMode:           Image.PreserveAspectFit
+        }
+    }
 }
