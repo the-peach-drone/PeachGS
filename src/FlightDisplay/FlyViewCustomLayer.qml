@@ -68,7 +68,6 @@ Item {
                     var openWeatherText = JSON.parse(openWeatherRequest.responseText)
 
                     // Weather Image Set
-                    console.log("http://openweathermap.org/img/wn/" + openWeatherText.weather[0].icon + "@2x.png")
                     weatherImage.source = "http://openweathermap.org/img/wn/" + openWeatherText.weather[0].icon + "@2x.png"
 
                     // Wind Label Set
@@ -114,6 +113,11 @@ Item {
         bottomEdgeCenterInset:      0
         bottomEdgeLeftInset:        0
         bottomEdgeRightInset:       0
+    }
+
+    // Get Weather on Complete
+    Component.onCompleted: {
+        getWeatherJSON()
     }
 
     //-----------------------------------------------------------------------------------------------------
@@ -194,7 +198,6 @@ Item {
             }
         }
     }
-    //-----------------------------------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------------------------------
     //--Attituede Indicator
@@ -216,7 +219,6 @@ Item {
             anchors.centerIn:   parent
         }
     }
-    //-----------------------------------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------------------------------
     //--Custom Telemetry Values Bar------------------------------------------------------------------------
@@ -226,7 +228,6 @@ Item {
         anchors.right:      attitudeIndicator.left
         anchors.bottom:     parent.bottom
     }
-    //-----------------------------------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------------------------------
     //--MapScale Bar---------------------------------------------------------------------------------------
@@ -241,7 +242,6 @@ Item {
 
         property real centerInset: visible ? parent.height - y : 0
     }
-    //-----------------------------------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------------------------------
     //--Vibration Widget-----------------------------------------------------------------------------------
@@ -253,7 +253,8 @@ Item {
         width:                  -anchors.rightMargin + compassBezel.width + (_toolsMargin * 2)
         height:                 attitudeIndicator.height / 1.5
         radius:                 2
-        color:                  Qt.rgba(0,0,0,0)
+        color:                  qgcPal.window
+        opacity:                0.8
 
         ColumnLayout {
             id:         vibrationValues
@@ -309,7 +310,9 @@ Item {
             }
         }
     }
+
     //-----------------------------------------------------------------------------------------------------
+    //--Wind Widget-----------------------------------------------------------------------------------
     Rectangle {
         id:                     windBackground
         anchors.bottom:         telemetryPanel.top
@@ -319,7 +322,8 @@ Item {
         width:                  -anchors.rightMargin + compassBezel.width + (_toolsMargin * 2)
         height:                 attitudeIndicator.height / 1.5
         radius:                 2
-        color:                  Qt.rgba(0,0,0,0)
+        color:                  qgcPal.window
+        opacity:                0.8
 
         MouseArea {
             anchors.fill: parent
@@ -332,8 +336,15 @@ Item {
             anchors.centerIn: parent
 
             QGCLabel {
+                font.pointSize:     ScreenTools.mediumFontPointSize
+                Layout.alignment:   Qt.AlignHCenter
+                text:               qsTr("Wind")
+
+            }
+
+            QGCLabel {
                 id:                 windDegreeLabel
-                font.pointSize:     ScreenTools.LargeFontPointSize
+                font.pointSize:     ScreenTools.largeFontPointSize
                 Layout.alignment:   Qt.AlignHCenter
 
             }
@@ -347,12 +358,14 @@ Item {
         }
     }
 
+    //-----------------------------------------------------------------------------------------------------
+    //--Weather Widget-----------------------------------------------------------------------------------
     Rectangle {
         id:                     weatherBackground
         anchors.bottom:         telemetryPanel.top
         anchors.bottomMargin:   ScreenTools.smallFontPointSize
         anchors.right:          windBackground.left
-        anchors.rightMargin:    _toolsMargin
+        anchors.rightMargin:    _toolsMargin * 4
         width:                  -anchors.rightMargin + compassBezel.width + (_toolsMargin * 2)
         height:                 attitudeIndicator.height / 1.5
         radius:                 2
@@ -368,7 +381,6 @@ Item {
             anchors.centerIn:   parent
             width:              parent * 0.5
             height:             parent * 0.5
-            source:             "http://openweathermap.org/img/wn/10d@2x.png"
             fillMode:           Image.PreserveAspectFit
         }
     }
