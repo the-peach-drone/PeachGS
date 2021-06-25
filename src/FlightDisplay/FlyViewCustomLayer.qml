@@ -41,13 +41,22 @@ Item {
     property color  _baseBGColor:           qgcPal.window
 
     // Property of Active Vehicle
-    //property var    _activeVehicle:         QGroundControl.multiVehicleManager.activeVehicle
     property var    _activeVehicle:         QGroundControl.multiVehicleManager.activeVehicle ? QGroundControl.multiVehicleManager.activeVehicle : QGroundControl.multiVehicleManager.offlineEditingVehicle
     property real   _heading:               _activeVehicle   ? _activeVehicle.heading.rawValue : 0
     property bool   _available:             !isNaN(_activeVehicle.vibration.xAxis.rawValue)
     property real   _xValue:                _activeVehicle.vibration.xAxis.rawValue
     property real   _yValue:                _activeVehicle.vibration.yAxis.rawValue
     property real   _zValue:                _activeVehicle.vibration.zAxis.rawValue
+
+    property real   _barWidth:              ScreenTools.defaultFontPixelWidth * 3
+    property real   _barHeight:             ScreenTools.defaultFontPixelHeight * 10
+
+    readonly property real _barMinimum:     0.0
+    readonly property real _barMaximum:     90.0
+    readonly property real _barBadValue:    60.0
+
+    // Property of Vibration visible
+    property var _vibeStatusVisible:        false
 
     // QGC Map Center Position
     property var _mapCoordinate:            QGroundControl.flightMapPosition
@@ -67,15 +76,18 @@ Item {
                 if (openWeatherRequest.status && openWeatherRequest.status === 200) {
                     var openWeatherText = JSON.parse(openWeatherRequest.responseText)
 
-                    // Weather Image Set
-                    weatherImage.source = "http://openweathermap.org/img/wn/" + openWeatherText.weather[0].icon + "@2x.png"
+                    // Debug
+                    //console.log(openWeatherRequest.responseText)
 
-                    // Wind Label Set
-                    windDegreeLabel.text = getDirection(openWeatherText.wind.deg)
-                    windSpeedLabel.text = openWeatherText.wind.speed
+                    // Weather Tab
+                    cityText.text       = openWeatherText.name
+                    weatherText.text    = openWeatherText.weather[0].main
+                    windDegreeText.text = getDirection(openWeatherText.wind.deg)
+                    windSpeedText.text  = openWeatherText.wind.speed
+
                 } else {
                     if(!openWeatherRequest.status) {
-                        //Not Internet
+                        // Not Internet
                         mainWindow.showMessageDialog(qsTr("Internet Not Connect."), qsTr("Check Your Internet Connection."))
                     }
                     else if(openWeatherRequest.status === 401) {
@@ -121,7 +133,7 @@ Item {
     }
 
     //-----------------------------------------------------------------------------------------------------
-    //--Compass Indicator
+    //--Compass Indicator----------------------------------------------------------------------------------
     Rectangle {
         id:                     compassBackground
         anchors.bottom:         telemetryPanel.top
@@ -200,7 +212,7 @@ Item {
     }
 
     //-----------------------------------------------------------------------------------------------------
-    //--Attituede Indicator
+    //--Attituede Indicator--------------------------------------------------------------------------------
     Rectangle {
         id:                     attitudeIndicator
         anchors.bottomMargin:   _toolsMargin
@@ -248,140 +260,221 @@ Item {
     Rectangle {
         id:                     vibrationBackground
         anchors.bottom:         telemetryPanel.top
-        anchors.bottomMargin:   ScreenTools.smallFontPointSize
+        anchors.bottomMargin:   ScreenTools.smallFontPointSize * 2
         anchors.right:          compassBackground.left
-        width:                  -anchors.rightMargin + compassBezel.width + (_toolsMargin * 2)
-        height:                 attitudeIndicator.height / 1.5
-        radius:                 2
-        color:                  qgcPal.window
-        opacity:                0.8
-
-        ColumnLayout {
-            id:         vibrationValues
-            spacing:    ScreenTools.defaultFontPixelWidth
-            anchors.centerIn: parent
-
-            QGCLabel {
-                font.pointSize:     ScreenTools.smallFontPointSize
-                Layout.alignment:   Qt.AlignHCenter
-                text:               qsTr("Vibration")
-            }
-
-            Row {
-                QGCLabel {
-                    font.pointSize:     ScreenTools.smallFontPointSize
-                    Layout.alignment:   Qt.AlignHCenter
-                    text:               qsTr("X : ")
-                }
-
-                QGCLabel {
-                    font.pointSize:     ScreenTools.smallFontPointSize
-                    Layout.alignment:   Qt.AlignHCenter
-                    text:               Math.round(_xValue * 100) / 100
-                }
-            }
-
-            Row {
-                QGCLabel {
-                    font.pointSize:     ScreenTools.smallFontPointSize
-                    Layout.alignment:   Qt.AlignHCenter
-                    text:               qsTr("Y : ")
-                }
-
-                QGCLabel {
-                    font.pointSize:     ScreenTools.smallFontPointSize
-                    Layout.alignment:   Qt.AlignHCenter
-                    text:               Math.round(_yValue * 100) / 100
-                }
-            }
-
-            Row {
-                QGCLabel {
-                    font.pointSize:     ScreenTools.smallFontPointSize
-                    Layout.alignment:   Qt.AlignHCenter
-                    text:               qsTr("Z : ")
-                }
-
-                QGCLabel {
-                    font.pointSize:     ScreenTools.smallFontPointSize
-                    Layout.alignment:   Qt.AlignHCenter
-                    text:               Math.round(_zValue * 100) / 100
-                }
-            }
-        }
-    }
-
-    //-----------------------------------------------------------------------------------------------------
-    //--Wind Widget-----------------------------------------------------------------------------------
-    Rectangle {
-        id:                     windBackground
-        anchors.bottom:         telemetryPanel.top
-        anchors.bottomMargin:   ScreenTools.smallFontPointSize
-        anchors.right:          vibrationBackground.left
-        anchors.rightMargin:    _toolsMargin
-        width:                  -anchors.rightMargin + compassBezel.width + (_toolsMargin * 2)
-        height:                 attitudeIndicator.height / 1.5
-        radius:                 2
-        color:                  qgcPal.window
-        opacity:                0.8
+        width:                  compassBezel.width
+        height:                 compassBezel.height
+        radius:                 height / 2
+        color:                  Qt.rgba(0,0,0,1)
 
         MouseArea {
             anchors.fill: parent
-            onClicked: getWeatherJSON()
+            onClicked:    _vibeStatusVisible = !_vibeStatusVisible
         }
 
-        ColumnLayout {
-            id:         windValues
-            spacing:    ScreenTools.defaultFontPixelWidth
-            anchors.centerIn: parent
-
-            QGCLabel {
-                font.pointSize:     ScreenTools.mediumFontPointSize
-                Layout.alignment:   Qt.AlignHCenter
-                text:               qsTr("Wind")
-
-            }
-
-            QGCLabel {
-                id:                 windDegreeLabel
-                font.pointSize:     ScreenTools.largeFontPointSize
-                Layout.alignment:   Qt.AlignHCenter
-
-            }
-
-            QGCLabel {
-                id:                 windSpeedLabel
-                font.pointSize:     ScreenTools.smallFontPointSize
-                Layout.alignment:   Qt.AlignHCenter
-
-            }
+        QGCLabel {
+            anchors.centerIn:   parent
+            font.pointSize:     ScreenTools.largeFontPointSize
+            Layout.alignment:   Qt.AlignHCenter
+            color:              "white"
+            text:               qsTr("Vibe")
         }
     }
 
     //-----------------------------------------------------------------------------------------------------
-    //--Weather Widget-----------------------------------------------------------------------------------
+    //--Vibration Status-----------------------------------------------------------------------------------
+    Rectangle {
+        id:                     vibrationStatus
+        anchors.left:           parent.left
+        anchors.leftMargin:     _toolsMargin * 13
+        anchors.top:            weatherBackground.bottom
+        anchors.topMargin:      _toolsMargin
+        width:                  -anchors.rightMargin + compassBezel.width + (_toolsMargin * 13)
+        height:                 attitudeIndicator.height * 1.5
+        radius:                 2
+        color:                  qgcPal.window
+        visible:                _vibeStatusVisible
+
+        RowLayout {
+            id:               barRow
+            spacing:          ScreenTools.defaultFontPixelWidth * 2
+            anchors.centerIn: parent
+
+            ColumnLayout {
+                Rectangle {
+                    id:                 xBar
+                    height:             _barHeight
+                    width:              _barWidth
+                    Layout.alignment:   Qt.AlignHCenter
+                    border.width:       1
+                    border.color:       qgcPal.text
+
+                    Rectangle {
+                        anchors.bottom: parent.bottom
+                        width:          parent.width
+                        height:         parent.height * (Math.min(_barMaximum, _xValue) / (_barMaximum - _barMinimum))
+                        color:          qgcPal.text
+                    }
+                }
+
+                QGCLabel {
+                    Layout.alignment:   Qt.AlignHCenter
+                    text:               qsTr("X")
+                }
+            }
+
+            ColumnLayout {
+                Rectangle {
+                    height:             _barHeight
+                    width:              _barWidth
+                    Layout.alignment:   Qt.AlignHCenter
+                    border.width:       1
+                    border.color:       qgcPal.text
+
+                    Rectangle {
+                        anchors.bottom: parent.bottom
+                        width:          parent.width
+                        height:         parent.height * (Math.min(_barMaximum, _yValue) / (_barMaximum - _barMinimum))
+                        color:          qgcPal.text
+                    }
+                }
+
+                QGCLabel {
+                    Layout.alignment:   Qt.AlignHCenter
+                    text:               qsTr("Y")
+                }
+            }
+
+            ColumnLayout {
+                Rectangle {
+                    height:             _barHeight
+                    width:              _barWidth
+                    Layout.alignment:   Qt.AlignHCenter
+                    border.width:       1
+                    border.color:       qgcPal.text
+
+                    Rectangle {
+                        anchors.bottom: parent.bottom
+                        width:          parent.width
+                        height:         parent.height * (Math.min(_barMaximum, _zValue) / (_barMaximum - _barMinimum))
+                        color:          qgcPal.text
+                    }
+                }
+
+                QGCLabel {
+                    Layout.alignment:   Qt.AlignHCenter
+                    text:               qsTr("Z")
+                }
+            }
+        }
+
+        // Max vibe indication line at 60
+        Rectangle {
+            anchors.topMargin:      xBar.height * (1.0 - ((_barBadValue - _barMinimum) / (_barMaximum - _barMinimum)))
+            anchors.top:            barRow.top
+            anchors.left:           barRow.left
+            anchors.right:          barRow.right
+            width:                  barRow.width
+            height:                 1
+            color:                  "red"
+        }
+    }
+
+    //-----------------------------------------------------------------------------------------------------
+    //--Weather Widget------------------------------------------------------==-----------------------------
     Rectangle {
         id:                     weatherBackground
-        anchors.bottom:         telemetryPanel.top
-        anchors.bottomMargin:   ScreenTools.smallFontPointSize
-        anchors.right:          windBackground.left
-        anchors.rightMargin:    _toolsMargin * 4
-        width:                  -anchors.rightMargin + compassBezel.width + (_toolsMargin * 2)
-        height:                 attitudeIndicator.height / 1.5
+        anchors.left:           parent.left
+        anchors.leftMargin:     _toolsMargin * 13
+        anchors.top:            parent.top
+        anchors.topMargin:      _toolsMargin
+        width:                  -anchors.rightMargin + compassBezel.width + (_toolsMargin * 13)
+        height:                 attitudeIndicator.height
         radius:                 2
-        color:                  Qt.rgba(0,0,0,0)
+        color:                  qgcPal.window
 
         MouseArea {
             anchors.fill: parent
             onClicked: getWeatherJSON()
         }
 
-        Image {
-            id:                 weatherImage
-            anchors.centerIn:   parent
-            width:              parent * 0.5
-            height:             parent * 0.5
-            fillMode:           Image.PreserveAspectFit
+        ColumnLayout {
+            id:         weatherValue
+            spacing:    ScreenTools.defaultFontPixelWidth
+            anchors.centerIn: parent
+
+            // City
+            Row {
+                QGCLabel {
+                    font.pointSize:     ScreenTools.smallFontPointSize
+                    Layout.alignment:   Qt.AlignHCenter
+                    text:               qsTr("City : ")
+                }
+
+                QGCLabel {
+                    id:                 cityText
+                    font.pointSize:     ScreenTools.smallFontPointSize
+                    Layout.alignment:   Qt.AlignHCenter
+                }
+            }
+
+            // Weather
+            Row {
+                QGCLabel {
+                    font.pointSize:     ScreenTools.smallFontPointSize
+                    Layout.alignment:   Qt.AlignHCenter
+                    text:               qsTr("Weather : ")
+                }
+
+                QGCLabel {
+                    id:                 weatherText
+                    font.pointSize:     ScreenTools.smallFontPointSize
+                    Layout.alignment:   Qt.AlignHCenter
+                }
+            }
+
+            // Wind Degree
+            Row {
+                QGCLabel {
+                    font.pointSize:     ScreenTools.smallFontPointSize
+                    Layout.alignment:   Qt.AlignHCenter
+                    text:               qsTr("Wind Degree : ")
+                }
+
+                QGCLabel {
+                    id:                 windDegreeText
+                    font.pointSize:     ScreenTools.smallFontPointSize
+                    Layout.alignment:   Qt.AlignHCenter
+                }
+            }
+
+            // Wind Speed
+            Row {
+                QGCLabel {
+                    font.pointSize:     ScreenTools.smallFontPointSize
+                    Layout.alignment:   Qt.AlignHCenter
+                    text:               qsTr("Wind Speed : ")
+                }
+
+                QGCLabel {
+                    id:                 windSpeedText
+                    font.pointSize:     ScreenTools.smallFontPointSize
+                    Layout.alignment:   Qt.AlignHCenter
+                }
+            }
+
+            // Widget Footer
+            QGCLabel {
+                font.pointSize:     ScreenTools.smallFontPointSize
+                Layout.alignment:   Qt.AlignHCenter
+                text:               qsTr("Provide by OpenWeather")
+            }
+
+            QGCLabel {
+                font.pointSize:     ScreenTools.smallFontPointSize
+                Layout.alignment:   Qt.AlignHCenter
+                text:               qsTr("(Click to Refresh)")
+            }
         }
     }
 }
