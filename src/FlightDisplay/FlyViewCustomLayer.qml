@@ -219,7 +219,7 @@ Item {
         anchors.rightMargin:    _toolsMargin
         anchors.bottom:         parent.bottom
         anchors.right:          parent.right
-        height:                 ScreenTools.defaultFontPixelHeight * 9
+        height:                 ScreenTools.defaultFontPixelHeight * 6
         width:                  height
         radius:                 height * 0.5
         color:                  Qt.rgba(0,0,0,0.9)
@@ -289,8 +289,8 @@ Item {
         anchors.leftMargin:     _toolsMargin * 13
         anchors.top:            weatherBackground.bottom
         anchors.topMargin:      _toolsMargin
-        width:                  -anchors.rightMargin + compassBezel.width + (_toolsMargin * 13)
-        height:                 attitudeIndicator.height * 1.5
+        width:                  -anchors.rightMargin + compassBezel.width + (_toolsMargin * 20)
+        height:                 attitudeIndicator.height * 2.0
         radius:                 2
         color:                  qgcPal.window
         visible:                _vibeStatusVisible
@@ -388,8 +388,8 @@ Item {
         anchors.leftMargin:     _toolsMargin * 13
         anchors.top:            parent.top
         anchors.topMargin:      _toolsMargin
-        width:                  -anchors.rightMargin + compassBezel.width + (_toolsMargin * 13)
-        height:                 attitudeIndicator.height
+        width:                  -anchors.rightMargin + compassBezel.width + (_toolsMargin * 20)
+        height:                 attitudeIndicator.height * 1.7
         radius:                 2
         color:                  qgcPal.window
 
@@ -406,14 +406,14 @@ Item {
             // City
             Row {
                 QGCLabel {
-                    font.pointSize:     ScreenTools.smallFontPointSize
+                    font.pointSize:     ScreenTools.mediumFontPointSize
                     Layout.alignment:   Qt.AlignHCenter
                     text:               qsTr("City : ")
                 }
 
                 QGCLabel {
                     id:                 cityText
-                    font.pointSize:     ScreenTools.smallFontPointSize
+                    font.pointSize:     ScreenTools.mediumFontPointSize
                     Layout.alignment:   Qt.AlignHCenter
                 }
             }
@@ -421,14 +421,14 @@ Item {
             // Weather
             Row {
                 QGCLabel {
-                    font.pointSize:     ScreenTools.smallFontPointSize
+                    font.pointSize:     ScreenTools.mediumFontPointSize
                     Layout.alignment:   Qt.AlignHCenter
                     text:               qsTr("Weather : ")
                 }
 
                 QGCLabel {
                     id:                 weatherText
-                    font.pointSize:     ScreenTools.smallFontPointSize
+                    font.pointSize:     ScreenTools.mediumFontPointSize
                     Layout.alignment:   Qt.AlignHCenter
                 }
             }
@@ -436,14 +436,14 @@ Item {
             // Wind Degree
             Row {
                 QGCLabel {
-                    font.pointSize:     ScreenTools.smallFontPointSize
+                    font.pointSize:     ScreenTools.mediumFontPointSize
                     Layout.alignment:   Qt.AlignHCenter
                     text:               qsTr("Wind Degree : ")
                 }
 
                 QGCLabel {
                     id:                 windDegreeText
-                    font.pointSize:     ScreenTools.smallFontPointSize
+                    font.pointSize:     ScreenTools.mediumFontPointSize
                     Layout.alignment:   Qt.AlignHCenter
                 }
             }
@@ -451,14 +451,14 @@ Item {
             // Wind Speed
             Row {
                 QGCLabel {
-                    font.pointSize:     ScreenTools.smallFontPointSize
+                    font.pointSize:     ScreenTools.mediumFontPointSize
                     Layout.alignment:   Qt.AlignHCenter
                     text:               qsTr("Wind Speed : ")
                 }
 
                 QGCLabel {
                     id:                 windSpeedText
-                    font.pointSize:     ScreenTools.smallFontPointSize
+                    font.pointSize:     ScreenTools.mediumFontPointSize
                     Layout.alignment:   Qt.AlignHCenter
                 }
             }
@@ -467,7 +467,7 @@ Item {
             QGCLabel {
                 font.pointSize:     ScreenTools.smallFontPointSize
                 Layout.alignment:   Qt.AlignHCenter
-                text:               qsTr("Provide by OpenWeather")
+                text:               qsTr("Provide by openweathermap")
             }
 
             QGCLabel {
@@ -475,6 +475,6 @@ Item {
                 Layout.alignment:   Qt.AlignHCenter
                 text:               qsTr("(Click to Refresh)")
             }
-        }
+        }//ColumnLayout
     }
 }
