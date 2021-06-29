@@ -66,6 +66,11 @@ Item {
 
     // Weather Function
     function getWeatherJSON() {
+        if(!_openWeatherAPIkey) {
+            weatherBackground.visible = false
+            return
+        }
+
         var requestUrl = "http://api.openweathermap.org/data/2.5/weather?lat=" + QGroundControl.flightMapPosition.latitude + "&lon="
                          + QGroundControl.flightMapPosition.longitude + "&appid=" + _openWeatherAPIkey + "&lang=kr&units=metric"
 
