@@ -45,14 +45,14 @@ MacBuild {
 
 LinuxBuild {
     CONFIG  += qesp_linux_udev
-	LIBS += -lusb-1.0
+    LIBS += -lusb-1.0
 }
 
 WindowsBuild {
     RC_ICONS = resources/icons/PLogoFull.ico
     CONFIG += resources_big
-	
-	INCLUDEPATH += $$PWD/libs/libusb_win
+
+    INCLUDEPATH += $$PWD/libs/libusb_win
     LIBS += $$PWD/libs/libusb_win/libusb-1.0.lib
 }
 
