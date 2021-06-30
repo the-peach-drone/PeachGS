@@ -106,59 +106,35 @@ Rectangle {
                                     (currentToolbar == planViewToolbar ? "qrc:/qml/PlanToolBarIndicators.qml" : "")
         }
     }
-
     //-------------------------------------------------------------------------
-    //-- Branding Logo
+    //-- Firmware Logo
     Image {
-        anchors.right:          parent.right
+        anchors.right:          thepeachLogo.left
         anchors.top:            parent.top
         anchors.bottom:         parent.bottom
         anchors.margins:        ScreenTools.defaultFontPixelHeight * 0.66
         visible:                currentToolbar !== planViewToolbar && _activeVehicle && !_communicationLost && x > (toolsFlickable.x + toolsFlickable.contentWidth + ScreenTools.defaultFontPixelWidth)
         fillMode:               Image.PreserveAspectFit
-        source:                 _outdoorPalette ? _brandImageOutdoor : _brandImageIndoor
+        source:                 _activeVehicle ? (_outdoorPalette ? _activeVehicle.brandImageOutdoor : _activeVehicle.brandImageIndoor) : ""
         mipmap:                 true
 
         property bool   _outdoorPalette:        qgcPal.globalTheme === QGCPalette.Light
-        property bool   _corePluginBranding:    QGroundControl.corePlugin.brandImageIndoor.length != 0
-        property string _userBrandImageIndoor:  QGroundControl.settingsManager.brandImageSettings.userBrandImageIndoor.value
-        property string _userBrandImageOutdoor: QGroundControl.settingsManager.brandImageSettings.userBrandImageOutdoor.value
-        property bool   _userBrandingIndoor:    _userBrandImageIndoor.length != 0
-        property bool   _userBrandingOutdoor:   _userBrandImageOutdoor.length != 0
-        property string _brandImageIndoor:      brandImageIndoor()
-        property string _brandImageOutdoor:     brandImageOutdoor()
+    }
 
-        function brandImageIndoor() {
-            if (_userBrandingIndoor) {
-                return _userBrandImageIndoor
-            } else {
-                if (_userBrandingOutdoor) {
-                    return _userBrandImageOutdoor
-                } else {
-                    if (_corePluginBranding) {
-                        return QGroundControl.corePlugin.brandImageIndoor
-                    } else {
-                        return _activeVehicle ? _activeVehicle.brandImageIndoor : ""
-                    }
-                }
-            }
-        }
+    //-------------------------------------------------------------------------
+    //-- Peach Company Logo
+    Image {
+        id:                     thepeachLogo
+        anchors.right:          parent.right
+        anchors.top:            parent.top
+        anchors.bottom:         parent.bottom
+        anchors.margins:        ScreenTools.defaultFontPixelHeight * 0.66
+        visible:                currentToolbar !== planViewToolbar && x > (toolsFlickable.x + toolsFlickable.contentWidth + ScreenTools.defaultFontPixelWidth)
+        fillMode:               Image.PreserveAspectFit
+        source:                 _outdoorPalette ? "/res/firmware/ThePeach_Black.png" : "/res/firmware/ThePeach_White.png"
+        mipmap:                 true
 
-        function brandImageOutdoor() {
-            if (_userBrandingOutdoor) {
-                return _userBrandImageOutdoor
-            } else {
-                if (_userBrandingIndoor) {
-                    return _userBrandImageIndoor
-                } else {
-                    if (_corePluginBranding) {
-                        return QGroundControl.corePlugin.brandImageOutdoor
-                    } else {
-                        return _activeVehicle ? _activeVehicle.brandImageOutdoor : ""
-                    }
-                }
-            }
-        }
+        property bool   _outdoorPalette:        qgcPal.globalTheme === QGCPalette.Light
     }
 
     // Small parameter download progress bar
