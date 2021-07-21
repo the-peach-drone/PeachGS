@@ -68,6 +68,9 @@ Item {
 
     readonly property real _margins: ScreenTools.defaultFontPixelWidth
 
+    // Elapsed Time Check
+    property double startTime: 0;
+
     function getMissionTime() {
         if (!_missionTime) {
             return "00:00:00"
@@ -94,8 +97,22 @@ Item {
                 uploadCompleteText.visible = true
                 progressBar.visible = false
                 resetProgressTimer.start()
+
+                // End Time Check
+                if(startTime === 0) {
+                    elapsedTimeLabel.text = 0
+                    return
+                }
+                elapsedTimeLabel.text = new Date().getTime() - startTime + " ms"
+                startTime = 0
+
             } else if (_controllerProgressPct > 0) {
                 progressBar.visible = true
+
+                // Start Time Check
+                if(startTime === 0) {
+                    startTime = new Date().getTime()
+                }
             }
         }
     }
@@ -126,7 +143,7 @@ Item {
         anchors.leftMargin:     _margins
         anchors.left:           parent.left
         columnSpacing:          0
-        columns:                4
+        columns:                5
 
         GridLayout {
             columns:                8
@@ -238,6 +255,29 @@ Item {
                 Layout.minimumWidth:    _mediumValueWidth
             }
 
+            Item { width: 1; height: 1 }
+        }
+
+        GridLayout {
+            columns:                5
+            rowSpacing:             _rowSpacing
+            columnSpacing:          _labelToValueSpacing
+            Layout.alignment:       Qt.AlignVCenter | Qt.AlignHCenter
+
+            QGCLabel {
+                text:               qsTr("Communication Elapsed Time")
+                Layout.columnSpan:  5
+                font.pointSize:     ScreenTools.smallFontPointSize
+            }
+
+            Item { width: 1; height: 1 }
+
+            QGCLabel { text: qsTr("Time : "); font.pointSize: _dataFontSize; }
+            QGCLabel {
+                id:                     elapsedTimeLabel
+                font.pointSize:         _dataFontSize
+                Layout.minimumWidth:    _largeValueWidth
+            }
             Item { width: 1; height: 1 }
         }
 
