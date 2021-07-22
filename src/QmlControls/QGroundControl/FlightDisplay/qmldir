@@ -35,3 +35,6 @@ TelemetryValuesBar              1.0 TelemetryValuesBar.qml
 VehicleWarnings                 1.0 VehicleWarnings.qml
 PeachArtificialHorizon          1.0 PeachArtificialHorizon.qml
 PeachAttitudeWidget             1.0 PeachAttitudeWidget.qml
+ObstacleDistanceOverlay         1.0 ObstacleDistanceOverlay.qml
+ObstacleDistanceOverlayMap      1.0 ObstacleDistanceOverlayMap.qml
+ObstacleDistanceOverlayVideo    1.0 ObstacleDistanceOverlayVideo.qml

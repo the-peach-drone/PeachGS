@@ -67,8 +67,10 @@ QGC_APP_DESCRIPTION = "Open source ground control app provided by QGroundControl
 QGC_APP_COPYRIGHT   = "Copyright (C) 2019 QGroundControl Development Team. All rights reserved."
 
 WindowsBuild {
+    QGC_INSTALLER_SCRIPT        = "$$SOURCE_DIR\\deploy\\windows\\nullsoft_installer.nsi"
     QGC_INSTALLER_ICON          = "$$SOURCE_DIR\\windows\\PLogoFull.ico"
     QGC_INSTALLER_HEADER_BITMAP = "$$SOURCE_DIR\\windows\\installheader-Peach.bmp"
+    QGC_INSTALLER_DRIVER_MSI    = "$$SOURCE_DIR\\deploy\\windows\\driver.msi"
 }
 
 # Load additional config flags from user_config.pri
@@ -223,8 +225,7 @@ LinuxBuild {
 # Qt configuration
 
 CONFIG += qt \
-    thread \
-    c++11
+    thread
 
 DebugBuild {
     CONFIG -= qtquickcompiler
@@ -1241,7 +1242,10 @@ SOURCES += \
 
 #-------------------------------------------------------------------------------------
 # MAVLink Inspector
-contains (DEFINES, QGC_ENABLE_MAVLINK_INSPECTOR) {
+
+contains (DEFINES, QGC_DISABLE_MAVLINK_INSPECTOR) {
+    message("Disable mavlink inspector")
+} else {
     HEADERS += \
         src/AnalyzeView/MAVLinkInspectorController.h
     SOURCES += \
@@ -1338,7 +1342,8 @@ contains (DEFINES, QGC_AIRMAP_ENABLED) {
         src/Airmap/airmap.qrc
 
     INCLUDEPATH += \
-        src/Airmap
+        src/Airmap \
+        src/Airmap/services
 
     HEADERS += \
         src/Airmap/AirMapAdvisoryManager.h \
@@ -1354,6 +1359,21 @@ contains (DEFINES, QGC_AIRMAP_ENABLED) {
         src/Airmap/AirMapVehicleManager.h \
         src/Airmap/AirMapWeatherInfoManager.h \
         src/Airmap/LifetimeChecker.h \
+        src/Airmap/services/advisory.h \
+        src/Airmap/services/aircrafts.h \
+        src/Airmap/services/airspaces.h \
+        src/Airmap/services/authenticator.h \
+        src/Airmap/services/client.h \
+        src/Airmap/services/dispatcher.h \
+        src/Airmap/services/flight_plans.h \
+        src/Airmap/services/flights.h \
+        src/Airmap/services/logger.h \
+        src/Airmap/services/pilots.h \
+        src/Airmap/services/rulesets.h \
+        src/Airmap/services/status.h \
+        src/Airmap/services/telemetry.h \
+        src/Airmap/services/traffic.h \
+        src/Airmap/services/types.h \
 
     SOURCES += \
         src/Airmap/AirMapAdvisoryManager.cc \
@@ -1368,6 +1388,21 @@ contains (DEFINES, QGC_AIRMAP_ENABLED) {
         src/Airmap/AirMapTrafficMonitor.cc \
         src/Airmap/AirMapVehicleManager.cc \
         src/Airmap/AirMapWeatherInfoManager.cc \
+        src/Airmap/services/advisory.cpp \
+        src/Airmap/services/aircrafts.cpp \
+        src/Airmap/services/airspaces.cpp \
+        src/Airmap/services/authenticator.cpp \
+        src/Airmap/services/client.cpp \
+        src/Airmap/services/dispatcher.cpp \
+        src/Airmap/services/flight_plans.cpp \
+        src/Airmap/services/flights.cpp \
+        src/Airmap/services/logger.cpp \
+        src/Airmap/services/pilots.cpp \
+        src/Airmap/services/rulesets.cpp \
+        src/Airmap/services/status.cpp \
+        src/Airmap/services/telemetry.cpp \
+        src/Airmap/services/traffic.cpp \
+        src/Airmap/services/types.cpp \
 
     #-- Do we have an API key?
     exists(src/Airmap/Airmap_api_key.h) {
