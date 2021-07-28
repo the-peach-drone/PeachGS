@@ -64,6 +64,21 @@ Item {
     // Property OpenWeather API Key
     property string   _openWeatherAPIkey:   QGroundControl.settingsManager ? QGroundControl.settingsManager.appSettings.openWeatherApiKey.value : null
 
+    QGCToolInsets {
+        id:                         _toolInsets
+        leftEdgeTopInset:       parentToolInsets.leftInset
+        leftEdgeCenterInset:    parentToolInsets.leftInset
+        leftEdgeBottomInset:    parentToolInsets.leftEdgeBottomInset
+        rightEdgeTopInset:      parentToolInsets.rightEdgeTopInset
+        rightEdgeCenterInset:   parentToolInsets.rightEdgeCenterInset
+        rightEdgeBottomInset:   parentToolInsets.rightEdgeBottomInset
+        topEdgeLeftInset:       parentToolInsets.topEdgeLeftInset
+        topEdgeCenterInset:     parentToolInsets.topEdgeCenterInset
+        topEdgeRightInset:      parentToolInsets.topEdgeRightInset
+        bottomEdgeLeftInset:    parentToolInsets.bottomEdgeLeftInset
+        bottomEdgeRightInset:   parentToolInsets.bottomEdgeInset
+    }
+
     // Weather Function
     function getWeatherJSON() {
         if(!_openWeatherAPIkey) {
@@ -114,22 +129,6 @@ Item {
         var directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
         var index = Math.round(((angle %= 360) < 0 ? angle + 360 : angle) / 45) % 8;
         return directions[index];
-    }
-
-    QGCToolInsets {
-        id:                         _toolInsets
-        leftEdgeCenterInset:        0
-        leftEdgeTopInset:           0
-        leftEdgeBottomInset:        0
-        rightEdgeCenterInset:       0
-        rightEdgeTopInset:          0
-        rightEdgeBottomInset:       0
-        topEdgeCenterInset:         0
-        topEdgeLeftInset:           0
-        topEdgeRightInset:          0
-        bottomEdgeCenterInset:      0
-        bottomEdgeLeftInset:        0
-        bottomEdgeRightInset:       0
     }
 
     // Get Weather on Complete
