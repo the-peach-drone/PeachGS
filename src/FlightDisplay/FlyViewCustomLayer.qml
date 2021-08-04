@@ -65,19 +65,20 @@ Item {
     property string   _openWeatherAPIkey:   QGroundControl.settingsManager ? QGroundControl.settingsManager.appSettings.openWeatherApiKey.value : null
 
     QGCToolInsets {
-        id:                         _toolInsets
-        leftEdgeTopInset:       parentToolInsets.leftInset
-        leftEdgeCenterInset:    parentToolInsets.leftInset
-        leftEdgeBottomInset:    parentToolInsets.leftEdgeBottomInset
-        rightEdgeTopInset:      parentToolInsets.rightEdgeTopInset
-        rightEdgeCenterInset:   parentToolInsets.rightEdgeCenterInset
-        rightEdgeBottomInset:   parentToolInsets.rightEdgeBottomInset
-        topEdgeLeftInset:       parentToolInsets.topEdgeLeftInset
-        topEdgeCenterInset:     parentToolInsets.topEdgeCenterInset
-        topEdgeRightInset:      parentToolInsets.topEdgeRightInset
-        bottomEdgeLeftInset:    parentToolInsets.bottomEdgeLeftInset
-        bottomEdgeRightInset:   parentToolInsets.bottomEdgeInset
-    }
+            id:                         _toolInsets
+            leftEdgeCenterInset:        0
+            leftEdgeTopInset:           0
+            leftEdgeBottomInset:        0
+            rightEdgeCenterInset:       0
+            rightEdgeTopInset:          0
+            rightEdgeBottomInset:       0
+            topEdgeCenterInset:         0
+            topEdgeLeftInset:           0
+            topEdgeRightInset:          0
+            bottomEdgeCenterInset:      0
+            bottomEdgeLeftInset:        0
+            bottomEdgeRightInset:       0
+        }
 
     // Weather Function
     function getWeatherJSON() {
