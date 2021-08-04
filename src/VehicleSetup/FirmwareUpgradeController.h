@@ -21,6 +21,7 @@
 #include <QPixmap>
 #include <QQuickItem>
 #include <QSerialPort>
+#include "QGCApplication.h"
 
 #include <stdint.h>
 
