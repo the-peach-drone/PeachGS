@@ -228,24 +228,23 @@ FlightMap {
         showText: !pipMode
     }
 
-    // Add trajectory lines to the map
-    MapPolyline {
-        id:         trajectoryPolyline
-        line.width: 3
-        line.color: "red"
-        z:          QGroundControl.zOrderTrajectoryLines
-        visible:    !pipMode
+    // Multi Polyline
+    MapItemView {
+        model: QGroundControl.multiVehicleManager.vehicles
 
-        Connections {
-            target:                 QGroundControl.multiVehicleManager
-            onActiveVehicleChanged: trajectoryPolyline.path = _activeVehicle ? _activeVehicle.trajectoryPoints.list() : []
-        }
+        delegate: MapPolyline {
+            id:         trajectoryPolyline
+            line.width: 3
+            line.color: "#" + Math.round(Math.random() * 0xffffff).toString(16);
+            z:          QGroundControl.zOrderTrajectoryLines
+            visible:    !pipMode
 
-        Connections {
-            target:                 _activeVehicle ? _activeVehicle.trajectoryPoints : null
-            onPointAdded:           trajectoryPolyline.addCoordinate(coordinate)
-            onUpdateLastPoint:      trajectoryPolyline.replaceCoordinate(trajectoryPolyline.pathLength() - 1, coordinate)
-            onPointsCleared:        trajectoryPolyline.path = []
+            Connections {
+                target:                 object ? object.trajectoryPoints : null
+                onPointAdded:           trajectoryPolyline.addCoordinate(coordinate)
+                onUpdateLastPoint:      trajectoryPolyline.replaceCoordinate(trajectoryPolyline.pathLength() - 1, coordinate)
+                onPointsCleared:        trajectoryPolyline.path = []
+            }
         }
     }
 
