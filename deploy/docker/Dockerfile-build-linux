@@ -2,8 +2,8 @@
 # QGroundControl linux build environment
 #
 
-FROM ubuntu:20.04
-LABEL authors="Daniel Agar <daniel@agar.ca>, Patrick José Pereira <patrickelectric@gmail.com>"
+FROM ubuntu:18.04
+LABEL authors="QGC Dev Team and ThePeach"
 
 ARG QT_VERSION=5.12.10
 
@@ -53,6 +53,7 @@ RUN apt update && apt -y --quiet --no-install-recommends install \
 		wget \
 		xvfb \
 		zlib1g-dev \
+		libusb-1.0-0-dev \
 	&& apt-get -y autoremove \
 	&& apt-get clean autoclean \
 	&& rm -rf /var/lib/apt/lists/{apt,dpkg,cache,log} /tmp/* /var/tmp/*
