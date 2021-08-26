@@ -103,10 +103,22 @@ Drawer {
         }
     }
 
+    Connections {
+        target: toolDrawer
+        onVisibleChanged: {
+            if(toolDrawer.visible === true) {
+                return
+            }
+            else {
+                Qt.inputMethod.hide()
+                close()
+            }
+        }
+    }
+
     Component.onCompleted: setupDialogButtons(dialogButtons)
 
     QGCLabel { id: _textMeasure; text: "X"; visible: false }
-
 
     background: Rectangle {
         color:  qgcPal.windowShadeDark
