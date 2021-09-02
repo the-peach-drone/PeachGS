@@ -22,8 +22,8 @@ Button {
     property real   heightFactor:   0.5
     property string iconSource
 
-    property alias wrapMode:            text.wrapMode
-    property alias horizontalAlignment: text.horizontalAlignment
+    property alias  wrapMode:            text.wrapMode
+    property alias  horizontalAlignment: text.horizontalAlignment
 
     property bool   _showHighlight:     pressed | hovered | checked
 
@@ -68,6 +68,7 @@ Button {
             id:                     text
             anchors.centerIn:       parent
             antialiasing:           true
+            horizontalAlignment:    Text.AlignHCenter
             text:                   control.text
             font.pointSize:         pointSize
             font.family:            ScreenTools.normalFontFamily
