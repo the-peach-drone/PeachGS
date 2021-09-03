@@ -638,7 +638,7 @@ GstVideoReceiver::_watchdog(void)
             _lastSourceFrameTime = now;
         }
 
-        if (now - _lastSourceFrameTime > _timeout) {
+        if (now - _lastSourceFrameTime > _timeout * 5) {
             qCDebug(VideoReceiverLog) << "Stream timeout, no frames for " << now - _lastSourceFrameTime << "" << _uri;
             _dispatchSignal([this](){
                 emit timeout();
@@ -651,7 +651,7 @@ GstVideoReceiver::_watchdog(void)
                 _lastVideoFrameTime = now;
             }
 
-            if (now - _lastVideoFrameTime > _timeout * 2) {
+            if (now - _lastVideoFrameTime > _timeout * 10) {
                 qCDebug(VideoReceiverLog) << "Video decoder timeout, no frames for " << now - _lastVideoFrameTime << " " << _uri;
                 _dispatchSignal([this](){
                     emit timeout();
