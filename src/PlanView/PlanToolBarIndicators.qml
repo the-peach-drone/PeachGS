@@ -258,29 +258,6 @@ Item {
             Item { width: 1; height: 1 }
         }
 
-        GridLayout {
-            columns:                5
-            rowSpacing:             _rowSpacing
-            columnSpacing:          _labelToValueSpacing
-            Layout.alignment:       Qt.AlignVCenter | Qt.AlignHCenter
-
-            QGCLabel {
-                text:               qsTr("Communication Elapsed Time")
-                Layout.columnSpan:  5
-                font.pointSize:     ScreenTools.smallFontPointSize
-            }
-
-            Item { width: 1; height: 1 }
-
-            QGCLabel { text: qsTr("Time : "); font.pointSize: _dataFontSize; }
-            QGCLabel {
-                id:                     elapsedTimeLabel
-                font.pointSize:         _dataFontSize
-                Layout.minimumWidth:    _largeValueWidth
-            }
-            Item { width: 1; height: 1 }
-        }
-
         QGCButton {
             id:          uploadButton
             text:        _controllerDirty ? qsTr("Upload Required") : qsTr("Upload")
