@@ -13,7 +13,7 @@
         { "vendorID": 9900, "productID": 33,        "boardClass": "Pixhawk",    "name": "AUAV X2.1 FMU V2" },
         { "vendorID": 9900, "productID": 48,        "boardClass": "Pixhawk",    "name": "MindPX FMU V2" },
         { "vendorID": 9900, "productID": 50,        "boardClass": "Pixhawk",    "name": "PX4 FMU V5" },
-        { "vendorID": 9900, "productID": 51,        "boardClass": "Pixhawk",    "name": "PX4 FMU V5X" },
+        { "vendorID": 12677, "productID": 51,       "boardClass": "Pixhawk",    "name": "PX4 FMU V5X" },
         { "vendorID": 7052, "productID": 54,        "boardClass": "Pixhawk",    "name": "PX4 FMU V6U" },
         { "vendorID": 12677, "productID": 53,       "boardClass": "Pixhawk",    "name": "PX4 FMU V6X" },
         { "vendorID": 9900, "productID": 64,        "boardClass": "Pixhawk",    "name": "TAP V1" },
@@ -25,6 +25,7 @@
         { "vendorID":12642, "productID": 75,        "boardClass": "Pixhawk",    "name": "PX4 DurandalV1" },
         { "vendorID": 4104, "productID": 1,         "boardClass": "Pixhawk",    "name": "PX4 FMU UVify Core" },
         { "vendorID": 12643, "productID": 76,       "boardClass": "Pixhawk",    "name": "CUAV Flight Controller" },
+        { "vendorID": 1155, "productID": 55,        "boardClass": "Pixhawk",    "name": "PX4 FMU SmartAP AIRLink" },
 
         { "vendorID": 1155, "productID": 22336,     "boardClass": "Pixhawk",    "name": "ArduPilot ChibiOS" },
         { "vendorID": 4617, "productID": 22336,     "boardClass": "Pixhawk",    "name": "ArduPilot ChibiOS" },

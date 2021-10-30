@@ -53,6 +53,7 @@
 #ifdef QT_DEBUG
 #include "MockLink.h"
 #endif
+#include "Autotune.h"
 
 #if defined(QGC_AIRMAP_ENABLED)
 #include "AirspaceVehicleManager.h"
@@ -385,6 +386,8 @@ void Vehicle::_commonInit()
     connect(_parameterManager, &ParameterManager::loadProgressChanged, this, &Vehicle::_gotProgressUpdate);
 
     _objectAvoidance = new VehicleObjectAvoidance(this, this);
+
+    _autotune = _firmwarePlugin->createAutotune(this);
 
     // GeoFenceManager needs to access ParameterManager so make sure to create after
     _geoFenceManager = new GeoFenceManager(this);
@@ -2764,6 +2767,11 @@ void Vehicle::sendMavCommandInt(int compId, MAV_CMD command, MAV_FRAME frame, bo
                           param1, param2, param3, param4, param5, param6, param7);
 }
 
+bool Vehicle::isMavCommandPending(int targetCompId, MAV_CMD command)
+{
+    return ((-1) < _findMavCommandListEntryIndex(targetCompId, command));
+}
+
 int Vehicle::_findMavCommandListEntryIndex(int targetCompId, MAV_CMD command)
 {
     for (int i=0; i<_mavCommandList.count(); i++) {
@@ -2809,8 +2817,7 @@ bool Vehicle::_sendMavCommandShouldRetry(MAV_CMD command)
 
 void Vehicle::_sendMavCommandWorker(bool commandInt, bool showError, MavCmdResultHandler resultHandler, void* resultHandlerData, int targetCompId, MAV_CMD command, MAV_FRAME frame, float param1, float param2, float param3, float param4, float param5, float param6, float param7)
 {
-    int entryIndex = _findMavCommandListEntryIndex(targetCompId, command);
-    if (entryIndex != -1 || targetCompId == MAV_COMP_ID_ALL) {
+    if ((targetCompId == MAV_COMP_ID_ALL) || isMavCommandPending(targetCompId, command)) {
         bool    compIdAll       = targetCompId == MAV_COMP_ID_ALL;
         QString rawCommandName  = _toolbox->missionCommandTree()->rawName(command);
 
@@ -2820,7 +2827,7 @@ void Vehicle::_sendMavCommandWorker(bool commandInt, bool showError, MavCmdResul
         // Because of this we fail in that case.
         MavCmdResultFailureCode_t failureCode = compIdAll ? MavCmdResultCommandResultOnly : MavCmdResultFailureDuplicateCommand;
         if (resultHandler) {
-            (*resultHandler)(resultHandlerData, targetCompId, MAV_RESULT_FAILED, failureCode);
+            (*resultHandler)(resultHandlerData, targetCompId, MAV_RESULT_FAILED, 0, failureCode);
         } else {
             emit mavCommandResult(_id, targetCompId, command, MAV_RESULT_FAILED, failureCode);
         }
@@ -2871,7 +2878,7 @@ void Vehicle::_sendMavCommandFromList(int index)
         qCDebug(VehicleLog) << "_sendMavCommandFromList giving up after max retries" << rawCommandName;
         _mavCommandList.removeAt(index);
         if (commandEntry.resultHandler) {
-            (*commandEntry.resultHandler)(commandEntry.resultHandlerData, commandEntry.targetCompId, MAV_RESULT_FAILED, MavCmdResultFailureNoResponseToCommand);
+            (*commandEntry.resultHandler)(commandEntry.resultHandlerData, commandEntry.targetCompId, MAV_RESULT_FAILED, 0, MavCmdResultFailureNoResponseToCommand);
         } else {
             emit mavCommandResult(_id, commandEntry.targetCompId, commandEntry.command, MAV_RESULT_FAILED, MavCmdResultFailureNoResponseToCommand);
         }
@@ -2980,6 +2987,11 @@ void Vehicle::_handleCommandAck(mavlink_message_t& message)
         }
     }
 
+    if (ack.command == MAV_CMD_PREFLIGHT_STORAGE) {
+        auto result = (ack.result == MAV_RESULT_ACCEPTED);
+        emit sensorsParametersResetAck(result);
+    }
+
 #if !defined(NO_ARDUPILOT_DIALECT)
     if (ack.command == MAV_CMD_FLASH_BOOTLOADER && ack.result == MAV_RESULT_ACCEPTED) {
         qgcApp()->showAppMessage(tr("Bootloader flash succeeded"));
@@ -2992,7 +3004,7 @@ void Vehicle::_handleCommandAck(mavlink_message_t& message)
         MavCommandListEntry_t commandEntry = _mavCommandList.takeAt(entryIndex);
         if (commandEntry.command == ack.command) {
             if (commandEntry.resultHandler) {
-                (*commandEntry.resultHandler)(commandEntry.resultHandlerData, message.compid, static_cast<MAV_RESULT>(ack.result), MavCmdResultCommandResultOnly);
+                (*commandEntry.resultHandler)(commandEntry.resultHandlerData, message.compid, static_cast<MAV_RESULT>(ack.result), ack.progress, MavCmdResultCommandResultOnly);
             } else {
                 if (commandEntry.showError) {
                     switch (ack.result) {
@@ -3094,7 +3106,7 @@ void Vehicle::requestMessage(RequestMessageResultHandler resultHandler, void* re
                           param1, param2, param3, param4, param5, 0);
 }
 
-void Vehicle::_requestMessageCmdResultHandler(void* resultHandlerData, int /*compId*/, MAV_RESULT result, MavCmdResultFailureCode_t failureCode)
+void Vehicle::_requestMessageCmdResultHandler(void* resultHandlerData, int /*compId*/, MAV_RESULT result, uint8_t progress, MavCmdResultFailureCode_t failureCode)
 {
     RequestMessageInfo_t*   pInfo   = static_cast<RequestMessageInfo_t*>(resultHandlerData);
     Vehicle*                vehicle = pInfo->vehicle;
@@ -3191,8 +3203,10 @@ QString Vehicle::firmwareVersionTypeString() const
     }
 }
 
-void Vehicle::_rebootCommandResultHandler(void* resultHandlerData, int /*compId*/, MAV_RESULT commandResult, MavCmdResultFailureCode_t failureCode)
+void Vehicle::_rebootCommandResultHandler(void* resultHandlerData, int /*compId*/, MAV_RESULT commandResult, uint8_t progress, MavCmdResultFailureCode_t failureCode)
 {
+    Q_UNUSED(progress)
+
     Vehicle* vehicle = static_cast<Vehicle*>(resultHandlerData);
 
     if (commandResult != MAV_RESULT_ACCEPTED) {
@@ -3726,7 +3740,7 @@ void Vehicle::_setMessageInterval(int messageId, int rate)
                    rate);
 }
 
-bool Vehicle::_initialConnectComplete() const
+bool Vehicle::isInitialConnectComplete() const
 {
     return !_initialConnectStateMachine->active();
 }
@@ -3967,7 +3981,8 @@ void Vehicle::sendJoystickDataThreadSafe(float roll, float pitch, float yaw, flo
                 static_cast<int16_t>(newRollCommand),
                 static_cast<int16_t>(newThrustCommand),
                 static_cast<int16_t>(newYawCommand),
-                buttons);
+                buttons,
+                0, 0, 0, 0);
     sendMessageOnLinkThreadSafe(sharedLink.get(), message);
 }
 

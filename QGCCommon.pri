@@ -68,7 +68,7 @@ linux {
         } else:equals(ANDROID_TARGET_ARCH, x86)  {
             CONFIG += Androidx86Build
             DEFINES += __androidx86__
-            message("Android Arm build")
+            message("Android x86 build")
         } else {
             error("Unsupported Android architecture: $${ANDROID_TARGET_ARCH}")
         }
@@ -104,11 +104,6 @@ linux {
         CONFIG  -= x86
         DEFINES += QGC_GST_TAISYNC_ENABLED
         DEFINES += QGC_GST_MICROHARD_ENABLED 
-        equals(QT_MAJOR_VERSION, 5) | greaterThan(QT_MINOR_VERSION, 5) {
-                QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
-        } else {
-                QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.6
-        }
         QMAKE_CXXFLAGS += -fvisibility=hidden
         QMAKE_CXXFLAGS_WARN_ON += -Werror \
             -Wno-unused-parameter           # gst-plugins-good
@@ -116,9 +111,6 @@ linux {
         error("Unsupported Mac toolchain, only 64-bit LLVM+clang is supported")
     }
 } else : ios {
-    !equals(QT_MAJOR_VERSION, 5) | !greaterThan(QT_MINOR_VERSION, 4) {
-        error("Unsupported Qt version, 5.5.x or greater is required for iOS")
-    }
     message("iOS build")
     CONFIG  += iOSBuild MobileBuild app_bundle NoSerialBuild
     CONFIG  -= bitcode
@@ -148,7 +140,7 @@ linux|macx|ios {
     }
 }
 
-!MacBuild {
+!MacBuild:!AndroidBuild {
     # See QGCPostLinkCommon.pri for details on why MacBuild doesn't use DESTDIR
     DESTDIR = staging
 }
@@ -172,15 +164,20 @@ exists ($$PWD/.git) {
     GIT_HASH     = $$system(git --git-dir $$PWD/.git --work-tree $$PWD rev-parse --short HEAD)
     GIT_TIME     = $$system(git --git-dir $$PWD/.git --work-tree $$PWD show --oneline --format=\"%ci\" -s HEAD)
 
-    # determine if we're on a tag matching vX.Y.Z (stable release)
-    contains(GIT_DESCRIBE, v[0-9]+.[0-9]+.[0-9]+) {
-        # release version "vX.Y.Z"
+    message(GIT_DESCRIBE $${GIT_DESCRIBE})
+
+    # Pull the version info from the last annotated version tag
+    #   Stable builds will be in the format v#.#.#
+    #   Daily builds on master will be in format d#.#.#
+    contains(GIT_DESCRIBE, ^[vd][0-9]+.[0-9]+.[0-9]+.*) {
+        message( release version "vX.Y.Z")
         GIT_VERSION = $${GIT_DESCRIBE}
         VERSION      = $$replace(GIT_DESCRIBE, "v", "")
+        VERSION      = $$replace(GIT_DESCRIBE, "d", "")
         VERSION      = $$replace(VERSION, "-", ".")
         VERSION      = $$section(VERSION, ".", 0, 3)
     } else {
-        # development version "Development branch:sha date"
+        message(development version "Development branch:sha date")
         GIT_VERSION = "Development $${GIT_BRANCH}:$${GIT_HASH} $${GIT_TIME}"
         VERSION         = 0.0.0
     }
@@ -193,10 +190,63 @@ exists ($$PWD/.git) {
         message(QGroundControl $${GIT_VERSION})
     }
 } else {
-    GIT_VERSION     = None
-    VERSION         = 0.0.0   # Marker to indicate out-of-tree build
-    MAC_VERSION     = 0.0.0
-    MAC_BUILD       = 0
+    GIT_VERSION             = None
+    VERSION                 = 0.0.0   # Marker to indicate out-of-tree build
+    MAC_VERSION             = 0.0.0
+    MAC_BUILD               = 0
+}
+
+AndroidBuild {
+    message(VERSION $${VERSION})
+    MAJOR_VERSION   = $$section(VERSION, ".", 0, 0)
+    MINOR_VERSION   = $$section(VERSION, ".", 1, 1)
+    PATCH_VERSION   = $$section(VERSION, ".", 2, 2)
+    DEV_VERSION     = $$section(VERSION, ".", 3, 3)
+
+    greaterThan(MAJOR_VERSION, 9) {
+        error(Major version larger than 1 digit: $${MAJOR_VERSION})
+    }
+    greaterThan(MINOR_VERSION, 9) {
+        error(Minor version larger than 1 digit: $${MINOR_VERSION})
+    }
+    greaterThan(PATCH_VERSION, 99) {
+        error(Patch version larger than 2 digits: $${PATCH_VERSION})
+    }
+    greaterThan(DEV_VERSION, 999) {
+        error(Dev version larger than 3 digits: $${DEV_VERSION})
+    }
+
+    lessThan(PATCH_VERSION, 10) {
+        PATCH_VERSION = $$join(PATCH_VERSION, "", "0")
+    }
+    equals(DEV_VERSION, "") {
+        DEV_VERSION = "0"
+    }
+    lessThan(DEV_VERSION, 10) {
+        DEV_VERSION = $$join(DEV_VERSION, "", "0")
+    }
+    lessThan(DEV_VERSION, 100) {
+        DEV_VERSION = $$join(DEV_VERSION, "", "0")
+    }
+
+    # Bitness is 66/34 instead of 64/32 in because of a required version number bump screw-up ages ago
+    equals(ANDROID_TARGET_ARCH, arm64-v8a)  {
+        ANDROID_BITNESS = 66
+    } else {
+        ANDROID_BITNESS = 34
+    }
+
+    # Version code format: BBMIPPDDD (B=Bitness, I=Minor)
+    ANDROID_VERSION_CODE = "BBMIPPDDD"
+    ANDROID_VERSION_CODE = $$replace(ANDROID_VERSION_CODE, "BB", $$ANDROID_BITNESS)
+    ANDROID_VERSION_CODE = $$replace(ANDROID_VERSION_CODE, "M", $$MAJOR_VERSION)
+    ANDROID_VERSION_CODE = $$replace(ANDROID_VERSION_CODE, "I", $$MINOR_VERSION)
+    ANDROID_VERSION_CODE = $$replace(ANDROID_VERSION_CODE, "PP", $$PATCH_VERSION)
+    ANDROID_VERSION_CODE = $$replace(ANDROID_VERSION_CODE, "DDD", $$DEV_VERSION)
+
+    message(Android version info: $${ANDROID_VERSION_CODE} bitness:$${ANDROID_BITNESS} major:$${MAJOR_VERSION} minor:$${MINOR_VERSION} patch:$${PATCH_VERSION} dev:$${DEV_VERSION})
+
+    ANDROID_VERSION_NAME    = GIT_VERSION
 }
 
 DEFINES += GIT_VERSION=\"\\\"$$GIT_VERSION\\\"\"
@@ -208,6 +258,9 @@ installer {
     CONFIG -= debug
     CONFIG -= debug_and_release
     CONFIG += release
+    AndroidBuild {
+        #ANDROID_ABIS = "armeabi-v7a arm64-v8a"
+    }
     message(Build Installer)
 }
 

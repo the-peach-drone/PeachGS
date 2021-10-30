@@ -108,10 +108,10 @@ FlightMap {
     Connections {
         target: gesture
 
-        onPanStarted:       _disableVehicleTracking = true
-        onFlickStarted:     _disableVehicleTracking = true
-        onPanFinished:      panRecenterTimer.restart()
-        onFlickFinished:    panRecenterTimer.restart()
+        function onPanStarted() {       _disableVehicleTracking = true }
+        function onFlickStarted() {     _disableVehicleTracking = true }
+        function onPanFinished() {      panRecenterTimer.restart() }
+        function onFlickFinished() {    panRecenterTimer.restart() }
     }
 
     function pointInRect(point, rect) {
@@ -207,7 +207,7 @@ FlightMap {
     Connections {
         target:                 _missionController
         ignoreUnknownSignals:   true
-        onNewItemsFromVehicle: {
+        function onNewItemsFromVehicle() {
             var visualItems = _missionController.visualItems
             if (visualItems && visualItems.count !== 1) {
                 mapFitFunctions.fitMapViewportToMissionItems()
@@ -379,7 +379,7 @@ FlightMap {
 
         Connections {
             target: QGroundControl.multiVehicleManager
-            onActiveVehicleChanged: {
+            function onActiveVehicleChanged(activeVehicle) {
                 if (!activeVehicle) {
                     gotoLocationItem.visible = false
                 }
@@ -417,7 +417,7 @@ FlightMap {
 
         Connections {
             target: QGroundControl.multiVehicleManager
-            onActiveVehicleChanged: {
+            function onActiveVehicleChanged(activeVehicle) {
                 if (!activeVehicle) {
                     orbitMapCircle.visible = false
                 }

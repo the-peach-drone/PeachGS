@@ -83,7 +83,7 @@ PX4FirmwarePlugin::PX4FirmwarePlugin()
         { PX4_CUSTOM_MAIN_MODE_AUTO,        PX4_CUSTOM_SUB_MODE_AUTO_RTL,           true,   true,   true },
         { PX4_CUSTOM_MAIN_MODE_AUTO,        PX4_CUSTOM_SUB_MODE_AUTO_FOLLOW_TARGET, true,   false,  true },
         { PX4_CUSTOM_MAIN_MODE_AUTO,        PX4_CUSTOM_SUB_MODE_AUTO_LAND,          false,  true,   true },
-        { PX4_CUSTOM_MAIN_MODE_AUTO,        PX4_CUSTOM_SUB_MODE_AUTO_PRECLAND,      false,  false,  true },
+        { PX4_CUSTOM_MAIN_MODE_AUTO,        PX4_CUSTOM_SUB_MODE_AUTO_PRECLAND,      true,  false,  true },
         { PX4_CUSTOM_MAIN_MODE_AUTO,        PX4_CUSTOM_SUB_MODE_AUTO_READY,         false,  true,   true },
         { PX4_CUSTOM_MAIN_MODE_AUTO,        PX4_CUSTOM_SUB_MODE_AUTO_RTGS,          false,  true,   true },
         { PX4_CUSTOM_MAIN_MODE_AUTO,        PX4_CUSTOM_SUB_MODE_AUTO_TAKEOFF,       false,  true,   true },
@@ -449,8 +449,10 @@ typedef struct {
     double              newAMSLAlt;
 } PauseVehicleThenChangeAltData_t;
 
-static void _pauseVehicleThenChangeAltResultHandler(void* resultHandlerData, int /*compId*/, MAV_RESULT commandResult, Vehicle::MavCmdResultFailureCode_t failureCode)
+static void _pauseVehicleThenChangeAltResultHandler(void* resultHandlerData, int /*compId*/, MAV_RESULT commandResult, uint8_t progress, Vehicle::MavCmdResultFailureCode_t failureCode)
 {
+    Q_UNUSED(progress);
+
     if (commandResult != MAV_RESULT_ACCEPTED) {
         switch (failureCode) {
         case Vehicle::MavCmdResultCommandResultOnly:
@@ -629,7 +631,7 @@ QString PX4FirmwarePlugin::_versionRegex() {
 
 bool PX4FirmwarePlugin::supportsNegativeThrust(Vehicle* vehicle)
 {
-    return vehicle->vehicleType() == MAV_TYPE_GROUND_ROVER;
+    return ((vehicle->vehicleType() == MAV_TYPE_GROUND_ROVER) || (vehicle->vehicleType() == MAV_TYPE_SUBMARINE));
 }
 
 QString PX4FirmwarePlugin::getHobbsMeter(Vehicle* vehicle) 

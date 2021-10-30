@@ -16,6 +16,7 @@
 #include "QGCFileDownload.h"
 #include "QGCCameraManager.h"
 #include "RadioComponentController.h"
+#include "Autotune.h"
 
 #include <QRegularExpression>
 #include <QDebug>
@@ -500,7 +501,7 @@ const QVariantList& FirmwarePlugin::cameraList(const Vehicle*)
                     5.4,                // focalLength
                     true,               // landscape
                     false,              // fixedOrientation
-                    0,                  // minTriggerInterval
+                    0.8,                // minTriggerInterval
                     tr("Sentera Double 4K Sensor"),// SHOULD BE BLANK FOR NEWLY ADDED CAMERAS. Deprecated translation from older builds.
                     this);
         _cameraList.append(QVariant::fromValue(metaData));
@@ -516,9 +517,25 @@ const QVariantList& FirmwarePlugin::cameraList(const Vehicle*)
                     4.14,               // focalLength
                     true,               // landscape
                     false,              // fixedOrientation
-                    0,                  // minTriggerInterval
+                    0.5,                // minTriggerInterval
                     tr("Sentera NDVI Single Sensor"),// SHOULD BE BLANK FOR NEWLY ADDED CAMERAS. Deprecated translation from older builds.
                     this);
+        _cameraList.append(QVariant::fromValue(metaData));
+
+        metaData = new CameraMetaData(
+                    "Sentera 6X Sensor",
+                    tr("Sentera"),
+                    tr("6X Sensor"),
+                    6.57,               // sensorWidth
+                    4.93,               // sendsorHeight
+                    1904,               // imageWidth
+                    1428,               // imageHeight
+                    8.0,                // focalLength
+                    true,               // true: landscape orientation
+                    false,              // true: camera is fixed orientation
+                    0.2,                // minimum trigger interval
+                    tr(""),             // SHOULD BE BLANK FOR NEWLY ADDED CAMERAS. Deprecated translation from older builds.
+                    this);              // parent
         _cameraList.append(QVariant::fromValue(metaData));
 
         metaData = new CameraMetaData(
@@ -849,7 +866,37 @@ const QVariantList& FirmwarePlugin::cameraList(const Vehicle*)
                     this);              // parent
         _cameraList.append(QVariant::fromValue(metaData));
 
+        metaData = new CameraMetaData(
+                    "Workswell Wiris Security Thermal Camera",
+                    tr("Workswell"),
+                    tr("Wiris Security"),
+                    13.6,                // sensorWidth
+                    10.2,                // sensorHeight
+                    800,               // imageWidth
+                    600,               // imageHeight
+                    35,                // focalLength
+                    true,               // true: landscape orientation
+                    false,              // true: camera is fixed orientation
+                    1.8,                  // minimum trigger interval
+                    "",   // SHOULD BE BLANK FOR NEWLY ADDED CAMERAS. Deprecated translation from older builds.
+                    this);              // parent
+        _cameraList.append(QVariant::fromValue(metaData));
 
+        metaData = new CameraMetaData(
+                    "Workswell Wiris Security Visual Camera",
+                    tr("Workswell"),
+                    tr("Wiris Security"),
+                    4.826,                // sensorWidth
+                    3.556,                // sensorHeight
+                    1920,               // imageWidth
+                    1080,               // imageHeight
+                    4.3,                // focalLength
+                    true,               // true: landscape orientation
+                    false,              // true: camera is fixed orientation
+                    1.8,                  // minimum trigger interval
+                    "",   // SHOULD BE BLANK FOR NEWLY ADDED CAMERAS. Deprecated translation from older builds.
+                    this);              // parent
+        _cameraList.append(QVariant::fromValue(metaData));
     }
 
     return _cameraList;
@@ -1078,4 +1125,9 @@ void FirmwarePlugin::sendGCSMotionReport(Vehicle* vehicle, FollowMe::GCSMotionRe
                                               &follow_target);
         vehicle->sendMessageOnLinkThreadSafe(sharedLink.get(), message);
     }
+}
+
+Autotune* FirmwarePlugin::createAutotune(Vehicle *vehicle)
+{
+    return new Autotune(vehicle);
 }

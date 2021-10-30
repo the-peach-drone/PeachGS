@@ -162,7 +162,7 @@ Rectangle {
 
         Connections {
             target:                 QGroundControl.multiVehicleManager
-            onActiveVehicleChanged: largeProgressBar._userHide = false
+            function onActiveVehicleChanged(activeVehicle) { largeProgressBar._userHide = false }
         }
 
         Rectangle {

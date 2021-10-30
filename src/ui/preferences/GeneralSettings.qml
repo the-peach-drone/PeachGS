@@ -467,13 +467,13 @@ Rectangle {
 
                                 QGCLabel {
                                     text:           qsTr("Language")
-                                    visible: QGroundControl.settingsManager.appSettings.language.visible
+                                    visible: QGroundControl.settingsManager.appSettings.qLocaleLanguage.visible
                                 }
                                 FactComboBox {
                                     Layout.preferredWidth:  _comboFieldWidth
-                                    fact:                   QGroundControl.settingsManager.appSettings.language
+                                    fact:                   QGroundControl.settingsManager.appSettings.qLocaleLanguage
                                     indexModel:             false
-                                    visible:                QGroundControl.settingsManager.appSettings.language.visible
+                                    visible:                QGroundControl.settingsManager.appSettings.qLocaleLanguage.visible
                                 }
 
                                 QGCLabel {
@@ -756,10 +756,11 @@ Rectangle {
                                         QGroundControl.settingsManager.autoConnectSettings.autoConnectPX4Flow,
                                         QGroundControl.settingsManager.autoConnectSettings.autoConnectLibrePilot,
                                         QGroundControl.settingsManager.autoConnectSettings.autoConnectUDP,
-                                        QGroundControl.settingsManager.autoConnectSettings.autoConnectRTKGPS
+                                        QGroundControl.settingsManager.autoConnectSettings.autoConnectRTKGPS,
+                                        QGroundControl.settingsManager.autoConnectSettings.autoConnectZeroConf,
                                     ]
 
-                                    property var names: [ qsTr("Pixhawk"), qsTr("SiK Radio"), qsTr("PX4 Flow"), qsTr("LibrePilot"), qsTr("UDP"), qsTr("RTK GPS") ]
+                                    property var names: [ qsTr("Pixhawk"), qsTr("SiK Radio"), qsTr("PX4 Flow"), qsTr("LibrePilot"), qsTr("UDP"), qsTr("RTK GPS"), qsTr("Zero-Conf") ]
 
                                     FactCheckBox {
                                         text:       autoConnectRepeater.names[index]
