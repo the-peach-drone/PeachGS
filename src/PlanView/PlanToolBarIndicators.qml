@@ -68,9 +68,6 @@ Item {
 
     readonly property real _margins: ScreenTools.defaultFontPixelWidth
 
-    // Elapsed Time Check
-    property double startTime: 0;
-
     function getMissionTime() {
         if (!_missionTime) {
             return "00:00:00"
@@ -97,22 +94,8 @@ Item {
                 uploadCompleteText.visible = true
                 progressBar.visible = false
                 resetProgressTimer.start()
-
-                // End Time Check
-                if(startTime === 0) {
-                    elapsedTimeLabel.text = 0
-                    return
-                }
-                elapsedTimeLabel.text = new Date().getTime() - startTime + " ms"
-                startTime = 0
-
             } else if (_controllerProgressPct > 0) {
                 progressBar.visible = true
-
-                // Start Time Check
-                if(startTime === 0) {
-                    startTime = new Date().getTime()
-                }
             }
         }
     }
