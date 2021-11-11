@@ -159,8 +159,7 @@ MavlinkConsoleController::_sendSerialData(QByteArray data, bool close)
                     0,
                     chunk.size(),
                     reinterpret_cast<uint8_t*>(chunk.data()),
-                    _vehicle->id(),
-                    MAV_COMP_ID_AUTOPILOT1);
+                    _vehicle->id(), _vehicle->defaultComponentId());
         _vehicle->sendMessageOnLinkThreadSafe(sharedLink.get(), msg);
         data.remove(0, chunk.size());
     }
