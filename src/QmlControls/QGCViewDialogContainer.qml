@@ -107,10 +107,14 @@ Drawer {
         target: toolDrawer
         onVisibleChanged: {
             if(toolDrawer.visible === true) {
+                
+                // Do nothing
                 return
             }
             else {
-                Qt.inputMethod.hide()
+                // Close DialogContainer
+                
+		Qt.inputMethod.hide()
                 close()
             }
         }
