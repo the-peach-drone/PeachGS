@@ -18,6 +18,9 @@
 #include <QVariant>
 #include <QQmlProperty>
 
+//Define Max Mag Calibration Fitness
+#define MAX_FIT_MAG_CAL 32.0
+
 QGC_LOGGING_CATEGORY(APMSensorsComponentControllerLog, "APMSensorsComponentControllerLog")
 QGC_LOGGING_CATEGORY(APMSensorsComponentControllerVerboseLog, "APMSensorsComponentControllerVerboseLog")
 
@@ -262,7 +265,8 @@ void APMSensorsComponentController::_mavCommandResult(int vehicleId, int compone
             Fact* compassCalFitness = getParameterFact(FactSystem::defaultComponentId, _compassCalFitnessParam);
             _restoreCompassCalFitness = true;
             _previousCompassCalFitness = compassCalFitness->rawValue().toFloat();
-            getParameterFact(FactSystem::defaultComponentId, _compassCalFitnessParam)->setRawValue(100.0);
+            //getParameterFact(FactSystem::defaultComponentId, _compassCalFitnessParam)->setRawValue(100.0);
+            getParameterFact(FactSystem::defaultComponentId, _compassCalFitnessParam)->setRawValue(MAX_FIT_MAG_CAL);
 
             _appendStatusLog(tr("Rotate the vehicle randomly around all axes until the progress bar fills all the way to the right ."));
             _vehicle->sendMavCommand(_vehicle->defaultComponentId(),
