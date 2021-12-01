@@ -61,7 +61,7 @@ SetupPage {
 
             Component.onCompleted: {
                 // We use QtCharts only on Desktop platforms
-                showAdvanced = !ScreenTools.isMobile
+                //showAdvanced = !ScreenTools.isMobile
 
                 // Qml Sliders have a strange behavior in which they first set Slider::value to some internal
                 // setting and then set Slider::value to the bound properties value. If you have an onValueChanged
@@ -446,34 +446,6 @@ SetupPage {
                     } // Rectangle - Channel 6 Tuning options wrap
                 } // Flow - Tune
             }
-
-            Loader {
-                anchors.left:       parent.left
-                anchors.right:      parent.right
-                sourceComponent:    advanced ? advancePageComponent : undefined
-            }
-
-            Component {
-                id: advancePageComponent
-
-                PIDTuning {
-                    anchors.left:   parent.left
-                    anchors.right:  parent.right
-                    tuneList:            [ qsTr("Roll"), qsTr("Pitch"), qsTr("Yaw") ]
-                    params:              [
-                        [ controller.getParameterFact(-1, "ATC_ANG_RLL_P"),
-                         controller.getParameterFact(-1, "ATC_RAT_RLL_P"),
-                         controller.getParameterFact(-1, "ATC_RAT_RLL_I"),
-                         controller.getParameterFact(-1, "ATC_RAT_RLL_D") ],
-                        [ controller.getParameterFact(-1, "ATC_ANG_PIT_P"),
-                         controller.getParameterFact(-1, "ATC_RAT_PIT_P"),
-                         controller.getParameterFact(-1, "ATC_RAT_PIT_I"),
-                         controller.getParameterFact(-1, "ATC_RAT_PIT_D") ],
-                        [ controller.getParameterFact(-1, "ATC_ANG_YAW_P"),
-                         controller.getParameterFact(-1, "ATC_RAT_YAW_P"),
-                         controller.getParameterFact(-1, "ATC_RAT_YAW_I") ] ]
-                }
-            } // Component - Advanced Page
         } // Column
     } // Component
 } // SetupView
