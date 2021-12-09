@@ -2773,10 +2773,10 @@
     </parameter>
     <parameter name="FW_L1_PERIOD" default="20.0" type="FLOAT">
       <short_desc>L1 period</short_desc>
-      <long_desc>This is the L1 distance and defines the tracking point ahead of the aircraft its following. A value of 18-25 meters works for most aircraft. Shorten slowly during tuning until response is sharp without oscillation.</long_desc>
-      <min>12.0</min>
+      <long_desc>Used to determine the L1 gain and controller time constant. This parameter is proportional to the L1 distance (which points ahead of the aircraft on the path it is following). A value of 18-25 seconds works for most aircraft. Shorten slowly during tuning until response is sharp without oscillation.</long_desc>
+      <min>7.0</min>
       <max>50.0</max>
-      <unit>m</unit>
+      <unit>s</unit>
       <decimal>1</decimal>
       <increment>0.5</increment>
     </parameter>
@@ -3386,18 +3386,21 @@
     </parameter>
     <parameter name="GPS_UBX_MODE" default="0" type="INT32">
       <short_desc>u-blox GPS Mode</short_desc>
-      <long_desc>Select the u-blox configuration setup. Most setups will use the default, including RTK and dual GPS without heading. The Heading mode requires 2 F9P devices to be attached. The main GPS will act as rover and output heading information, whereas the secondary will act as moving base, sending RTCM on UART2 to the rover GPS. RTK is still possible with this setup.</long_desc>
+      <long_desc>Select the u-blox configuration setup. Most setups will use the default, including RTK and dual GPS without heading. The Heading mode requires 2 F9P devices to be attached. The main GPS will act as rover and output heading information, whereas the secondary will act as moving base. Modes 1 and 2 require each F9P UART1 to be connected to the Autopilot. In addition, UART2 on the F9P units are connected to each other. Modes 3 and 4 only require UART1 on each F9P connected to the Autopilot or Can Node. UART RX DMA is required. RTK is still possible with this setup.</long_desc>
       <min>0</min>
       <max>1</max>
       <reboot_required>true</reboot_required>
       <values>
         <value code="0">Default</value>
-        <value code="1">Heading</value>
+        <value code="1">Heading (Rover With Moving Base UART1 Connected To Autopilot, UART2 Connected To Moving Base)</value>
+        <value code="2">Moving Base (UART1 Connected To Autopilot, UART2 Connected To Rover)</value>
+        <value code="3">Heading (Rover With Moving Base UART1 Connected to Autopilot Or Can Node At 921600)</value>
+        <value code="4">Moving Base (Moving Base UART1 Connected to Autopilot Or Can Node At 921600)</value>
       </values>
     </parameter>
     <parameter name="GPS_YAW_OFFSET" default="0." type="FLOAT">
       <short_desc>Heading/Yaw offset for dual antenna GPS</short_desc>
-      <long_desc>Heading offset angle for dual antenna GPS setups that support heading estimation. (currently only for the Trimble MB-Two). Set this to 0 if the antennas are parallel to the forward-facing direction of the vehicle and the first antenna is in front. The offset angle increases clockwise. Set this to 90 if the first antenna is placed on the right side and the second on the left side of the vehicle.</long_desc>
+      <long_desc>Heading offset angle for dual antenna GPS setups that support heading estimation. Set this to 0 if the antennas are parallel to the forward-facing direction of the vehicle and the first antenna is in front. The offset angle increases clockwise. Set this to 90 if the first antenna is placed on the right side and the second on the left side of the vehicle.</long_desc>
       <min>0</min>
       <max>360</max>
       <unit>deg</unit>
@@ -4372,13 +4375,13 @@
       <max>360.0</max>
       <decimal>1</decimal>
     </parameter>
-    <parameter name="MNT_RANGE_PITCH" default="360.0" type="FLOAT">
+    <parameter name="MNT_RANGE_PITCH" default="90.0" type="FLOAT">
       <short_desc>Range of pitch channel output in degrees (only in AUX output mode)</short_desc>
       <min>1.0</min>
       <max>720.0</max>
       <decimal>1</decimal>
     </parameter>
-    <parameter name="MNT_RANGE_ROLL" default="360.0" type="FLOAT">
+    <parameter name="MNT_RANGE_ROLL" default="90.0" type="FLOAT">
       <short_desc>Range of roll channel output in degrees (only in AUX output mode)</short_desc>
       <min>1.0</min>
       <max>720.0</max>
@@ -4401,6 +4404,15 @@
       <long_desc>Full stick input [-1..1] translats to [-yaw rate..yaw rate].</long_desc>
       <min>1.0</min>
       <max>90.0</max>
+    </parameter>
+    <parameter name="MNT_RC_IN_MODE" default="1" type="INT32">
+      <short_desc>Input mode for RC gimbal input</short_desc>
+      <min>0</min>
+      <max>1</max>
+      <values>
+        <value code="0">Angle</value>
+        <value code="1">Angular rate</value>
+      </values>
     </parameter>
   </group>
   <group name="Multicopter Attitude Control">
@@ -6874,11 +6886,11 @@
       <decimal>1</decimal>
       <increment>0.1</increment>
     </parameter>
-    <parameter name="RTL_TIME_MARGIN" default="110" type="INT32">
+    <parameter name="RTL_TIME_MARGIN" default="100" type="INT32">
       <short_desc>RTL time estimate safety margin offset</short_desc>
       <long_desc>Margin that is added to the time estimate, after it has already been scaled Time with margin = RTL_TIME_FACTOR * time + RTL_TIME_MARGIN</long_desc>
       <min>0</min>
-      <max>300</max>
+      <max>3600</max>
       <unit>s</unit>
       <decimal>1</decimal>
       <increment>1</increment>
@@ -9013,6 +9025,10 @@
       <long_desc>For systems with an external barometer, this should be set to false to make sure that the external is used.</long_desc>
       <reboot_required>true</reboot_required>
     </parameter>
+    <parameter name="SENS_MAG_AUTOCAL" default="0" type="INT32" boolean="true" category="System">
+      <short_desc>Magnetometer auto calibration</short_desc>
+      <long_desc>Automatically initialize magnetometer calibration from bias estimate if available.</long_desc>
+    </parameter>
     <parameter name="SENS_MAG_MODE" default="1" type="INT32" category="System">
       <short_desc>Sensors hub mag mode</short_desc>
       <reboot_required>true</reboot_required>
@@ -10634,6 +10650,11 @@
     </parameter>
     <parameter name="UCAN1_UORB_GPS" default="-1" type="INT32">
       <short_desc>sensor_gps uORB over UAVCAN v1 subscription port ID</short_desc>
+      <min>-1</min>
+      <max>6143</max>
+    </parameter>
+    <parameter name="UCAN1_UORB_GPS_P" default="-1" type="INT32">
+      <short_desc>sensor_gps uORB over UAVCAN v1 publication port ID</short_desc>
       <min>-1</min>
       <max>6143</max>
     </parameter>
