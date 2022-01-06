@@ -1176,6 +1176,11 @@
       <max>60</max>
       <unit>s</unit>
     </parameter>
+    <parameter name="COM_HOME_EN" default="1" type="INT32" boolean="true">
+      <short_desc>Home position enabled</short_desc>
+      <long_desc>Set home position automatically if possible.</long_desc>
+      <reboot_required>true</reboot_required>
+    </parameter>
     <parameter name="COM_HOME_H_T" default="5.0" type="FLOAT">
       <short_desc>Home set horizontal threshold</short_desc>
       <long_desc>The home position will be set if the estimated positioning accuracy is below the threshold.</long_desc>
@@ -3409,6 +3414,11 @@
       <decimal>0</decimal>
       <reboot_required>true</reboot_required>
     </parameter>
+    <parameter name="PPS_CAP_ENABLE" default="0" type="INT32" boolean="true">
+      <short_desc>PPS Capture Enable</short_desc>
+      <long_desc>Enables the PPS capture module. This switches mode of FMU channel 7 to be the PPS input channel.</long_desc>
+      <reboot_required>true</reboot_required>
+    </parameter>
   </group>
   <group name="Geofence">
     <parameter name="GF_ACTION" default="2" type="INT32">
@@ -3615,6 +3625,43 @@
       <short_desc>Total flight time in microseconds</short_desc>
       <long_desc>Total flight time of this autopilot. Lower 32 bits of the value. Flight time in microseconds = (LND_FLIGHT_T_HI &lt;&lt; 32) | LND_FLIGHT_T_LO.</long_desc>
       <min>0</min>
+    </parameter>
+  </group>
+  <group name="Landing Target Estimator">
+    <parameter name="LTEST_SENS_POS_X" default="0.0" type="FLOAT">
+      <short_desc>X Position of IRLOCK in body frame (forward)</short_desc>
+      <unit>m</unit>
+      <decimal>3</decimal>
+      <reboot_required>true</reboot_required>
+    </parameter>
+    <parameter name="LTEST_SENS_POS_Y" default="0.0" type="FLOAT">
+      <short_desc>Y Position of IRLOCK in body frame (right)</short_desc>
+      <unit>m</unit>
+      <decimal>3</decimal>
+      <reboot_required>true</reboot_required>
+    </parameter>
+    <parameter name="LTEST_SENS_POS_Z" default="0.0" type="FLOAT">
+      <short_desc>Z Position of IRLOCK in body frame (downward)</short_desc>
+      <unit>m</unit>
+      <decimal>3</decimal>
+      <reboot_required>true</reboot_required>
+    </parameter>
+    <parameter name="LTEST_SENS_ROT" default="2" type="INT32">
+      <short_desc>Rotation of IRLOCK sensor relative to airframe</short_desc>
+      <long_desc>Default orientation of Yaw 90°</long_desc>
+      <min>-1</min>
+      <max>40</max>
+      <reboot_required>true</reboot_required>
+      <values>
+        <value code="0">No rotation</value>
+        <value code="1">Yaw 45°</value>
+        <value code="2">Yaw 90°</value>
+        <value code="3">Yaw 135°</value>
+        <value code="4">Yaw 180°</value>
+        <value code="5">Yaw 225°</value>
+        <value code="6">Yaw 270°</value>
+        <value code="7">Yaw 315°</value>
+      </values>
     </parameter>
   </group>
   <group name="Landing target Estimator">
@@ -5133,7 +5180,7 @@
   <group name="PWM Outputs">
     <parameter name="MOT_SLEW_MAX" default="0.0" type="FLOAT">
       <short_desc>Minimum motor rise time (slew rate limit)</short_desc>
-      <long_desc>Minimum time allowed for the motor input signal to pass through a range of 1000 PWM units. A value x means that the motor signal can only go from 1000 to 2000 PWM in maximum x seconds. Zero means that slew rate limiting is disabled.</long_desc>
+      <long_desc>Minimum time allowed for the motor input signal to pass through a range of 1000 PWM units. A value x means that the motor signal can only go from 1000 to 2000 PWM in minimum x seconds. Zero means that slew rate limiting is disabled.</long_desc>
       <min>0.0</min>
       <unit>s/(1000*PWM)</unit>
     </parameter>
@@ -10595,6 +10642,11 @@
       <long_desc>Enable UAVCAN GPS subscriptions. uavcan::equipment::gnss::Fix uavcan::equipment::gnss::Fix2 uavcan::equipment::gnss::Auxiliary</long_desc>
       <reboot_required>true</reboot_required>
     </parameter>
+    <parameter name="UAVCAN_SUB_HYGRO" default="0" type="INT32" boolean="true">
+      <short_desc>subscription hygrometer</short_desc>
+      <long_desc>Enable UAVCAN hygrometer subscriptions. dronecan::sensors::hygrometer::Hygrometer</long_desc>
+      <reboot_required>true</reboot_required>
+    </parameter>
     <parameter name="UAVCAN_SUB_ICE" default="0" type="INT32" boolean="true">
       <short_desc>subscription ICE</short_desc>
       <long_desc>Enable UAVCAN internal combusion engine (ICE) subscription. uavcan::equipment::ice::reciprocating::Status</long_desc>
@@ -10861,8 +10913,8 @@
       <increment>0.01</increment>
     </parameter>
     <parameter name="VT_ELEV_MC_LOCK" default="1" type="INT32" boolean="true">
-      <short_desc>Lock elevons in multicopter mode</short_desc>
-      <long_desc>If set to 1 the elevons are locked in multicopter mode</long_desc>
+      <short_desc>Lock control surfaces in hover</short_desc>
+      <long_desc>If set to 1 the control surfaces are locked at the disarmed value in multicopter mode.</long_desc>
     </parameter>
     <parameter name="VT_FWD_THRUST_EN" default="0" type="INT32">
       <short_desc>Enable/disable usage of fixed-wing actuators in hover to generate forward force (instead of pitching down)</short_desc>
