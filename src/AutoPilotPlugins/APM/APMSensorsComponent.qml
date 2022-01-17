@@ -94,7 +94,6 @@ SetupPage {
                 case _calTypeCompass:
                     _orientationsDialogShowCompass = true
                     _orientationDialogHelp = orientationHelpCal
-                    _singleCompassSettingsComponentShowPriority = false
                     dialogTitle = qsTr("Calibrate Compass")
                     buttons |= StandardButton.Cancel
                     break
@@ -342,6 +341,9 @@ SetupPage {
                     QGCLabel {
                         text: compassLabel(index)
                     }
+                    APMSensorIdDecoder {
+                        fact: sensorParams.rgCompassId[index]
+                    }
 
                     Column {
                         anchors.margins:    ScreenTools.defaultFontPixelWidth * 2
@@ -365,14 +367,13 @@ SetupPage {
                                 property int _compassIndex: index
 
                                 function selectPriorityfromParams() {
-                                    if (visible) {
-                                        currentIndex = 3
-                                        var compassId = sensorParams.rgCompassId[_compassIndex].rawValue
-                                        for (var prioIndex=0; prioIndex<3; prioIndex++) {
-                                            if (compassId == sensorParams.rgCompassPrio[prioIndex].rawValue) {
-                                                currentIndex = prioIndex
-                                                break
-                                            }
+                                    currentIndex = 3
+                                    var compassId = sensorParams.rgCompassId[_compassIndex].rawValue
+                                    for (var prioIndex=0; prioIndex<3; prioIndex++) {
+                                        console.log(`comparing ${compassId} with ${sensorParams.rgCompassPrio[prioIndex].rawValue} (index ${prioIndex})`)
+                                        if (compassId == sensorParams.rgCompassPrio[prioIndex].rawValue) {
+                                            currentIndex = prioIndex
+                                            break
                                         }
                                     }
                                 }
