@@ -46,8 +46,11 @@ MacBuild {
 }
 
 LinuxBuild {
-    CONFIG  += qesp_linux_udev
+    CONFIG += qesp_linux_udev
     LIBS += -lusb-1.0
+    system("$$QMAKE_LINK -fuse-ld=gold -Wl,--version &>/dev/null") {
+        CONFIG += use_gold_linker
+    }
 }
 
 WindowsBuild {

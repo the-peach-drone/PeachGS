@@ -977,6 +977,14 @@
         <value code="1">Allow arming without GPS</value>
       </values>
     </parameter>
+    <parameter name="COM_BAT_ACT_T" default="10.0" type="FLOAT">
+      <short_desc>Delay between battery state change and failsafe reaction</short_desc>
+      <long_desc>Battery state requires action -&gt; wait COM_BAT_ACT_T seconds in Hold mode for the user to realize and take a custom action -&gt; React with failsafe action COM_LOW_BAT_ACT A zero value disables the delay.</long_desc>
+      <min>0.0</min>
+      <max>25.0</max>
+      <unit>s</unit>
+      <decimal>3</decimal>
+    </parameter>
     <parameter name="COM_CPU_MAX" default="90.0" type="FLOAT">
       <short_desc>Maximum allowed CPU load to still arm</short_desc>
       <long_desc>A negative value disables the check.</long_desc>
@@ -1347,7 +1355,7 @@
     </parameter>
     <parameter name="COM_RCL_ACT_T" default="15.0" type="FLOAT">
       <short_desc>Delay between RC loss and configured reaction</short_desc>
-      <long_desc>RC signal not updated -&gt; still use data for COM_RC_LOSS_T seconds Consider RC signal lost -&gt; wait COM_RCL_ACT_T seconds on the spot waiting to regain signal React with failsafe action NAV_RCL_ACT A zero value disables the delay.</long_desc>
+      <long_desc>RC signal not updated -&gt; still use data for COM_RC_LOSS_T seconds Consider RC signal lost -&gt; wait COM_RCL_ACT_T seconds in Hold mode to regain signal React with failsafe action NAV_RCL_ACT A zero value disables the delay.</long_desc>
       <min>0.0</min>
       <max>25.0</max>
       <unit>s</unit>
@@ -1769,7 +1777,7 @@
     </parameter>
     <parameter name="EKF2_GPS_CHECK" default="245" type="INT32">
       <short_desc>Integer bitmask controlling GPS checks</short_desc>
-      <long_desc>Set bits to 1 to enable checks. Checks enabled by the following bit positions 0 : Minimum required sat count set by EKF2_REQ_NSATS 1 : Maximum allowed PDOP set by EKF2_REQ_PDOP 2 : Maximum allowed horizontal position error set by EKF2_REQ_EPH 3 : Maximum allowed vertical position error set by EKF2_REQ_EPV 4 : Maximum allowed speed error set by EKF2_REQ_SACC 5 : Maximum allowed horizontal position rate set by EKF2_REQ_HDRIFT. This check will only run when the vehicle is on ground and stationary. Detecton of the stationary condition is controlled by the EKF2_MOVE_TEST parameter. 6 : Maximum allowed vertical position rate set by EKF2_REQ_VDRIFT. This check will only run when the vehicle is on ground and stationary. Detecton of the stationary condition is controlled by the EKF2_MOVE_TEST parameter. 7 : Maximum allowed horizontal speed set by EKF2_REQ_HDRIFT. This check will only run when the vehicle is on ground and stationary. Detecton of the stationary condition is controlled by the EKF2_MOVE_TEST parameter. 8 : Maximum allowed vertical velocity discrepancy set by EKF2_REQ_VDRIFT</long_desc>
+      <long_desc>Set bits to 1 to enable checks. Checks enabled by the following bit positions 0 : Minimum required sat count set by EKF2_REQ_NSATS 1 : Maximum allowed PDOP set by EKF2_REQ_PDOP 2 : Maximum allowed horizontal position error set by EKF2_REQ_EPH 3 : Maximum allowed vertical position error set by EKF2_REQ_EPV 4 : Maximum allowed speed error set by EKF2_REQ_SACC 5 : Maximum allowed horizontal position rate set by EKF2_REQ_HDRIFT. This check will only run when the vehicle is on ground and stationary. 6 : Maximum allowed vertical position rate set by EKF2_REQ_VDRIFT. This check will only run when the vehicle is on ground and stationary. 7 : Maximum allowed horizontal speed set by EKF2_REQ_HDRIFT. This check will only run when the vehicle is on ground and stationary. 8 : Maximum allowed vertical velocity discrepancy set by EKF2_REQ_VDRIFT</long_desc>
       <min>0</min>
       <max>511</max>
       <bitmask>
@@ -1952,7 +1960,7 @@
     </parameter>
     <parameter name="EKF2_MAG_TYPE" default="0" type="INT32">
       <short_desc>Type of magnetometer fusion</short_desc>
-      <long_desc>Integer controlling the type of magnetometer fusion used - magnetic heading or 3-component vector. The fuson of magnetomer data as a three component vector enables vehicle body fixed hard iron errors to be learned, but requires a stable earth field. If set to 'Automatic' magnetic heading fusion is used when on-ground and 3-axis magnetic field fusion in-flight with fallback to magnetic heading fusion if there is insufficient motion to make yaw or magnetic field states observable. If set to 'Magnetic heading' magnetic heading fusion is used at all times If set to '3-axis' 3-axis field fusion is used at all times. If set to 'VTOL custom' the behaviour is the same as 'Automatic', but if fusing airspeed, magnetometer fusion is only allowed to modify the magnetic field states. This can be used by VTOL platforms with large magnetic field disturbances to prevent incorrect bias states being learned during forward flight operation which can adversely affect estimation accuracy after transition to hovering flight. If set to 'MC custom' the behaviour is the same as 'Automatic, but if there are no earth frame position or velocity observations being used, the magnetometer will not be used. This enables vehicles to operate with no GPS in environments where the magnetic field cannot be used to provide a heading reference. Prior to flight, the yaw angle is assumed to be constant if movement tests controlled by the EKF2_MOVE_TEST parameter indicate that the vehicle is static. This allows the vehicle to be placed on the ground to learn the yaw gyro bias prior to flight. If set to 'None' the magnetometer will not be used under any circumstance. If no external source of yaw is available, it is possible to use post-takeoff horizontal movement combined with GPS velocity measurements to align the yaw angle with the timer required (depending on the amount of movement and GPS data quality). Other external sources of yaw may be used if selected via the EKF2_AID_MASK parameter.</long_desc>
+      <long_desc>Integer controlling the type of magnetometer fusion used - magnetic heading or 3-component vector. The fuson of magnetomer data as a three component vector enables vehicle body fixed hard iron errors to be learned, but requires a stable earth field. If set to 'Automatic' magnetic heading fusion is used when on-ground and 3-axis magnetic field fusion in-flight with fallback to magnetic heading fusion if there is insufficient motion to make yaw or magnetic field states observable. If set to 'Magnetic heading' magnetic heading fusion is used at all times If set to '3-axis' 3-axis field fusion is used at all times. If set to 'VTOL custom' the behaviour is the same as 'Automatic', but if fusing airspeed, magnetometer fusion is only allowed to modify the magnetic field states. This can be used by VTOL platforms with large magnetic field disturbances to prevent incorrect bias states being learned during forward flight operation which can adversely affect estimation accuracy after transition to hovering flight. If set to 'MC custom' the behaviour is the same as 'Automatic, but if there are no earth frame position or velocity observations being used, the magnetometer will not be used. This enables vehicles to operate with no GPS in environments where the magnetic field cannot be used to provide a heading reference. Prior to flight, the yaw angle is assumed to be constant if movement tests indicate that the vehicle is static. This allows the vehicle to be placed on the ground to learn the yaw gyro bias prior to flight. If set to 'None' the magnetometer will not be used under any circumstance. If no external source of yaw is available, it is possible to use post-takeoff horizontal movement combined with GPS velocity measurements to align the yaw angle with the timer required (depending on the amount of movement and GPS data quality). Other external sources of yaw may be used if selected via the EKF2_AID_MASK parameter.</long_desc>
       <reboot_required>true</reboot_required>
       <values>
         <value code="0">Automatic</value>
@@ -1981,17 +1989,10 @@
     </parameter>
     <parameter name="EKF2_MIN_RNG" default="0.1" type="FLOAT">
       <short_desc>Expected range finder reading when on ground</short_desc>
-      <long_desc>If the vehicle is on ground, is not moving as determined by the motion test controlled by EKF2_MOVE_TEST and the range finder is returning invalid or no data, then an assumed range value of EKF2_MIN_RNG will be used by the terrain estimator so that a terrain height estimate is avilable at the start of flight in situations where the range finder may be inside its minimum measurements distance when on ground.</long_desc>
+      <long_desc>If the vehicle is on ground, is not moving as determined by the motion test and the range finder is returning invalid or no data, then an assumed range value of EKF2_MIN_RNG will be used by the terrain estimator so that a terrain height estimate is avilable at the start of flight in situations where the range finder may be inside its minimum measurements distance when on ground.</long_desc>
       <min>0.01</min>
       <unit>m</unit>
       <decimal>2</decimal>
-    </parameter>
-    <parameter name="EKF2_MOVE_TEST" default="1.0" type="FLOAT">
-      <short_desc>Vehicle movement test threshold</short_desc>
-      <long_desc>Scales the threshold tests applied to IMU data used to determine if the vehicle is static or moving. See parameter descriptions for EKF2_GPS_CHECK and EKF2_MAG_TYPE for further information on the functionality affected by this parameter.</long_desc>
-      <min>0.1</min>
-      <max>10.0</max>
-      <decimal>1</decimal>
     </parameter>
     <parameter name="EKF2_MULTI_IMU" default="0" type="INT32">
       <short_desc>Multi-EKF IMUs</short_desc>
@@ -3481,7 +3482,7 @@
     </parameter>
     <parameter name="GPS_YAW_OFFSET" default="0." type="FLOAT">
       <short_desc>Heading/Yaw offset for dual antenna GPS</short_desc>
-      <long_desc>Heading offset angle for dual antenna GPS setups that support heading estimation. Set this to 0 if the antennas are parallel to the forward-facing direction of the vehicle and the first antenna is in front. The offset angle increases clockwise. Set this to 90 if the first antenna is placed on the right side and the second on the left side of the vehicle.</long_desc>
+      <long_desc>Heading offset angle for dual antenna GPS setups that support heading estimation. Set this to 0 if the antennas are parallel to the forward-facing direction of the vehicle and the rover antenna is in front. The offset angle increases clockwise. Set this to 90 if the rover antenna is placed on the right side of the vehicle and the moving base antenna is on the left side.</long_desc>
       <min>0</min>
       <max>360</max>
       <unit>deg</unit>
@@ -4442,24 +4443,25 @@
     </parameter>
     <parameter name="MNT_MODE_IN" default="-1" type="INT32">
       <short_desc>Mount input mode</short_desc>
-      <long_desc>RC uses the AUX input channels (see MNT_MAN_* parameters), MAVLINK_ROI uses the MAV_CMD_DO_SET_ROI Mavlink message, and MAVLINK_DO_MOUNT the MAV_CMD_DO_MOUNT_CONFIGURE and MAV_CMD_DO_MOUNT_CONTROL messages to control a mount.</long_desc>
+      <long_desc>This is the protocol used between the ground station and the autopilot. Recommended is Auto, RC only or MAVLink gimbal protocol v2. The rest will be deprecated.</long_desc>
       <min>-1</min>
       <max>4</max>
       <reboot_required>true</reboot_required>
       <values>
         <value code="-1">DISABLED</value>
-        <value code="0">AUTO</value>
+        <value code="0">Auto (RC and MAVLink gimbal protocol v2)</value>
         <value code="1">RC</value>
-        <value code="2">MAVLINK_ROI (protocol v1)</value>
-        <value code="3">MAVLINK_DO_MOUNT (protocol v1)</value>
+        <value code="2">MAVLINK_ROI (protocol v1, to be deprecated)</value>
+        <value code="3">MAVLINK_DO_MOUNT (protocol v1, to be deprecated)</value>
         <value code="4">MAVlink gimbal protocol v2</value>
       </values>
     </parameter>
     <parameter name="MNT_MODE_OUT" default="0" type="INT32">
       <short_desc>Mount output mode</short_desc>
-      <long_desc>AUX uses the mixer output Control Group #2. MAVLINK uses the MAV_CMD_DO_MOUNT_CONFIGURE and MAV_CMD_DO_MOUNT_CONTROL MavLink messages to control a mount (set MNT_MAV_SYSID &amp; MNT_MAV_COMPID)</long_desc>
+      <long_desc>This is the protocol used between the autopilot and a connected gimbal. Recommended is the MAVLink gimbal protocol v2 if the gimbal supports it.</long_desc>
       <min>0</min>
       <max>2</max>
+      <reboot_required>true</reboot_required>
       <values>
         <value code="0">AUX</value>
         <value code="1">MAVLink gimbal protocol v1</value>
@@ -4734,10 +4736,24 @@
     </parameter>
     <parameter name="MPC_LAND_ALT2" default="5.0" type="FLOAT">
       <short_desc>Altitude for 2. step of slow landing (landing)</short_desc>
-      <long_desc>Below this altitude descending velocity gets limited to "MPC_LAND_SPEED". Value needs to be lower than "MPC_LAND_ALT1"</long_desc>
+      <long_desc>Below this altitude descending velocity gets limited to "MPC_LAND_SPEED" Value needs to be lower than "MPC_LAND_ALT1"</long_desc>
       <min>0</min>
       <max>122</max>
       <unit>m</unit>
+      <decimal>1</decimal>
+    </parameter>
+    <parameter name="MPC_LAND_ALT3" default="1.0" type="FLOAT">
+      <short_desc>Altitude for 3. step of slow landing</short_desc>
+      <long_desc>Below this altitude descending velocity gets limited to "MPC_LAND_CRWL", if LIDAR available. No effect if LIDAR not available</long_desc>
+      <min>0</min>
+      <max>122</max>
+      <unit>m</unit>
+      <decimal>1</decimal>
+    </parameter>
+    <parameter name="MPC_LAND_CRWL" default="0.3" type="FLOAT">
+      <short_desc>Land crawl descend rate. Used below</short_desc>
+      <min>0.3</min>
+      <unit>m/s</unit>
       <decimal>1</decimal>
     </parameter>
     <parameter name="MPC_LAND_SPEED" default="0.7" type="FLOAT">
@@ -7944,6 +7960,10 @@
         <value code="5">SF/LW20/b</value>
         <value code="6">SF/LW20/c</value>
       </values>
+    </parameter>
+    <parameter name="SENS_EN_SHT3X" default="0" type="INT32" boolean="true">
+      <short_desc>SHT3x temperature and hygrometer</short_desc>
+      <reboot_required>true</reboot_required>
     </parameter>
     <parameter name="SENS_EN_SR05" default="0" type="INT32" boolean="true">
       <short_desc>HY-SRF05 / HC-SR05</short_desc>
