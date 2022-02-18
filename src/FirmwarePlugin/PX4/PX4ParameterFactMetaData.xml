@@ -3452,6 +3452,11 @@
         <value code="2">RTCM output (PPK)</value>
       </values>
     </parameter>
+    <parameter name="GPS_SAT_INFO" default="0" type="INT32" boolean="true">
+      <short_desc>Enable sat info (if available)</short_desc>
+      <long_desc>Enable publication of satellite info (ORB_ID(satellite_info)) if possible. Not available on MTK.</long_desc>
+      <reboot_required>true</reboot_required>
+    </parameter>
     <parameter name="GPS_UBX_DYNMODEL" default="7" type="INT32">
       <short_desc>u-blox GPS dynamic platform model</short_desc>
       <long_desc>u-blox receivers support different dynamic platform models to adjust the navigation engine to the expected application environment.</long_desc>
@@ -3578,6 +3583,14 @@
       <max>1.0</max>
       <unit>normalized_thrust/s</unit>
       <decimal>4</decimal>
+    </parameter>
+    <parameter name="HTE_THR_RANGE" default="0.2" type="FLOAT">
+      <short_desc>Max deviation from MPC_THR_HOVER</short_desc>
+      <long_desc>Defines the range of the hover thrust estimate around MPC_THR_HOVER. A value of 0.2 with MPC_THR_HOVER at 0.5 results in a range of [0.3, 0.7]. Set to a large value if the vehicle operates in varying physical conditions that affect the required hover thrust strongly (e.g. differently sized payloads).</long_desc>
+      <min>0.01</min>
+      <max>0.4</max>
+      <unit>normalized_thrust</unit>
+      <decimal>2</decimal>
     </parameter>
     <parameter name="HTE_VXY_THR" default="10.0" type="FLOAT">
       <short_desc>Horizontal velocity threshold for sensitivity reduction</short_desc>
@@ -7486,6 +7499,11 @@
     </parameter>
   </group>
   <group name="Sensors">
+    <parameter name="ADC_ADS1115_EN" default="0" type="INT32" boolean="true">
+      <short_desc>Enable external ADS1115 ADC</short_desc>
+      <long_desc>If enabled, the internal ADC is not used.</long_desc>
+      <reboot_required>true</reboot_required>
+    </parameter>
     <parameter name="BAT1_C_MULT" default="1.0" type="FLOAT">
       <short_desc>Capacity/current multiplier for high-current capable SMBUS battery</short_desc>
       <decimal>1</decimal>
@@ -7877,6 +7895,10 @@
     <parameter name="SENS_EN_INA238" default="0" type="INT32" boolean="true">
       <short_desc>Enable INA238 Power Monitor</short_desc>
       <long_desc>For systems a INA238 Power Monitor, this should be set to true</long_desc>
+      <reboot_required>true</reboot_required>
+    </parameter>
+    <parameter name="SENS_EN_IRLOCK" default="0" type="INT32" boolean="true">
+      <short_desc>IR-LOCK Sensor (external I2C)</short_desc>
       <reboot_required>true</reboot_required>
     </parameter>
     <parameter name="SENS_EN_LL40LS" default="0" type="INT32">
@@ -10129,6 +10151,17 @@
       <unit>Hz</unit>
       <decimal>3</decimal>
       <increment>0.01</increment>
+    </parameter>
+  </group>
+  <group name="VTOL Takeoff">
+    <parameter name="VTO_LOITER_ALT" default="80" type="FLOAT">
+      <short_desc>VTOL Takeoff relative loiter altitude</short_desc>
+      <long_desc>Altitude relative to home at which vehicle will loiter after front transition.</long_desc>
+      <min>20</min>
+      <max>300</max>
+      <unit>m</unit>
+      <decimal>1</decimal>
+      <increment>1</increment>
     </parameter>
   </group>
   <group name="Vehicle Model">
