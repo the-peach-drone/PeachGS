@@ -623,7 +623,7 @@ SetupPage {
                             return
                         }
                         var newAmpsPerVolt = (vehicleCurrentFact.value !== 0) ? (measuredCurrentValue * battAmpPerVoltFact.value) / vehicleCurrentFact.value : 0
-                        if (newAmpsPerVolt !== 0) {s
+                        if (newAmpsPerVolt !== 0) {
                             battAmpPerVoltFact.value = newAmpsPerVolt
                         }
                     }

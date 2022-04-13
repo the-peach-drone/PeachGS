@@ -606,6 +606,14 @@
     <parameter name="BAT_ADC_CHANNEL" default="-1" type="INT32">
       <short_desc>This parameter is deprecated. Please use BAT1_I_CHANNEL</short_desc>
     </parameter>
+    <parameter name="BAT_AVRG_CURRENT" default="15.0" type="FLOAT">
+      <short_desc>Expected battery current in flight</short_desc>
+      <long_desc>This value is used to initialize the in-flight average current estimation, which in turn is used for estimating remaining flight time and RTL triggering.</long_desc>
+      <min>0</min>
+      <max>500</max>
+      <unit>A</unit>
+      <increment>0.1</increment>
+    </parameter>
     <parameter name="BAT_CRIT_THR" default="0.07" type="FLOAT">
       <short_desc>Critical threshold</short_desc>
       <long_desc>Sets the threshold when the battery will be reported as critically low. This has to be lower than the low threshold. This threshold commonly will trigger RTL.</long_desc>
@@ -1063,6 +1071,7 @@
         <value code="10">Takeoff</value>
         <value code="11">Land</value>
         <value code="12">Follow Me</value>
+        <value code="13">Precision Land</value>
       </values>
     </parameter>
     <parameter name="COM_FLTMODE2" default="-1" type="INT32">
@@ -1082,6 +1091,7 @@
         <value code="10">Takeoff</value>
         <value code="11">Land</value>
         <value code="12">Follow Me</value>
+        <value code="13">Precision Land</value>
       </values>
     </parameter>
     <parameter name="COM_FLTMODE3" default="-1" type="INT32">
@@ -1101,6 +1111,7 @@
         <value code="10">Takeoff</value>
         <value code="11">Land</value>
         <value code="12">Follow Me</value>
+        <value code="13">Precision Land</value>
       </values>
     </parameter>
     <parameter name="COM_FLTMODE4" default="-1" type="INT32">
@@ -1120,6 +1131,7 @@
         <value code="10">Takeoff</value>
         <value code="11">Land</value>
         <value code="12">Follow Me</value>
+        <value code="13">Precision Land</value>
       </values>
     </parameter>
     <parameter name="COM_FLTMODE5" default="-1" type="INT32">
@@ -1139,6 +1151,7 @@
         <value code="10">Takeoff</value>
         <value code="11">Land</value>
         <value code="12">Follow Me</value>
+        <value code="13">Precision Land</value>
       </values>
     </parameter>
     <parameter name="COM_FLTMODE6" default="-1" type="INT32">
@@ -1158,6 +1171,7 @@
         <value code="10">Takeoff</value>
         <value code="11">Land</value>
         <value code="12">Follow Me</value>
+        <value code="13">Precision Land</value>
       </values>
     </parameter>
     <parameter name="COM_FLT_PROFILE" default="0" type="INT32">
@@ -1169,6 +1183,10 @@
         <value code="200">Flight Tester</value>
         <value code="300">Developer</value>
       </values>
+    </parameter>
+    <parameter name="COM_FORCE_SAFETY" default="0" type="INT32" boolean="true">
+      <short_desc>Enable force safety</short_desc>
+      <long_desc>Force safety when the vehicle disarms. Not supported when safety button used over PX4IO board.</long_desc>
     </parameter>
     <parameter name="COM_HLDL_LOSS_T" default="120" type="INT32">
       <short_desc>High Latency Datalink loss time threshold</short_desc>
@@ -1326,18 +1344,6 @@
       <long_desc>This is the vertical position error (EPV) threshold that will trigger a failsafe. The default is appropriate for a multicopter. Can be increased for a fixed-wing.</long_desc>
       <unit>m</unit>
     </parameter>
-    <parameter name="COM_POS_FS_GAIN" default="10" type="INT32">
-      <short_desc>Loss of position probation gain factor</short_desc>
-      <long_desc>This sets the rate that the loss of position probation time grows when position checks are failing. The default value has been optimised for rotary wing applications. For fixed wing applications a value of 0 should be used.</long_desc>
-      <reboot_required>true</reboot_required>
-    </parameter>
-    <parameter name="COM_POS_FS_PROB" default="30" type="INT32">
-      <short_desc>Loss of position probation delay at takeoff</short_desc>
-      <long_desc>The probation delay is the number of seconds that the EKF innovation checks need to pass for the position to be declared good after it has been declared bad. The probation delay will be reset to this parameter value when takeoff is detected. After takeoff, if position checks are passing, the probation delay will reduce by one second for every lapsed second of valid position down to a minimum of 1 second. If position checks are failing, the probation delay will increase by COM_POS_FS_GAIN seconds for every lapsed second up to a maximum of 100 seconds. The default value has been optimised for rotary wing applications. For fixed wing applications, a value of 1 should be used.</long_desc>
-      <min>1</min>
-      <max>100</max>
-      <unit>s</unit>
-    </parameter>
     <parameter name="COM_POWER_COUNT" default="1" type="INT32">
       <short_desc>Required number of redundant power modules</short_desc>
       <long_desc>This configures a check to verify the expected number of 5V rail power supplies are present. By default only one is expected. Note: CBRK_SUPPLY_CHK disables all power checks including this one.</long_desc>
@@ -1351,6 +1357,15 @@
         <value code="0">Disabled</value>
         <value code="1">Safety button</value>
         <value code="2">Always</value>
+      </values>
+    </parameter>
+    <parameter name="COM_QC_ACT" default="0" type="INT32">
+      <short_desc>Set command after a quadchute</short_desc>
+      <values>
+        <value code="-1">No action: stay in current flight mode</value>
+        <value code="0">Return mode</value>
+        <value code="1">Land mode</value>
+        <value code="2">Hold mode</value>
       </values>
     </parameter>
     <parameter name="COM_RCL_ACT_T" default="15.0" type="FLOAT">
@@ -1419,10 +1434,6 @@
       <unit>%</unit>
       <decimal>0</decimal>
       <increment>0.05</increment>
-    </parameter>
-    <parameter name="COM_REARM_GRACE" default="1" type="INT32" boolean="true">
-      <short_desc>Rearming grace period</short_desc>
-      <long_desc>Re-arming grace allows to rearm the drone with manual command without running prearmcheck during 5 s after disarming.</long_desc>
     </parameter>
     <parameter name="COM_TAKEOFF_ACT" default="0" type="INT32">
       <short_desc>Action after TAKEOFF has been accepted</short_desc>
@@ -2209,6 +2220,13 @@
       <min>1.0</min>
       <unit>SD</unit>
       <decimal>1</decimal>
+    </parameter>
+    <parameter name="EKF2_RNG_K_GATE" default="1.0" type="FLOAT">
+      <short_desc>Gate size used for range finder kinematic consistency check</short_desc>
+      <long_desc>To be used, the time derivative of the distance sensor measurements projected on the vertical axis needs to be statistically consistent with the estimated vertical velocity of the drone. Decrease this value to make the filter more robust against range finder faulty data (stuck, reflections, ...). Note: tune the range finder noise parameters (EKF2_RNG_NOISE and EKF2_RNG_SFE) before tuning this gate.</long_desc>
+      <min>0.1</min>
+      <max>5.0</max>
+      <unit>SD</unit>
     </parameter>
     <parameter name="EKF2_RNG_NOISE" default="0.1" type="FLOAT">
       <short_desc>Measurement noise for range finder fusion</short_desc>
@@ -3548,6 +3566,10 @@
       <unit>m</unit>
       <increment>1</increment>
     </parameter>
+    <parameter name="GF_PREDICT" default="1" type="INT32" boolean="true">
+      <short_desc>Use Pre-emptive geofence triggering</short_desc>
+      <long_desc>Predict the motion of the vehicle and trigger the breach if it is determined that the current trajectory would result in a breach happening before the vehicle can make evasive maneuvers. The vehicle is then re-routed to a safe hold position (stop for multirotor, loiter for fixed wing).</long_desc>
+    </parameter>
     <parameter name="GF_SOURCE" default="0" type="INT32">
       <short_desc>Geofence source</short_desc>
       <long_desc>Select which position source should be used. Selecting GPS instead of global position makes sure that there is no dependence on the position estimator 0 = global position, 1 = GPS</long_desc>
@@ -4142,39 +4164,29 @@
       <max>250</max>
       <reboot_required>true</reboot_required>
     </parameter>
-    <parameter name="MAV_TYPE" default="2" type="INT32">
+    <parameter name="MAV_TYPE" default="0" type="INT32">
       <short_desc>MAVLink airframe type</short_desc>
-      <min>1</min>
-      <max>27</max>
+      <min>0</min>
+      <max>22</max>
       <values>
         <value code="0">Generic micro air vehicle</value>
         <value code="1">Fixed wing aircraft</value>
         <value code="2">Quadrotor</value>
         <value code="3">Coaxial helicopter</value>
         <value code="4">Normal helicopter with tail rotor</value>
-        <value code="5">Ground installation</value>
-        <value code="6">Operator control unit / ground control station</value>
         <value code="7">Airship, controlled</value>
         <value code="8">Free balloon, uncontrolled</value>
-        <value code="9">Rocket</value>
         <value code="10">Ground rover</value>
         <value code="11">Surface vessel, boat, ship</value>
         <value code="12">Submarine</value>
         <value code="13">Hexarotor</value>
         <value code="14">Octorotor</value>
         <value code="15">Tricopter</value>
-        <value code="16">Flapping wing</value>
-        <value code="17">Kite</value>
-        <value code="18">Onboard companion controller</value>
-        <value code="19">Two-rotor VTOL using control surfaces in vertical operation in addition. Tailsitter.</value>
-        <value code="20">Quad-rotor VTOL using a V-shaped quad config in vertical operation. Tailsitter.</value>
-        <value code="21">Tiltrotor VTOL</value>
-        <value code="22">VTOL reserved 2</value>
-        <value code="23">VTOL reserved 3</value>
-        <value code="24">VTOL reserved 4</value>
-        <value code="25">VTOL reserved 5</value>
-        <value code="26">Onboard gimbal</value>
-        <value code="27">Onboard ADSB peripheral</value>
+        <value code="19">VTOL Two-rotor Tailsitter</value>
+        <value code="20">VTOL Quad-rotor Tailsitter</value>
+        <value code="21">VTOL Tiltrotor</value>
+        <value code="22">VTOL Standard (separate fixed rotors for hover and cruise flight)</value>
+        <value code="23">VTOL Tailsitter</value>
       </values>
     </parameter>
     <parameter name="MAV_USEHILGPS" default="0" type="INT32" boolean="true">
@@ -4330,7 +4342,7 @@
       <decimal>1</decimal>
       <increment>0.5</increment>
     </parameter>
-    <parameter name="NAV_LOITER_RAD" default="50.0" type="FLOAT">
+    <parameter name="NAV_LOITER_RAD" default="80.0" type="FLOAT">
       <short_desc>Loiter radius (FW only)</short_desc>
       <long_desc>Default value of loiter radius for missions, Hold mode, Return mode, etc. (fixedwing only).</long_desc>
       <min>25</min>
@@ -7025,7 +7037,7 @@
       <decimal>1</decimal>
       <increment>0.5</increment>
     </parameter>
-    <parameter name="RTL_LOITER_RAD" default="50.0" type="FLOAT">
+    <parameter name="RTL_LOITER_RAD" default="80.0" type="FLOAT">
       <short_desc>Loiter radius for rtl descend</short_desc>
       <long_desc>Set the radius for loitering to a safe altitude for VTOL transition.</long_desc>
       <min>25</min>
@@ -7679,17 +7691,33 @@
       <min>1</min>
       <max>30</max>
     </parameter>
-    <parameter name="IMU_GYRO_NF_BW" default="20.0" type="FLOAT">
+    <parameter name="IMU_GYRO_NF0_BW" default="20.0" type="FLOAT">
       <short_desc>Notch filter bandwidth for gyro</short_desc>
-      <long_desc>The frequency width of the stop band for the 2nd order notch filter on the primary gyro. See "IMU_GYRO_NF_FREQ" to activate the filter and to set the notch frequency. Applies to both angular velocity and angular acceleration sent to the controllers.</long_desc>
+      <long_desc>The frequency width of the stop band for the 2nd order notch filter on the primary gyro. See "IMU_GYRO_NF0_FRQ" to activate the filter and to set the notch frequency. Applies to both angular velocity and angular acceleration sent to the controllers.</long_desc>
       <min>0</min>
       <max>100</max>
       <unit>Hz</unit>
       <reboot_required>true</reboot_required>
     </parameter>
-    <parameter name="IMU_GYRO_NF_FREQ" default="0.0" type="FLOAT">
+    <parameter name="IMU_GYRO_NF0_FRQ" default="0.0" type="FLOAT">
       <short_desc>Notch filter frequency for gyro</short_desc>
-      <long_desc>The center frequency for the 2nd order notch filter on the primary gyro. This filter can be enabled to avoid feedback amplification of structural resonances at a specific frequency. This only affects the signal sent to the controllers, not the estimators. Applies to both angular velocity and angular acceleration sent to the controllers. See "IMU_GYRO_NF_BW" to set the bandwidth of the filter. A value of 0 disables the filter.</long_desc>
+      <long_desc>The center frequency for the 2nd order notch filter on the primary gyro. This filter can be enabled to avoid feedback amplification of structural resonances at a specific frequency. This only affects the signal sent to the controllers, not the estimators. Applies to both angular velocity and angular acceleration sent to the controllers. See "IMU_GYRO_NF0_BW" to set the bandwidth of the filter. A value of 0 disables the filter.</long_desc>
+      <min>0</min>
+      <max>1000</max>
+      <unit>Hz</unit>
+      <reboot_required>true</reboot_required>
+    </parameter>
+    <parameter name="IMU_GYRO_NF1_BW" default="20.0" type="FLOAT">
+      <short_desc>Notch filter 1 bandwidth for gyro</short_desc>
+      <long_desc>The frequency width of the stop band for the 2nd order notch filter on the primary gyro. See "IMU_GYRO_NF1_FRQ" to activate the filter and to set the notch frequency. Applies to both angular velocity and angular acceleration sent to the controllers.</long_desc>
+      <min>0</min>
+      <max>100</max>
+      <unit>Hz</unit>
+      <reboot_required>true</reboot_required>
+    </parameter>
+    <parameter name="IMU_GYRO_NF1_FRQ" default="0.0" type="FLOAT">
+      <short_desc>Notch filter 2 frequency for gyro</short_desc>
+      <long_desc>The center frequency for the 2nd order notch filter on the primary gyro. This filter can be enabled to avoid feedback amplification of structural resonances at a specific frequency. This only affects the signal sent to the controllers, not the estimators. Applies to both angular velocity and angular acceleration sent to the controllers. See "IMU_GYRO_NF1_BW" to set the bandwidth of the filter. A value of 0 disables the filter.</long_desc>
       <min>0</min>
       <max>1000</max>
       <unit>Hz</unit>
@@ -7803,7 +7831,6 @@
       <min>500</min>
       <max>1500</max>
       <unit>hPa</unit>
-      <reboot_required>true</reboot_required>
     </parameter>
     <parameter name="SENS_BARO_RATE" default="20.0" type="FLOAT">
       <short_desc>Baro max rate</short_desc>
@@ -7811,7 +7838,6 @@
       <min>1</min>
       <max>200</max>
       <unit>Hz</unit>
-      <reboot_required>true</reboot_required>
     </parameter>
     <parameter name="SENS_BOARD_ROT" default="0" type="INT32">
       <short_desc>Board rotation</short_desc>
@@ -8010,6 +8036,10 @@
     </parameter>
     <parameter name="SENS_EN_SHT3X" default="0" type="INT32" boolean="true">
       <short_desc>SHT3x temperature and hygrometer</short_desc>
+      <reboot_required>true</reboot_required>
+    </parameter>
+    <parameter name="SENS_EN_SPL06" default="0" type="INT32" boolean="true">
+      <short_desc>Goertek SPL06 Barometer (external I2C)</short_desc>
       <reboot_required>true</reboot_required>
     </parameter>
     <parameter name="SENS_EN_SR05" default="0" type="INT32" boolean="true">
@@ -8808,6 +8838,7 @@
     </parameter>
     <parameter name="SIM_BARO_OFF_T" default="0.0" type="FLOAT">
       <short_desc>simulated barometer temperature offset</short_desc>
+      <unit>celcius</unit>
     </parameter>
     <parameter name="SIM_GPS_USED" default="10" type="INT32">
       <short_desc>simulated GPS number of satellites used</short_desc>
@@ -8917,6 +8948,13 @@
     <parameter name="SYS_HAS_MAG" default="1" type="INT32" boolean="true">
       <short_desc>Control if the vehicle has a magnetometer</short_desc>
       <long_desc>Disable this if the board has no magnetometer, such as the Omnibus F4 SD. If disabled, the preflight checks will not check for the presence of a magnetometer.</long_desc>
+      <reboot_required>true</reboot_required>
+    </parameter>
+    <parameter name="SYS_HAS_NUM_DIST" default="0" type="INT32">
+      <short_desc>Control the number of distance sensors on the vehicle</short_desc>
+      <long_desc>If set to the number of distance sensors, the preflight check will check for their presence and valid data publication. Disable with 0 if no distance sensor present or to disbale the preflight check.</long_desc>
+      <min>0</min>
+      <max>4</max>
       <reboot_required>true</reboot_required>
     </parameter>
     <parameter name="SYS_HITL" default="0" type="INT32">
@@ -9682,6 +9720,11 @@
       <long_desc>Enable UAVCAN battery subscription. uavcan::equipment::power::BatteryInfo ardupilot::equipment::power::BatteryInfoAux</long_desc>
       <reboot_required>true</reboot_required>
     </parameter>
+    <parameter name="UAVCAN_SUB_BTN" default="0" type="INT32" boolean="true">
+      <short_desc>subscription button</short_desc>
+      <long_desc>Enable UAVCAN button subscription. ardupilot::indication::Button</long_desc>
+      <reboot_required>true</reboot_required>
+    </parameter>
     <parameter name="UAVCAN_SUB_DPRES" default="0" type="INT32" boolean="true">
       <short_desc>subscription differential pressure</short_desc>
       <long_desc>Enable UAVCAN differential pressure subscription. uavcan::equipment::air_data::RawAirData</long_desc>
@@ -9714,12 +9757,12 @@
     </parameter>
     <parameter name="UAVCAN_SUB_MAG" default="1" type="INT32" boolean="true">
       <short_desc>subscription magnetometer</short_desc>
-      <long_desc>Enable UAVCAN GPS subscription. uavcan::equipment::ahrs::MagneticFieldStrength uavcan::equipment::ahrs::MagneticFieldStrength2</long_desc>
+      <long_desc>Enable UAVCAN mag subscription. uavcan::equipment::ahrs::MagneticFieldStrength uavcan::equipment::ahrs::MagneticFieldStrength2</long_desc>
       <reboot_required>true</reboot_required>
     </parameter>
     <parameter name="UAVCAN_SUB_RNG" default="0" type="INT32" boolean="true">
       <short_desc>subscription range finder</short_desc>
-      <long_desc>Enable UAVCAN GPS subscription. uavcan::equipment::range_sensor::Measurement</long_desc>
+      <long_desc>Enable UAVCAN range finder subscription. uavcan::equipment::range_sensor::Measurement</long_desc>
       <reboot_required>true</reboot_required>
     </parameter>
   </group>
