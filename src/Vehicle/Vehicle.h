@@ -389,6 +389,10 @@ public:
     Q_INVOKABLE void guidedModeROI(const QGeoCoordinate& centerCoord);
     Q_INVOKABLE void stopGuidedModeROI();
 
+    /// Command vehicle to set EKF Origin
+    ///     @param centerCoord specific coordinates
+    Q_INVOKABLE void setEkfOrigin(const QGeoCoordinate& centerCoord);
+
     /// Command vehicle to pause at current location. If vehicle supports guide mode, vehicle will be left
     /// in guided mode after pause.
     Q_INVOKABLE void pauseVehicle();
