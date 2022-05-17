@@ -12,6 +12,7 @@
 #include "QGCApplication.h"
 #include "SettingsManager.h"
 #include "NTRIPSettings.h"
+#include "QGroundControlQmlGlobal.h"
 
 #include <QDebug>
 
@@ -175,4 +176,72 @@ void NTRIPTCPLink::_readBytes(void)
     }
     QByteArray bytes = _socket->readAll();
     _parse(bytes);
+}
+
+void NTRIPTCPLink::_sendNMEA() {
+    QGeoCoordinate position = QGroundControlQmlGlobal::flightMapPosition();
+
+    double lat = position.latitude();
+    double lng = position.longitude();
+    double alt = position.altitude();
+
+    qCDebug(NTRIPLog) << "lat : " << lat << " lon : " << lng << " alt : " << alt;
+
+    QString time = QDateTime::currentDateTimeUtc().toString("hhmmss.zzz");
+
+    if(lat != 0 || lng != 0) {
+        double latdms = (int) lat + (lat - (int) lat) * .6f;
+        double lngdms = (int) lng + (lng - (int) lng) * .6f;
+        if(isnan(alt)) alt = 0.0;
+
+        QString line = QString("$GP%1,%2,%3,%4,%5,%6,%7,%8,%9,%10,%11,%12,%13,%14,%15")
+                .arg("GGA", time,
+                     QString::number(qFabs(latdms * 100), 'f', 2), lat < 0 ? "S" : "N",
+                     QString::number(qFabs(lngdms * 100), 'f', 2), lng < 0 ? "W" : "E",
+                     "1", "10", "1",
+                     QString::number(alt, 'f', 2),
+                     "M", "0", "M", "0.0", "0");
+
+        // Calculrate checksum and send message
+        QString checkSum = _getCheckSum(line);
+        QString* nmeaMessage = new QString(line + "*" + checkSum + "\r\n");
+
+        // Write nmea message
+        _socket->write(nmeaMessage->toUtf8());
+
+        qCDebug(NTRIPLog) << "NMEA Message : " << nmeaMessage->toUtf8();
+    }
+}
+
+QString NTRIPTCPLink::_getCheckSum(QString line) {
+    QByteArray temp_Byte = line.toUtf8();
+    const char* buf = temp_Byte.constData();
+
+    char character;
+    int checksum = 0;
+
+    for(int i = 0; i < line.length(); i++) {
+        character = buf[i];
+        switch(character) {
+        case '$':
+            // Ignore the dollar sign
+            break;
+        case '*':
+            // Stop processing before the asterisk
+            i = line.length();
+            continue;
+        default:
+            // First value for the checksum
+            if(checksum == 0) {
+                // Set the checksum to the value
+                checksum = character;
+            }
+            else {
+                // XOR the checksum with this character's value
+                checksum = checksum ^ character;
+            }
+        }
+    }
+
+    return QString("%1").arg(checksum, 0, 16);
 }

@@ -66,8 +66,9 @@ private:
     QString         _mountpoint;
     QSet<int>       _whitelist;
 
-    // QUrl
-    QUrl            _ntripURL;
+    // Temp Func
+    void    _sendNMEA();
+    QString _getCheckSum(QString line);
 
     RTCMParsing *_rtcm_parsing{nullptr};
     NTRIPState _state;
