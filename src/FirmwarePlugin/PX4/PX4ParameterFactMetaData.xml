@@ -812,13 +812,6 @@
       <max>782097</max>
       <reboot_required>true</reboot_required>
     </parameter>
-    <parameter name="CBRK_ENGINEFAIL" default="284953" type="INT32" category="Developer">
-      <short_desc>Circuit breaker for engine failure detection</short_desc>
-      <long_desc>Setting this parameter to 284953 will disable the engine failure detection. If the aircraft is in engine failure mode the engine failure flag will be set to healthy WARNING: ENABLING THIS CIRCUIT BREAKER IS AT OWN RISK</long_desc>
-      <min>0</min>
-      <max>284953</max>
-      <reboot_required>true</reboot_required>
-    </parameter>
     <parameter name="CBRK_FLIGHTTERM" default="121212" type="INT32" category="Developer">
       <short_desc>Circuit breaker for flight termination</short_desc>
       <long_desc>Setting this parameter to 121212 will disable the flight termination action if triggered by the FailureDetector logic or if FMU is lost. This circuit breaker does not affect the RC loss, data link loss, geofence, and takeoff failure detection safety logic.</long_desc>
@@ -865,6 +858,19 @@
     </parameter>
   </group>
   <group name="Commander">
+    <parameter name="COM_ACT_FAIL_ACT" default="0" type="INT32">
+      <short_desc>Set the actuator failure failsafe mode</short_desc>
+      <long_desc>Note: actuator failure needs to be enabled and configured via FD_ACT_* parameters.</long_desc>
+      <min>0</min>
+      <max>3</max>
+      <values>
+        <value code="0">Disabled</value>
+        <value code="1">Hold mode</value>
+        <value code="2">Land mode</value>
+        <value code="3">Return mode</value>
+        <value code="4">Terminate</value>
+      </values>
+    </parameter>
     <parameter name="COM_ARM_ARSP_EN" default="1" type="INT32">
       <short_desc>Enable preflight check for maximal allowed airspeed when arming</short_desc>
       <long_desc>Deny arming if the current airspeed measurement is greater than half the cruise airspeed (FW_AIRSPD_TRIM). Excessive airspeed measurements on ground are either caused by wind or bad airspeed calibration.</long_desc>
@@ -985,7 +991,7 @@
         <value code="1">Allow arming without GPS</value>
       </values>
     </parameter>
-    <parameter name="COM_BAT_ACT_T" default="10.0" type="FLOAT">
+    <parameter name="COM_BAT_ACT_T" default="5." type="FLOAT">
       <short_desc>Delay between battery state change and failsafe reaction</short_desc>
       <long_desc>Battery state requires action -&gt; wait COM_BAT_ACT_T seconds in Hold mode for the user to realize and take a custom action -&gt; React with failsafe action COM_LOW_BAT_ACT A zero value disables the delay.</long_desc>
       <min>0.0</min>
@@ -1018,33 +1024,6 @@
       <long_desc>After this amount of seconds without datalink the data link lost mode triggers</long_desc>
       <min>5</min>
       <max>300</max>
-      <unit>s</unit>
-      <decimal>1</decimal>
-      <increment>1</increment>
-    </parameter>
-    <parameter name="COM_EF_C2T" default="5.0" type="FLOAT">
-      <short_desc>Engine Failure Current/Throttle Threshold</short_desc>
-      <long_desc>Engine failure triggers only below this current value</long_desc>
-      <min>0.0</min>
-      <max>50.0</max>
-      <unit>A/%</unit>
-      <decimal>2</decimal>
-      <increment>1</increment>
-    </parameter>
-    <parameter name="COM_EF_THROT" default="0.5" type="FLOAT">
-      <short_desc>Engine Failure Throttle Threshold</short_desc>
-      <long_desc>Engine failure triggers only above this throttle value</long_desc>
-      <min>0.0</min>
-      <max>1.0</max>
-      <unit>norm</unit>
-      <decimal>2</decimal>
-      <increment>0.01</increment>
-    </parameter>
-    <parameter name="COM_EF_TIME" default="10.0" type="FLOAT">
-      <short_desc>Engine Failure Time Threshold</short_desc>
-      <long_desc>Engine failure triggers only if the throttle threshold and the current to throttle threshold are violated for this time</long_desc>
-      <min>0.0</min>
-      <max>60.0</max>
       <unit>s</unit>
       <decimal>1</decimal>
       <increment>1</increment>
@@ -1182,6 +1161,16 @@
         <value code="100">Pro User</value>
         <value code="200">Flight Tester</value>
         <value code="300">Developer</value>
+      </values>
+    </parameter>
+    <parameter name="COM_FLT_TIME_MAX" default="-1" type="INT32">
+      <short_desc>Maximum allowed flight time</short_desc>
+      <long_desc>The vehicle aborts the current operation and returns to launch when the time since takeoff is above this value. It is not possible to resume the mission or switch to any mode other than RTL or Land. Set a nagative value to disable.</long_desc>
+      <min>-1</min>
+      <max>10000</max>
+      <unit>s</unit>
+      <values>
+        <value code="0">Disable</value>
       </values>
     </parameter>
     <parameter name="COM_FORCE_SAFETY" default="0" type="INT32" boolean="true">
@@ -1430,6 +1419,15 @@
       <long_desc>This is the horizontal velocity error (EVH) threshold that will trigger a failsafe. The default is appropriate for a multicopter. Can be increased for a fixed-wing.</long_desc>
       <unit>m/s</unit>
     </parameter>
+    <parameter name="COM_WIND_MAX" default="-1." type="FLOAT">
+      <short_desc>Wind speed RLT threshold</short_desc>
+      <long_desc>Wind speed threshold above which an automatic return to launch is triggered and enforced as long as the threshold is exceeded. A negative value disables the feature.</long_desc>
+      <min>-1</min>
+      <max>30</max>
+      <unit>m/s</unit>
+      <decimal>1</decimal>
+      <increment>0.1</increment>
+    </parameter>
     <parameter name="COM_WIND_WARN" default="-1." type="FLOAT">
       <short_desc>Wind speed warning threshold</short_desc>
       <long_desc>A warning is triggered if the currently estimated wind speed is above this value. Warning is sent periodically (every 1min). A negative value disables the feature.</long_desc>
@@ -1465,6 +1463,92 @@
         <value code="5">Terminate</value>
         <value code="6">Lockdown</value>
       </values>
+    </parameter>
+  </group>
+  <group name="Cyphal">
+    <parameter name="CYPHAL_BAUD" default="1000000" type="INT32">
+      <short_desc>UAVCAN/CAN v1 bus bitrate</short_desc>
+      <min>20000</min>
+      <max>1000000</max>
+      <unit>bit/s</unit>
+      <reboot_required>true</reboot_required>
+    </parameter>
+    <parameter name="CYPHAL_ENABLE" default="0" type="INT32" boolean="true">
+      <short_desc>Cyphal</short_desc>
+      <long_desc>0 - Cyphal disabled. 1 - Enables Cyphal</long_desc>
+      <reboot_required>true</reboot_required>
+    </parameter>
+    <parameter name="CYPHAL_ID" default="1" type="INT32">
+      <short_desc>Cyphal Node ID</short_desc>
+      <long_desc>Read the specs at http://uavcan.org to learn more about Node ID.</long_desc>
+      <min>-1</min>
+      <max>125</max>
+      <reboot_required>true</reboot_required>
+    </parameter>
+    <parameter name="UCAN1_ACTR_PUB" default="-1" type="INT32">
+      <short_desc>actuator_outputs uORB over Cyphal publication port ID</short_desc>
+      <min>-1</min>
+      <max>6143</max>
+    </parameter>
+    <parameter name="UCAN1_BMS_BP_SUB" default="-1" type="INT32">
+      <short_desc>UDRAL battery parameters subscription  port ID</short_desc>
+      <min>-1</min>
+      <max>6143</max>
+    </parameter>
+    <parameter name="UCAN1_BMS_BS_SUB" default="-1" type="INT32">
+      <short_desc>UDRAL battery status subscription port ID</short_desc>
+      <min>-1</min>
+      <max>6143</max>
+    </parameter>
+    <parameter name="UCAN1_BMS_ES_SUB" default="-1" type="INT32">
+      <short_desc>UDRAL battery energy source subscription port ID</short_desc>
+      <min>-1</min>
+      <max>6143</max>
+    </parameter>
+    <parameter name="UCAN1_ESC0_SUB" default="-1" type="INT32">
+      <short_desc>ESC 0 subscription port ID</short_desc>
+      <min>-1</min>
+      <max>6143</max>
+    </parameter>
+    <parameter name="UCAN1_ESC_PUB" default="-1" type="INT32">
+      <short_desc>Cyphal ESC publication port ID</short_desc>
+      <min>-1</min>
+      <max>6143</max>
+    </parameter>
+    <parameter name="UCAN1_GPS0_SUB" default="-1" type="INT32">
+      <short_desc>GPS 0 subscription port ID</short_desc>
+      <min>-1</min>
+      <max>6143</max>
+    </parameter>
+    <parameter name="UCAN1_GPS1_SUB" default="-1" type="INT32">
+      <short_desc>GPS 1 subscription port ID</short_desc>
+      <min>-1</min>
+      <max>6143</max>
+    </parameter>
+    <parameter name="UCAN1_GPS_PUB" default="-1" type="INT32">
+      <short_desc>Cyphal GPS publication port ID</short_desc>
+      <min>-1</min>
+      <max>6143</max>
+    </parameter>
+    <parameter name="UCAN1_LG_BMS_SUB" default="-1" type="INT32">
+      <short_desc>Cyphal leagcy battery port ID</short_desc>
+      <min>-1</min>
+      <max>6143</max>
+    </parameter>
+    <parameter name="UCAN1_SERVO_PUB" default="-1" type="INT32">
+      <short_desc>Cyphal Servo publication port ID</short_desc>
+      <min>-1</min>
+      <max>6143</max>
+    </parameter>
+    <parameter name="UCAN1_UORB_GPS" default="-1" type="INT32">
+      <short_desc>sensor_gps uORB over Cyphal subscription port ID</short_desc>
+      <min>-1</min>
+      <max>6143</max>
+    </parameter>
+    <parameter name="UCAN1_UORB_GPS_P" default="-1" type="INT32">
+      <short_desc>sensor_gps uORB over Cyphal publication port ID</short_desc>
+      <min>-1</min>
+      <max>6143</max>
     </parameter>
   </group>
   <group name="Data Link Loss">
@@ -3317,6 +3401,37 @@
     </parameter>
   </group>
   <group name="Failure Detector">
+    <parameter name="FD_ACT_EN" default="1" type="INT32" boolean="true">
+      <short_desc>Enable Actuator Failure check</short_desc>
+      <long_desc>If enabled, failure detector will verify that for motors, a minimum amount of ESC current per throttle level is being consumed. Otherwise this indicates an motor failure.</long_desc>
+      <reboot_required>true</reboot_required>
+    </parameter>
+    <parameter name="FD_ACT_MOT_C2T" default="2.0" type="FLOAT">
+      <short_desc>Motor Failure Current/Throttle Threshold</short_desc>
+      <long_desc>Motor failure triggers only below this current value</long_desc>
+      <min>0.0</min>
+      <max>50.0</max>
+      <unit>A/%</unit>
+      <decimal>2</decimal>
+      <increment>1</increment>
+    </parameter>
+    <parameter name="FD_ACT_MOT_THR" default="0.2" type="FLOAT">
+      <short_desc>Motor Failure Throttle Threshold</short_desc>
+      <long_desc>Motor failure triggers only above this throttle value.</long_desc>
+      <min>0.0</min>
+      <max>1.0</max>
+      <unit>norm</unit>
+      <decimal>2</decimal>
+      <increment>0.01</increment>
+    </parameter>
+    <parameter name="FD_ACT_MOT_TOUT" default="100" type="INT32">
+      <short_desc>Motor Failure Time Threshold</short_desc>
+      <long_desc>Motor failure triggers only if the throttle threshold and the current to throttle threshold are violated for this time.</long_desc>
+      <min>10</min>
+      <max>10000</max>
+      <unit>ms</unit>
+      <increment>100</increment>
+    </parameter>
     <parameter name="FD_ESCS_EN" default="1" type="INT32" boolean="true">
       <short_desc>Enable checks on ESCs that report their arming state</short_desc>
       <long_desc>If enabled, failure detector will verify that all the ESCs have successfully armed when the vehicle has transitioned to the armed state. Timeout for receiving an acknowledgement from the ESCs is 0.3s, if no feedback is received the failure detector will auto disarm the vehicle.</long_desc>
@@ -3520,7 +3635,7 @@
   <group name="Geofence">
     <parameter name="GF_ACTION" default="2" type="INT32">
       <short_desc>Geofence violation action</short_desc>
-      <long_desc>Note: Setting this value to 4 enables flight termination, which will kill the vehicle on violation of the fence. Due to the inherent danger of this, this function is disabled using a software circuit breaker, which needs to be reset to 0 to really shut down the system.</long_desc>
+      <long_desc>Note: Setting this value to 4 enables flight termination, which will kill the vehicle on violation of the fence.</long_desc>
       <min>0</min>
       <max>5</max>
       <values>
@@ -9773,94 +9888,6 @@
       <reboot_required>true</reboot_required>
     </parameter>
   </group>
-  <group name="UAVCAN v1">
-    <parameter name="UAVCAN_V1_BAUD" default="1000000" type="INT32">
-      <short_desc>UAVCAN/CAN v1 bus bitrate</short_desc>
-      <min>20000</min>
-      <max>1000000</max>
-      <unit>bit/s</unit>
-      <reboot_required>true</reboot_required>
-    </parameter>
-    <parameter name="UAVCAN_V1_ENABLE" default="0" type="INT32" boolean="true">
-      <short_desc>UAVCAN v1</short_desc>
-      <long_desc>0 - UAVCAN disabled. 1 - Enables UAVCANv1</long_desc>
-      <reboot_required>true</reboot_required>
-    </parameter>
-    <parameter name="UCAN1_ACTR_PUB" default="-1" type="INT32">
-      <short_desc>actuator_outputs uORB over UAVCAN v1 publication port ID</short_desc>
-      <min>-1</min>
-      <max>6143</max>
-    </parameter>
-    <parameter name="UCAN1_BMS_BP_SUB" default="-1" type="INT32">
-      <short_desc>DS-015 battery parameters subscription  port ID</short_desc>
-      <min>-1</min>
-      <max>6143</max>
-    </parameter>
-    <parameter name="UCAN1_BMS_BS_SUB" default="-1" type="INT32">
-      <short_desc>DS-015 battery status subscription port ID</short_desc>
-      <min>-1</min>
-      <max>6143</max>
-    </parameter>
-    <parameter name="UCAN1_BMS_ES_SUB" default="-1" type="INT32">
-      <short_desc>DS-015 battery energy source subscription port ID</short_desc>
-      <min>-1</min>
-      <max>6143</max>
-    </parameter>
-    <parameter name="UCAN1_ESC0_SUB" default="-1" type="INT32">
-      <short_desc>ESC 0 subscription port ID</short_desc>
-      <min>-1</min>
-      <max>6143</max>
-    </parameter>
-    <parameter name="UCAN1_ESC_PUB" default="-1" type="INT32">
-      <short_desc>UAVCAN v1 ESC publication port ID</short_desc>
-      <min>-1</min>
-      <max>6143</max>
-    </parameter>
-    <parameter name="UCAN1_GPS0_SUB" default="-1" type="INT32">
-      <short_desc>GPS 0 subscription port ID</short_desc>
-      <min>-1</min>
-      <max>6143</max>
-    </parameter>
-    <parameter name="UCAN1_GPS1_SUB" default="-1" type="INT32">
-      <short_desc>GPS 1 subscription port ID</short_desc>
-      <min>-1</min>
-      <max>6143</max>
-    </parameter>
-    <parameter name="UCAN1_GPS_PUB" default="-1" type="INT32">
-      <short_desc>UAVCAN v1 GPS publication port ID</short_desc>
-      <min>-1</min>
-      <max>6143</max>
-    </parameter>
-    <parameter name="UCAN1_LG_BMS_SUB" default="-1" type="INT32">
-      <short_desc>UAVCAN v1 leagcy battery port ID</short_desc>
-      <min>-1</min>
-      <max>6143</max>
-    </parameter>
-    <parameter name="UCAN1_SERVO_PUB" default="-1" type="INT32">
-      <short_desc>UAVCAN v1 Servo publication port ID</short_desc>
-      <min>-1</min>
-      <max>6143</max>
-    </parameter>
-    <parameter name="UCAN1_UORB_GPS" default="-1" type="INT32">
-      <short_desc>sensor_gps uORB over UAVCAN v1 subscription port ID</short_desc>
-      <min>-1</min>
-      <max>6143</max>
-    </parameter>
-    <parameter name="UCAN1_UORB_GPS_P" default="-1" type="INT32">
-      <short_desc>sensor_gps uORB over UAVCAN v1 publication port ID</short_desc>
-      <min>-1</min>
-      <max>6143</max>
-    </parameter>
-  </group>
-  <group name="UAVCANv1">
-    <parameter name="UAVCAN_V1_ID" default="1" type="INT32">
-      <short_desc>UAVCAN v1 Node ID</short_desc>
-      <long_desc>Read the specs at http://uavcan.org to learn more about Node ID.</long_desc>
-      <min>-1</min>
-      <max>125</max>
-      <reboot_required>true</reboot_required>
-    </parameter>
-  </group>
   <group name="UUV Attitude Control">
     <parameter name="UUV_DIRCT_PITCH" default="0.0" type="FLOAT">
       <short_desc>Direct pitch input</short_desc>
@@ -9996,7 +10023,7 @@
     <parameter name="VT_B_TRANS_DUR" default="4.0" type="FLOAT">
       <short_desc>Duration of a back transition</short_desc>
       <long_desc>Time in seconds used for a back transition</long_desc>
-      <min>0.00</min>
+      <min>0.1</min>
       <max>20.00</max>
       <unit>s</unit>
       <decimal>2</decimal>
@@ -10074,10 +10101,6 @@
       <decimal>0</decimal>
       <increment>1</increment>
     </parameter>
-    <parameter name="VT_FW_PERM_STAB" default="0" type="INT32" boolean="true">
-      <short_desc>Permanent stabilization in fw mode</short_desc>
-      <long_desc>If set to one this parameter will cause permanent attitude stabilization in fw mode. This parameter has been introduced for pure convenience sake.</long_desc>
-    </parameter>
     <parameter name="VT_FW_QC_P" default="0" type="INT32">
       <short_desc>QuadChute Max Pitch</short_desc>
       <long_desc>Maximum pitch angle before QuadChute engages Above this the vehicle will transition back to MC mode and enter failsafe RTL</long_desc>
@@ -10093,7 +10116,7 @@
     <parameter name="VT_F_TRANS_DUR" default="5.0" type="FLOAT">
       <short_desc>Duration of a front transition</short_desc>
       <long_desc>Time in seconds used for a transition</long_desc>
-      <min>0.00</min>
+      <min>0.1</min>
       <max>20.00</max>
       <unit>s</unit>
       <decimal>2</decimal>
@@ -10122,9 +10145,9 @@
       <decimal>0</decimal>
       <increment>1</increment>
     </parameter>
-    <parameter name="VT_LND_PTCH_MIN" default="-5.0" type="FLOAT">
+    <parameter name="VT_LND_PITCH_MIN" default="-5.0" type="FLOAT">
       <short_desc>Minimum pitch angle during hover landing</short_desc>
-      <long_desc>Overrides  VT_PTCH_MIN when the vehicle is in LAND mode (hovering). During landing it can be beneficial to allow lower minimum pitch angles as it can avoid the wings generating too much lift and preventing the vehicle from sinking at the desired rate.</long_desc>
+      <long_desc>Overrides  VT_PITCH_MIN when the vehicle is in LAND mode (hovering). During landing it can be beneficial to allow lower minimum pitch angles as it can avoid the wings generating too much lift and preventing the vehicle from sinking at the desired rate.</long_desc>
       <min>-10.0</min>
       <max>45.0</max>
     </parameter>
@@ -10139,18 +10162,18 @@
       <decimal>0</decimal>
       <increment>1</increment>
     </parameter>
+    <parameter name="VT_PITCH_MIN" default="-5.0" type="FLOAT">
+      <short_desc>Minimum pitch angle during hover</short_desc>
+      <long_desc>Minimum pitch angle during hover flight. If the desired pitch angle is is lower than this value then the fixed-wing forward actuation can be used to compensate for the missing thrust in forward direction (see VT_FW_TRHUST_EN)</long_desc>
+      <min>-10.0</min>
+      <max>45.0</max>
+    </parameter>
     <parameter name="VT_PSHER_RMP_DT" default="3.0" type="FLOAT">
       <short_desc>Pusher throttle ramp up window</short_desc>
       <long_desc>Defines the time window during which the pusher throttle will be ramped up linearly to VT_F_TRANS_THR during a transition to fixed wing mode. Zero or negative values will produce an instant throttle rise to VT_F_TRANS_THR.</long_desc>
       <max>20</max>
       <decimal>2</decimal>
       <increment>0.01</increment>
-    </parameter>
-    <parameter name="VT_PTCH_MIN" default="-5.0" type="FLOAT">
-      <short_desc>Minimum pitch angle during hover</short_desc>
-      <long_desc>Minimum pitch angle during hover flight. If the desired pitch angle is is lower than this value then the fixed-wing forward actuation can be used to compensate for the missing thrust in forward direction (see VT_FW_TRHUST_EN)</long_desc>
-      <min>-10.0</min>
-      <max>45.0</max>
     </parameter>
     <parameter name="VT_SPOILER_MC_LD" default="0." type="FLOAT">
       <short_desc>Spoiler setting while landing (hover)</short_desc>
@@ -10208,7 +10231,7 @@
     <parameter name="VT_TRANS_TIMEOUT" default="15.0" type="FLOAT">
       <short_desc>Front transition timeout</short_desc>
       <long_desc>Time in seconds after which transition will be cancelled. Disabled if set to 0.</long_desc>
-      <min>0.00</min>
+      <min>0.1</min>
       <max>30.00</max>
       <unit>s</unit>
       <decimal>2</decimal>
