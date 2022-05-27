@@ -228,7 +228,7 @@ FlightMap {
         showText: !pipMode
     }
 
-    // Multi Polyline
+    // Add the vehicles trajectory polyline
     MapItemView {
         model: QGroundControl.multiVehicleManager.vehicles
 

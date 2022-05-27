@@ -44,7 +44,7 @@ Rectangle {
     property var    _videoStreamManager:                        QGroundControl.videoManager
     property bool   _videoStreamAllowsPhotoWhileRecording:      true
     property bool   _videoStreamIsStreaming:                    _videoStreamManager.streaming
-    property bool   _simplePhotoCaptureIsIdle:             true
+    property bool   _simplePhotoCaptureIsIdle:                  true
     property bool   _videoStreamRecording:                      _videoStreamManager.recording
     property bool   _videoStreamCanShoot:                       _videoStreamIsStreaming
     property bool   _videoStreamIsShootingInCurrentMode:        _videoStreamInPhotoMode ? !_simplePhotoCaptureIsIdle : _videoStreamRecording
@@ -324,7 +324,7 @@ Rectangle {
                     flow:   GridLayout.TopToBottom
                     rows:   dynamicRows + (_mavlinkCamera ? _mavlinkCamera.activeSettings.length : 0)
 
-                    property int dynamicRows: 10
+                    property int dynamicRows: 11
 
                     // First column
                     QGCLabel {
@@ -374,6 +374,12 @@ Rectangle {
 
                     QGCLabel {
                         text:               qsTr("Video Grid Lines")
+                        visible:            _anyVideoStreamAvailable
+                        onVisibleChanged:   gridLayout.dynamicRows += visible ? 1 : -1
+                    }
+
+                    QGCLabel {
+                        text:               qsTr("Video URL")
                         visible:            _anyVideoStreamAvailable
                         onVisibleChanged:   gridLayout.dynamicRows += visible ? 1 : -1
                     }
@@ -518,6 +524,12 @@ Rectangle {
                         checked:            _videoStreamSettings.gridLines.rawValue
                         visible:            _anyVideoStreamAvailable
                         onClicked:          _videoStreamSettings.gridLines.rawValue = checked ? 1 : 0
+                    }
+
+                    FactTextField {
+                        Layout.fillWidth:   true
+                        fact:               _videoStreamSettings.rtspUrl
+                        visible:            _anyVideoStreamAvailable
                     }
 
                     FactComboBox {
