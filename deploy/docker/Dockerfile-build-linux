@@ -2,7 +2,7 @@
 # Peach-GS linux build environment
 #
 
-ARG BASE_IMAGE=20.04
+ARG BASE_IMAGE=ubuntu:20.04
 FROM $BASE_IMAGE
 LABEL authors="QGroundControl Team and ThePeach Team"
 
