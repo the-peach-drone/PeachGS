@@ -1,9 +1,10 @@
 #
-# QGroundControl linux build environment
+# Peach-GS linux build environment
 #
 
-FROM ubuntu:18.04
-LABEL authors="QGC Dev Team and ThePeach"
+ARG BASE_IMAGE=20.04
+FROM $BASE_IMAGE
+LABEL authors="QGroundControl Team and ThePeach Team"
 
 ARG QT_VERSION=5.15.2
 
@@ -72,4 +73,4 @@ RUN useradd user --create-home --home-dir /home/user --shell /bin/bash --uid 100
 USER user
 
 WORKDIR /project/build
-CMD qmake /project/source && make -j$(nproc)
+CMD qmake /project/source CONFIG+=installer && make -j$(nproc)
