@@ -175,6 +175,8 @@ exists ($$PWD/.git) {
         VERSION         = $$replace(GIT_DESCRIBE, "v", "")
         VERSION         = $$replace(VERSION, "-", ".")
         VERSION         = $$section(VERSION, ".", 0, 3)
+    } else {
+        APP_VERSION_STR = "$${GIT_BRANCH}:$${GIT_HASH} $${GIT_TIME}"
     }
 
     DailyBuild {
