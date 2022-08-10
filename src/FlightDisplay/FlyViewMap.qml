@@ -12,6 +12,7 @@ import QtQuick.Controls             2.4
 import QtLocation                   5.3
 import QtPositioning                5.3
 import QtQuick.Dialogs              1.2
+import QtQuick.Layouts              1.11
 
 import QGroundControl               1.0
 import QGroundControl.Airspace      1.0
@@ -508,60 +509,107 @@ FlightMap {
         }
     }
 
-    // Handle guided mode clicks
+    // Handle guided mode clicks    
     MouseArea {
-        anchors.fill: parent
+            anchors.fill: parent
 
-        QGCMenu {
-            id: clickMenu
-            property var coord
-            QGCMenuItem {
-                text:           qsTr("Go to location")
-                visible:        globals.guidedControllerFlyView.showGotoLocation
+            Popup {
+                id: clickMenu
+                modal: true
 
-                onTriggered: {
-                    gotoLocationItem.show(clickMenu.coord)
-                    globals.guidedControllerFlyView.confirmAction(globals.guidedControllerFlyView.actionGoto, clickMenu.coord, gotoLocationItem)
+                property var coord
+
+                function setCoordinates(mouseX, mouseY) {
+                    var newX = mouseX
+                    var newY = mouseY
+
+                    // Filtering coordinates
+                    if (newX + clickMenu.width > _root.width) {
+                        newX = _root.width - clickMenu.width
+                    }
+                    if (newY + clickMenu.height > _root.height) {
+                        newY = _root.height - clickMenu.height
+                    }
+
+                    // Set coordiantes
+                    x = newX
+                    y = newY
+                }
+
+                background: Rectangle {
+                    radius: ScreenTools.defaultFontPixelHeight * 0.5
+                    color: qgcPal.window
+                    border.color: qgcPal.text
+                }
+
+                ColumnLayout {
+                    id: mainLayout
+                    spacing: ScreenTools.defaultFontPixelWidth / 2
+
+                    QGCButton {
+                        Layout.fillWidth: true
+                        text: "Go to location"
+                        visible: globals.guidedControllerFlyView.showGotoLocation
+                        onClicked: {
+                            if (clickMenu.opened) {
+                                clickMenu.close()
+                            }
+                            gotoLocationItem.show(clickMenu.coord)
+                            globals.guidedControllerFlyView.confirmAction(globals.guidedControllerFlyView.actionGoto, clickMenu.coord, gotoLocationItem)
+                        }
+                    }
+
+                    QGCButton {
+                        Layout.fillWidth: true
+                        text: "Orbit at location"
+                        visible: globals.guidedControllerFlyView.showOrbit
+                        onClicked: {
+                            if (clickMenu.opened) {
+                                clickMenu.close()
+                            }
+                            orbitMapCircle.show(clickMenu.coord)
+                            globals.guidedControllerFlyView.confirmAction(globals.guidedControllerFlyView.actionOrbit, clickMenu.coord, orbitMapCircle)
+                        }
+                    }
+
+                    QGCButton {
+                        Layout.fillWidth: true
+                        text: "ROI at location"
+                        visible: globals.guidedControllerFlyView.showROI
+                        onClicked: {
+                            if (clickMenu.opened) {
+                                clickMenu.close()
+                            }
+                            roiLocationItem.show(clickMenu.coord)
+                            globals.guidedControllerFlyView.confirmAction(globals.guidedControllerFlyView.actionROI, clickMenu.coord, roiLocationItem)
+                        }
+                    }
+
+                    QGCButton {
+                        Layout.fillWidth: true
+                        text: "Set EKF Origin"
+                        visible: globals.guidedControllerFlyView.showSetEkfOrigin
+                        onClicked: {
+                            if (clickMenu.opened) {
+                                clickMenu.close()
+                            }
+                            globals.guidedControllerFlyView.confirmAction(globals.guidedControllerFlyView.actionSetEkfOrigin, clickMenu.coord)
+                        }
+                    }
                 }
             }
-            QGCMenuItem {
-                text:           qsTr("Orbit at location")
-                visible:        globals.guidedControllerFlyView.showOrbit
 
-                onTriggered: {
-                    orbitMapCircle.show(clickMenu.coord)
-                    globals.guidedControllerFlyView.confirmAction(globals.guidedControllerFlyView.actionOrbit, clickMenu.coord, orbitMapCircle)
-                }
-            }
-            QGCMenuItem {
-                text:           qsTr("ROI at location")
-                visible:        globals.guidedControllerFlyView.showROI
-
-                onTriggered: {
-                    roiLocationItem.show(clickMenu.coord)
-                    globals.guidedControllerFlyView.confirmAction(globals.guidedControllerFlyView.actionROI, clickMenu.coord, roiLocationItem)
-                }
-            }
-            QGCMenuItem {
-                text:           qsTr("Set EKF Origin")
-                visible:        globals.guidedControllerFlyView.showSetEkfOrigin
-
-                onTriggered: {
-                    globals.guidedControllerFlyView.confirmAction(globals.guidedControllerFlyView.actionSetEkfOrigin, clickMenu.coord)
+            onClicked: {
+                if (!globals.guidedControllerFlyView.guidedUIVisible && (globals.guidedControllerFlyView.showGotoLocation || globals.guidedControllerFlyView.showOrbit || globals.guidedControllerFlyView.showROI || globals.guidedControllerFlyView.showSetEkfOrigin)) {
+                    orbitMapCircle.hide()
+                    gotoLocationItem.hide()
+                    var clickCoord = _root.toCoordinate(Qt.point(mouse.x, mouse.y), false /* clipToViewPort */)
+                    clickMenu.coord = clickCoord
+                    clickMenu.setCoordinates(mouse.x, mouse.y)
+                    clickMenu.open()
                 }
             }
         }
-
-        onClicked: {
-            if (!globals.guidedControllerFlyView.guidedUIVisible && (globals.guidedControllerFlyView.showGotoLocation || globals.guidedControllerFlyView.showOrbit || globals.guidedControllerFlyView.showROI || globals.guidedControllerFlyView.showSetEkfOrigin)) {
-                orbitMapCircle.hide()
-                gotoLocationItem.hide()
-                var clickCoord = _root.toCoordinate(Qt.point(mouse.x, mouse.y), false /* clipToViewPort */)
-                clickMenu.coord = clickCoord
-                clickMenu.popup()
-            }
-        }
-    }
 
     // Airspace overlap support
     MapItemView {
