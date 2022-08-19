@@ -798,6 +798,10 @@ contains (DEFINES, QGC_ENABLE_PAIRING) {
     }
 }
 
+contains(DEFINES, NO_SERIAL_LINK) {
+    CONFIG += NoSerialBuild
+}
+
 !NoSerialBuild {
 HEADERS += \
     src/comm/QGCSerialPortInfo.h \
