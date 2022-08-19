@@ -28,6 +28,7 @@ LinkConfiguration::LinkConfiguration(const QString& name)
     , _dynamic      (false)
     , _autoConnect  (false)
     , _highLatency  (false)
+    , _noParameter  (false)
 {
 
 }
@@ -39,6 +40,7 @@ LinkConfiguration::LinkConfiguration(LinkConfiguration* copy)
     _dynamic    = copy->isDynamic();
     _autoConnect= copy->isAutoConnect();
     _highLatency= copy->isHighLatency();
+    _noParameter= copy->isNoParameter();
     Q_ASSERT(!_name.isEmpty());
 }
 
@@ -50,6 +52,7 @@ void LinkConfiguration::copyFrom(LinkConfiguration* source)
     _dynamic    = source->isDynamic();
     _autoConnect= source->isAutoConnect();
     _highLatency= source->isHighLatency();
+    _noParameter= source->isNoParameter();
 }
 
 /*!

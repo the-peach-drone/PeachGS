@@ -209,6 +209,13 @@ Rectangle {
                                     onCheckedChanged:   editingConfig.highLatency = checked
                                 }
 
+                                QGCCheckBox {
+                                    Layout.columnSpan:  2
+                                    text:               qsTr("No Parameter Mode")
+                                    checked:            editingConfig.noParameter
+                                    onCheckedChanged:   editingConfig.noParameter = checked
+                                }
+
                                 QGCLabel { text: qsTr("Type") }
                                 QGCComboBox {
                                     Layout.preferredWidth:  _secondColumnWidth

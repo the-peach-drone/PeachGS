@@ -451,7 +451,7 @@ void ParameterManager::refreshAllParameters(uint8_t componentId)
         return;
     }
 
-    if (weakLink.lock()->linkConfiguration()->isHighLatency() || _logReplay) {
+    if (weakLink.lock()->linkConfiguration()->isHighLatency() || weakLink.lock()->linkConfiguration()->isNoParameter() || _logReplay) {
         // These links don't load params
         _parametersReady = true;
         _missingParameters = true;

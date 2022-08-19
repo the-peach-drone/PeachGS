@@ -33,6 +33,7 @@ public:
     Q_PROPERTY(QString          settingsURL         READ settingsURL                            CONSTANT)
     Q_PROPERTY(QString          settingsTitle       READ settingsTitle                          CONSTANT)
     Q_PROPERTY(bool             highLatency         READ isHighLatency  WRITE setHighLatency    NOTIFY highLatencyChanged)
+    Q_PROPERTY(bool             noParameter         READ isNoParameter  WRITE setNoParameter    NOTIFY noParameterChanged)
 
     // Property accessors
 
@@ -72,6 +73,13 @@ public:
     bool isHighLatency() const{ return _highLatency; }
 
     /*!
+     *
+     * Is this a No Parameter configuration?
+     * @return True if this is an No Parameter configuration.
+     */
+    bool isNoParameter() const{ return _noParameter; }
+
+    /*!
      * Set if this is this a dynamic configuration. (decided at runtime)
     */
     void setDynamic(bool dynamic = true) { _dynamic = dynamic; emit dynamicChanged(); }
@@ -85,6 +93,11 @@ public:
      * Set if this is this an High Latency configuration.
     */
     void setHighLatency(bool hl = false) { _highLatency = hl; emit highLatencyChanged(); }
+
+    /*!
+     * Set if this is this an No Parameter configuration.
+    */
+    void setNoParameter(bool np = false) { _noParameter = np; emit noParameterChanged(); }
 
     /// Virtual Methods
 
@@ -167,6 +180,7 @@ signals:
     void dynamicChanged     ();
     void autoConnectChanged ();
     void highLatencyChanged ();
+    void noParameterChanged ();
     void linkChanged        ();
 
 protected:
@@ -177,6 +191,7 @@ private:
     bool    _dynamic;       ///< A connection added automatically and not persistent (unless it's edited).
     bool    _autoConnect;   ///< This connection is started automatically at boot
     bool    _highLatency;
+    bool    _noParameter;
 };
 
 typedef std::shared_ptr<LinkConfiguration>  SharedLinkConfigurationPtr;
