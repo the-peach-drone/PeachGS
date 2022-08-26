@@ -527,6 +527,8 @@ GstVideoReceiver::startRecording(const QString& videoFile, FILE_FORMAT format)
 
     gst_bin_add(GST_BIN(_pipeline), _fileSink);
 
+    gst_element_sync_state_with_parent(_fileSink);
+
     if (!gst_element_link(_recorderValve, _fileSink)) {
         qCCritical(VideoReceiverLog) << "Failed to link valve and file sink" << _uri;
         _dispatchSignal([this](){
@@ -534,8 +536,6 @@ GstVideoReceiver::startRecording(const QString& videoFile, FILE_FORMAT format)
         });
         return;
     }
-
-    gst_element_sync_state_with_parent(_fileSink);
 
     GST_DEBUG_BIN_TO_DOT_FILE(GST_BIN(_pipeline), GST_DEBUG_GRAPH_SHOW_ALL, "pipeline-with-filesink");
 
