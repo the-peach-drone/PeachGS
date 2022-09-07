@@ -68,13 +68,14 @@ The build system is setup to use pkgconfig and it will find the necessary header
 
 ### Mac OS
 
-Download the gstreamer framework from here: http://gstreamer.freedesktop.org/data/pkg/osx. Supported version is 1.18.1. QGC may work with newer version, but it is untested.
+Download the gstreamer framework from here: http://gstreamer.freedesktop.org/data/pkg/osx. Supported version is 1.18.6. QGC may work with newer version, but it is untested.
 
 You need two packages:
-- [gstreamer-1.0-devel-1.18.1-x86_64.pkg](https://gstreamer.freedesktop.org/data/pkg/osx/1.18.1/gstreamer-1.0-devel-1.18.1-x86_64.pkg)
-- [gstreamer-1.0-1.18.1-x86_64.pkg](https://gstreamer.freedesktop.org/data/pkg/osx/1.18.1/gstreamer-1.0-1.18.1-x86_64.pkg)
+- [gstreamer-1.0-devel-1.18.6-x86_64.pkg](https://gstreamer.freedesktop.org/data/pkg/osx/1.18.6/gstreamer-1.0-devel-1.18.6-x86_64.pkg)
+- [gstreamer-1.0-1.18.6-x86_64.pkg](https://gstreamer.freedesktop.org/data/pkg/osx/1.18.6/gstreamer-1.0-1.18.6-x86_64.pkg)
 
 The installer places them under /Library/Frameworks/GStreamer.framework, which is where the QGC build system will look for it. That's all that is needed. When you build QGC and it finds the gstreamer framework, it automatically builds video streaming support.
+You need to add the variable LIBRARY_PATH=/Library/Frameworks/GStreamer.framework/Versions/1.0/lib/ to your build environment in Qt Creator.
 
 :point_right: To run gstreamer commands from the command line, you can add the path to find them (either in ~/.profile or ~/.bashrc):
 ```
