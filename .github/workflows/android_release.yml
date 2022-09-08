@@ -45,7 +45,6 @@ jobs:
         working-directory:  ${{ github.workspace }}
         run: |
           git fetch --all --tags -f
-
       - name: Install Qt
         uses: jurplel/install-qt-action@v3
         with:
@@ -55,7 +54,7 @@ jobs:
           dir:          ${{ runner.temp }}
           modules:      qtcharts
           setup-python: true
-          
+
       - name: Install Android NDK
         uses: nttld/setup-ndk@v1
         id: setup-ndk
@@ -72,7 +71,6 @@ jobs:
         run: |
           string(TIMESTAMP current_date "%Y-%m-%d-%H;%M;%S" UTC)
           message("::set-output name=timestamp::${current_date}")
-
       - name: ccache cache files
         uses: actions/cache@v2
         with:
@@ -88,7 +86,6 @@ jobs:
             echo "compression_level = 5" >> ~/.ccache/ccache.conf
             ccache -s
             ccache -z
-
       - name: Create build directory
         run:  mkdir ${{ runner.temp }}/shadow_build_dir
 
@@ -98,7 +95,6 @@ jobs:
             wget --quiet https://gstreamer.freedesktop.org/data/pkg/android/1.18.5/gstreamer-1.0-android-universal-1.18.5.tar.xz
             mkdir gstreamer-1.0-android-universal-1.18.5
             tar xf gstreamer-1.0-android-universal-1.18.5.tar.xz -C gstreamer-1.0-android-universal-1.18.5
-
       # This will set GIT_BRANCH_NAME environment variable
       - name: Git branch name
         id:   git-branch-name
@@ -109,7 +105,6 @@ jobs:
           if [ $GIT_BRANCH_NAME != "Stable*" ]; then
             ${SOURCE_DIR}/tools/update_android_manifest_package.sh ${GIT_BRANCH_NAME}
           fi
-
       - name: Build
         working-directory: ${{ runner.temp }}/shadow_build_dir
         env:
@@ -120,10 +115,7 @@ jobs:
           ANDROID_NDK: ${{ steps.setup-ndk.outputs.ndk-path }}
         run:  |
             qmake -r ${SOURCE_DIR}/qgroundcontrol.pro -spec android-clang CONFIG+=${BUILD_TYPE} CONFIG+=installer ANDROID_ABIS="${{ matrix.eabi }}"
-            make -j2 apk
-            mkdir ${{ runner.temp }}/shadow_build_dir/package
-            mv ${{ runner.temp }}/shadow_build_dir/android-build/build/outputs/apk/debug/android-build-debug.apk ${{ runner.temp }}/shadow_build_dir/package/${{ matrix.ARTIFACT }}
-
+            make -j2
       - name: ccache post-run
         run:  ccache -s
 
@@ -140,7 +132,6 @@ jobs:
               aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
               aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
               aws s3 cp ${{ matrix.ARTIFACT }} s3://qgroundcontrol/builds/${GIT_BRANCH_NAME}/${{ matrix.ARTIFACT }} --region us-west-2 --acl public-read
-
       - name: Upload tagged stable build to S3 latest Bucket
         if:                 github.event_name == 'push' && github.ref_type == 'tag'
         working-directory:  ${{ runner.temp }}/shadow_build_dir/package
