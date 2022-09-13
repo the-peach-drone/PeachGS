@@ -638,7 +638,7 @@ GstVideoReceiver::_watchdog(void)
             _lastSourceFrameTime = now;
         }
 
-        if (now - _lastSourceFrameTime > _timeout * 5) {
+        if (now - _lastSourceFrameTime > _timeout) {
             qCDebug(VideoReceiverLog) << "Stream timeout, no frames for " << now - _lastSourceFrameTime << "" << _uri;
             _dispatchSignal([this](){
                 emit timeout();
