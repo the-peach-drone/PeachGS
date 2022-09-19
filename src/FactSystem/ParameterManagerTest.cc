@@ -101,15 +101,13 @@ void ParameterManagerTest::_requestListNoResponse(void)
 void ParameterManagerTest::_FTPnoFailure()
 {
     Q_ASSERT(!_mockLink);
+    _mockLink = MockLink::startAPMArduPlaneMockLink(false, MockConfiguration::FailParamNoReponseToRequestList);
+    _mockLink->mockLinkFTP()->enableBinParamFile(true);
     MultiVehicleManager* vehicleMgr = qgcApp()->toolbox()->multiVehicleManager();
     QVERIFY(vehicleMgr);
 
     // Wait for the Vehicle to get created
     QSignalSpy spyVehicle(vehicleMgr, SIGNAL(activeVehicleAvailableChanged(bool)));
-    /* Mocklink later - otherwise the ftpdownload is finished before we
-     * can catch the signal changes */
-    _mockLink = MockLink::startAPMArduPlaneMockLink(false, MockConfiguration::FailParamNoReponseToRequestList);
-    _mockLink->mockLinkFTP()->enableBinParamFile(true);
     QCOMPARE(spyVehicle.wait(5000), true);
     qDebug() << Q_FUNC_INFO << QDateTime::currentDateTime().time();
     QCOMPARE(spyVehicle.count(), 1);

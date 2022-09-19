@@ -540,6 +540,7 @@ void MockLink::respondWithMavlinkMessage(const mavlink_message_t& msg)
     if (!_commLost) {
         uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
 
+        usleep(500);
         int cBuffer = mavlink_msg_to_send_buffer(buffer, &msg);
         QByteArray bytes((char *)buffer, cBuffer);
         emit bytesReceived(this, bytes);
