@@ -541,7 +541,9 @@ void ParameterManager::refreshAllParameters(uint8_t componentId)
         FTPManager* ftpManager = _vehicle->ftpManager();
         connect(ftpManager, &FTPManager::downloadComplete, this, &ParameterManager::_ftpDownloadComplete);
         _waitingParamTimeoutTimer.stop();
-        if(ftpManager->download("@PARAM/param.pck?withdefaults=1", QStandardPaths::writableLocation(QStandardPaths::TempLocation))) {
+        if (ftpManager->download("@PARAM/param.pck?withdefaults=1",
+                                 QStandardPaths::writableLocation(QStandardPaths::TempLocation),
+                                 "", false /* No filesize check */)) {
             connect(ftpManager, &FTPManager::commandProgress, this, &ParameterManager::_ftpDownloadProgress);
         }
         else {
