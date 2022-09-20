@@ -476,7 +476,8 @@ void ParameterManager::_ftpDownloadComplete(const QString& fileName, const QStri
             }
         }
         else if(_loadProgress < 0.01) {
-            qCDebug(ParameterManagerLog) << "ParameterManager-ftp progress too slow - Start Conventional Parameter Download";
+            qCDebug(ParameterManagerLog) << "Error Message : " << errorMsg;
+            qCDebug(ParameterManagerLog) << "ParameterManager-ftp progress too slow - Start Conventional Parameter Download, Progress : " << _loadProgress;
         }
         else if(_initialRequestRetryCount == 1) {
             qCDebug(ParameterManagerLog) << "ParameterManager-ftp: Too many retries - Start Conventional Parameter Download";
