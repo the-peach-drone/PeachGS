@@ -171,7 +171,7 @@ void ParameterManager::_updateProgressBar(void)
 
 void ParameterManager::mavlinkMessageReceived(mavlink_message_t message)
 {
-    if(_tryftp) {
+    if(_tryftp && !_initialLoadComplete) {
         return;
     }
 
@@ -457,52 +457,44 @@ void ParameterManager::_ftpDownloadComplete(const QString& fileName, const QStri
     disconnect(_vehicle->ftpManager(), &FTPManager::downloadComplete, this, &ParameterManager::_ftpDownloadComplete);
     disconnect(_vehicle->ftpManager(), &FTPManager::commandProgress, this, &ParameterManager::_ftpDownloadProgress);
 
-    if(errorMsg.isEmpty()) {
+    if (errorMsg.isEmpty()) {
         qCDebug(ParameterManagerLog) << "ParameterManager::_ftpDownloadComplete : Parameter file received:" << fileName;
-        if(_parseParamFile(fileName)) {
+        if (_parseParamFile(fileName)) {
             qCDebug(ParameterManagerLog) << "ParameterManager::_ftpDownloadComplete : Parsed!";
             return;
-        }
-        else {
+        } else {
             qCDebug(ParameterManagerLog) << "ParameterManager::_ftpDownloadComplete : Error in parameter file";
             /* This should not happen... */
         }
-    }
-    else {
-        if(errorMsg.contains("File Not Found")) {
+    } else {
+        if (errorMsg.contains("File Not Found")) {
             qCDebug(ParameterManagerLog) << "ParameterManager-ftp: No Parameterfile on vehicle - Start Conventional Parameter Download";
-            if(_initialRequestRetryCount == 0) {
+            if (_initialRequestRetryCount == 0) {
                 immediateretry = true;
             }
-        }
-        else if(_loadProgress < 0.01) {
-            qCDebug(ParameterManagerLog) << "Error Message : " << errorMsg;
-            qCDebug(ParameterManagerLog) << "ParameterManager-ftp progress too slow - Start Conventional Parameter Download, Progress : " << _loadProgress;
-        }
-        else if(_initialRequestRetryCount == 1) {
+        } else if (_loadProgress > 0.0001 && _loadProgress < 0.01) { /* FTP supported but too slow */
+            qCDebug(ParameterManagerLog) << "ParameterManager-ftp progress too slow - Start Conventional Parameter Download";
+        } else if (_initialRequestRetryCount == 1) {
             qCDebug(ParameterManagerLog) << "ParameterManager-ftp: Too many retries - Start Conventional Parameter Download";
-        }
-        else {
+        } else {
             qCDebug(ParameterManagerLog) << "ParameterManager-ftp Retry: " << _initialRequestRetryCount;
             continuewithdefaultparameterdownload = false;
         }
     }
 
-    if(continuewithdefaultparameterdownload) {
+    if (continuewithdefaultparameterdownload) {
         _tryftp = false;
         _initialRequestRetryCount = 0;
         /* If we receive "File not Found" this indicates that the vehicle does not support
          * the parameter download via ftp. If we received this without retry, then we
          * can immediately response with the conventional parameter download request, because
          * we have no indication of communication link congestion.*/
-        if(immediateretry) {
+        if (immediateretry) {
             _initialRequestTimeout();
         }
-        else {
+        else
             _initialRequestTimeoutTimer.start();
-        }
-    }
-    else {
+    } else {
         _initialRequestTimeoutTimer.start();
     }
 }
@@ -551,8 +543,7 @@ void ParameterManager::refreshAllParameters(uint8_t componentId)
             qCWarning(ParameterManagerLog) << "ParameterManager::refreshallParameters FTPManager::download returned failure";
             disconnect(ftpManager, &FTPManager::downloadComplete, this, &ParameterManager::_ftpDownloadComplete);
         }
-    }
-    else {
+    } else {
         // Reset index wait lists
         for (int cid: _paramCountMap.keys()) {
             // Add/Update all indices to the wait list, parameter index is 0-based
