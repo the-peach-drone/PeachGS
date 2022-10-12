@@ -530,11 +530,11 @@ void ParameterManager::refreshAllParameters(uint8_t componentId)
         _initialRequestTimeoutTimer.start();
     }
 
-    if(_tryftp) {
+    if(_tryftp && (componentId == MAV_COMP_ID_ALL || componentId == MAV_COMP_ID_AUTOPILOT1)) {
         FTPManager* ftpManager = _vehicle->ftpManager();
         connect(ftpManager, &FTPManager::downloadComplete, this, &ParameterManager::_ftpDownloadComplete);
         _waitingParamTimeoutTimer.stop();
-        if (ftpManager->download("@PARAM/param.pck?withdefaults=1",
+        if (ftpManager->download("@PARAM/param.pck",
                                  QStandardPaths::writableLocation(QStandardPaths::TempLocation),
                                  "", false /* No filesize check */)) {
             connect(ftpManager, &FTPManager::commandProgress, this, &ParameterManager::_ftpDownloadProgress);
@@ -547,8 +547,9 @@ void ParameterManager::refreshAllParameters(uint8_t componentId)
         // Reset index wait lists
         for (int cid: _paramCountMap.keys()) {
             // Add/Update all indices to the wait list, parameter index is 0-based
-            if(componentId != MAV_COMP_ID_ALL && componentId != cid)
+            if(componentId != MAV_COMP_ID_ALL && componentId != cid) {
                 continue;
+            }
             for (int waitingIndex = 0; waitingIndex < _paramCountMap[cid]; waitingIndex++) {
                 // This will add a new waiting index if needed and set the retry count for that index to 0
                 _waitingReadParamIndexMap[cid][waitingIndex] = 0;
