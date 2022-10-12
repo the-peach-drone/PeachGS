@@ -171,7 +171,7 @@ void ParameterManager::_updateProgressBar(void)
 
 void ParameterManager::mavlinkMessageReceived(mavlink_message_t message)
 {
-    if(_tryftp && !_initialLoadComplete) {
+    if (_tryftp && message.compid == MAV_COMP_ID_AUTOPILOT1 && !_initialLoadComplete) {
         return;
     }
 
