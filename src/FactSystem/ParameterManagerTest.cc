@@ -108,8 +108,9 @@ void ParameterManagerTest::_FTPnoFailure()
 
     // Wait for the Vehicle to get created
     QSignalSpy spyVehicle(vehicleMgr, SIGNAL(activeVehicleAvailableChanged(bool)));
+    // When param load is complete we get the param ready signal
+    QSignalSpy spyParamsReady(vehicleMgr, SIGNAL(parameterReadyVehicleAvailableChanged(bool)));
     QCOMPARE(spyVehicle.wait(5000), true);
-    qDebug() << Q_FUNC_INFO << QDateTime::currentDateTime().time();
     QCOMPARE(spyVehicle.count(), 1);
     QList<QVariant> arguments = spyVehicle.takeFirst();
     QCOMPARE(arguments.count(), 1);
@@ -117,20 +118,21 @@ void ParameterManagerTest::_FTPnoFailure()
     Vehicle* vehicle = vehicleMgr->activeVehicle();
     QVERIFY(vehicle);
 
-    // We should get progress bar updates during load
-    QSignalSpy spyProgress(vehicle->parameterManager(), SIGNAL(loadProgressChanged(float)));
-    QCOMPARE(spyProgress.wait(6000), true);
-    arguments = spyProgress.takeFirst();
-    QCOMPARE(arguments.count(), 1);
-    QVERIFY(arguments.at(0).toFloat() > 0.0f);
-
-    // When param load is complete we get the param ready signal
-    QSignalSpy spyParamsReady(vehicleMgr, SIGNAL(parameterReadyVehicleAvailableChanged(bool)));
-    QCOMPARE(spyParamsReady.wait(60000), true);
+    spyParamsReady.wait(5000);
+    QCOMPARE(spyParamsReady.count(), 1);
     arguments = spyParamsReady.takeFirst();
     QCOMPARE(arguments.count(), 1);
     QCOMPARE(arguments.at(0).toBool(), true);
 
+    // Request all parameters again and check the progress bar. The initial parameterdownload
+    // is so fast that I cannot connect to the loadprogress early enough.
+    QSignalSpy spyProgress(vehicle->parameterManager(), SIGNAL(loadProgressChanged(float)));
+    vehicle->parameterManager()->refreshAllParameters();
+    spyParamsReady.wait(5000);
+    QVERIFY(spyProgress.count() > 1);
+    arguments = spyProgress.takeFirst();
+    QCOMPARE(arguments.count(), 1);
+    QVERIFY(arguments.at(0).toFloat() > 0.0f);
     // Progress should have been set back to 0
     arguments = spyProgress.takeLast();
     QCOMPARE(arguments.count(), 1);
