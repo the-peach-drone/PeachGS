@@ -125,7 +125,7 @@ void MockLinkFTP::_openCommand(uint8_t senderSystemId, uint8_t senderComponentId
         tmpFilename = ":MockLink/Parameter.MetaData.json";
     } else if (path == "/parameter.json.xz") {
         tmpFilename = ":MockLink/Parameter.MetaData.json.xz";
-    } else if (_BinParamFileEnabled && path == "@PARAM/param.pck?withdefaults=1") {
+    } else if (_BinParamFileEnabled && path == "@PARAM/param.pck") {
         tmpFilename = ":MockLink/Arduplane.params.ftp.bin";
     }
 
@@ -147,7 +147,7 @@ void MockLinkFTP::_openCommand(uint8_t senderSystemId, uint8_t senderComponentId
     // Data contains file length
     response.hdr.size = sizeof(uint32_t);
     /* Ardupilot sends constant wrong file size for parameter file due to dynamic on the fly generation */
-    response.openFileLength = (path == "@PARAM/param.pck?withdefaults=1" ? 1024*1024 : _currentFile.size());
+    response.openFileLength = (path == "@PARAM/param.pck" ? 1024*1024 : _currentFile.size());
     
     _sendResponse(senderSystemId, senderComponentId, &response, outgoingSeqNumber);
 }
