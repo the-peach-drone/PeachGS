@@ -21,7 +21,7 @@ installer {
         QMAKE_POST_LINK += && rm -rf $${TARGET}.app/Contents/Frameworks/GStreamer.framework/Versions/1.0/lib/{*.a,*.la,glib-2.0,gst-validate-launcher,pkgconfig}
 
         # macdeployqt is missing some relocations once in a while. "Fix" it:
-        QMAKE_POST_LINK += && cp -R /Library/Frameworks/GStreamer.framework $${TARGET}.app/Contents/Frameworks
+        QMAKE_POST_LINK += && rsync -a --delete /Library/Frameworks/GStreamer.framework $${TARGET}.app/Contents/Frameworks
         QMAKE_POST_LINK += && echo libexec
         QMAKE_POST_LINK += && ln -sf $${TARGET}.app/Contents/Frameworks $${TARGET}.app/Contents/Frameworks/GStreamer.framework/Versions/1.0/libexec/Frameworks
         QMAKE_POST_LINK += && install_name_tool -change /Library/Frameworks/GStreamer.framework/Versions/1.0/lib/GStreamer @executable_path/../Frameworks/GStreamer.framework/Versions/1.0/lib/GStreamer $${TARGET}.app/Contents/MacOS/QGroundControl
@@ -39,6 +39,8 @@ installer {
         QMAKE_POST_LINK += && mkdir -p package
         QMAKE_POST_LINK += && mkdir -p staging
         QMAKE_POST_LINK += && rsync -a --delete $${TARGET}.app staging
+        QMAKE_POST_LINK += && rm -rf /tmp/tmp.dmg
+        QMAKE_POST_LINK += && rm -rf package/$${TARGET}.dmg
         QMAKE_POST_LINK += && hdiutil create /tmp/tmp.dmg -ov -volname "$${TARGET}-$${MAC_VERSION}" -fs HFS+ -srcfolder "staging"
         QMAKE_POST_LINK += && hdiutil convert /tmp/tmp.dmg -format UDBZ -o package/$${TARGET}.dmg
         QMAKE_POST_LINK += && rm /tmp/tmp.dmg
