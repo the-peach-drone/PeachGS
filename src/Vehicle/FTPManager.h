@@ -31,7 +31,8 @@ class FTPManager : public QObject
 public:
     FTPManager(Vehicle* vehicle);
 
-	/// Downloads the specified file.
+    /// Downloads the specified file
+    ///     @param fromCompId Component id of the component to download from. If fromCompId is MAV_COMP_ID_ALL, then MAV_COMP_ID_AUTOPILOT1 is used.
     ///     @param fromURI  File to download from vehicle, fully qualified path. May be in the format "mftp://[;comp=<id>]..." where the component id is specified.
     ///                     If component id is not specified MAV_COMP_ID_AUTOPILOT1 is used.
     ///     @param toDir    Local directory to download file to
@@ -43,7 +44,7 @@ public:
     ///                     a dynamic file creation on the vehicle.
     /// @return true: download has started, false: error, no download
     /// Signals downloadComplete, commandError, commandProgress
-    bool download(const QString& fromURI, const QString& toDir, const QString& fileName="", bool checksize = true);
+    bool download(uint8_t fromCompId, const QString& fromURI, const QString& toDir, const QString& fileName="", bool checksize = true);
 
     /// Cancel the current operation
     /// This will emit downloadComplete() when done, and if there's currently a download in progress
@@ -136,7 +137,7 @@ private:
     void    _fillRequestDataWithString(MavlinkFTP::Request* request, const QString& str);
     void    _fillMissingBlocksWorker    (bool firstRequest);
     void    _burstReadFileWorker        (bool firstRequest);
-    bool    _parseURI                   (const QString& uri, QString& parsedURI, uint8_t& compId);
+    bool    _parseURI                   (uint8_t fromCompId, const QString& uri, QString& parsedURI, uint8_t& compId);
 
     void    _terminateSessionBegin      (void);
     void    _terminateSessionAckOrNak   (const MavlinkFTP::Request* ackOrNak);
