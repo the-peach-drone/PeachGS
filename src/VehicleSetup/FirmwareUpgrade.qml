@@ -298,7 +298,7 @@ SetupPage {
                                             firmwareSelectDialog.preventClose = true
                                             return
                                         }
-                                        if (ardupilotFirmwareSelectionCombo.currentIndex == 0) {
+                                        if (ardupilotFirmwareSelectionCombo.currentIndex == -1) {
                                             mainWindow.showMessageDialog(firmwareSelectDialog.title, qsTr("You must choose a board type."))
                                             firmwareSelectDialog.preventClose = true
                                             return
