@@ -34,5 +34,6 @@ Column {
         id:                 flightDisplayViewWidgets
         width:              parent.width
         missionController:  _missionController
+        visible:            QGroundControl.corePlugin.options.flyView.showInstrumentPanel
     }
 }
