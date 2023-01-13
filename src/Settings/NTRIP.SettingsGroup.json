@@ -54,6 +54,14 @@
     "type":                 "string",
     "default":         "",
     "qgcRebootRequired":    true
+},
+{
+    "name":                 "ntripEnableVRS",
+    "shortDesc":     "Enable NTRIP VRS",
+    "longDesc":      "Check to Enable VRS RTK",
+    "type":                 "bool",
+    "default":         false,
+    "qgcRebootRequired":    true
 }
 ]
 }

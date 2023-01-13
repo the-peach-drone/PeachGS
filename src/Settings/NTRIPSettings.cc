@@ -24,3 +24,5 @@ DECLARE_SETTINGSFACT(NTRIPSettings, ntripUsername)
 DECLARE_SETTINGSFACT(NTRIPSettings, ntripPassword)
 DECLARE_SETTINGSFACT(NTRIPSettings, ntripMountpoint)
 DECLARE_SETTINGSFACT(NTRIPSettings, ntripWhitelist)
+DECLARE_SETTINGSFACT(NTRIPSettings, ntripEnableVRS)
+

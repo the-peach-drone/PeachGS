@@ -9,9 +9,6 @@
 
 #pragma once
 
-#include "QGCToolbox.h"
-#include "QmlObjectListModel.h"
-
 #include <QThread>
 #include <QTcpSocket>
 #include <QGeoCoordinate>
@@ -33,7 +30,7 @@ public:
                  const QString& password,
                  const QString& mountpoint,
                  const QString& whitelist,
-                 QObject* parent);
+                 const bool&    enableVRS);
     ~NTRIPTCPLink();
 
 signals:
@@ -65,13 +62,20 @@ private:
     QString         _password;
     QString         _mountpoint;
     QSet<int>       _whitelist;
+    bool            _isVRSEnable;
 
     // Temp Func
     void    _sendNMEA();
     QString _getCheckSum(QString line);
 
+    // VRS Timer
+    QTimer* _vrsSendTimer;
+    static const int _vrsSendRateMSecs = 3000;
+
     RTCMParsing *_rtcm_parsing{nullptr};
     NTRIPState _state;
+
+    QGCToolbox* _toolbox = nullptr;
 };
 
 class NTRIP : public QGCTool {

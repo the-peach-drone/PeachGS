@@ -1013,6 +1013,13 @@ Rectangle {
                                 Layout.columnSpan:      2
                             }
 
+                            FactCheckBox {
+                                text:                   ntripGrid.ntripSettings.ntripEnableVRS.shortDescription
+                                fact:                   ntripGrid.ntripSettings.ntripEnableVRS
+                                visible:                ntripGrid.ntripSettings.ntripEnableVRS.visible
+                                Layout.columnSpan:      2
+                            }
+
                             QGCLabel {
                                 text:               ntripGrid.ntripSettings.ntripServerHostAddress.shortDescription
                                 visible:            ntripGrid.ntripSettings.ntripServerHostAddress.visible

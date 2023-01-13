@@ -25,4 +25,5 @@ public:
     DEFINE_SETTINGFACT(ntripPassword)
     DEFINE_SETTINGFACT(ntripMountpoint)
     DEFINE_SETTINGFACT(ntripWhitelist)
+    DEFINE_SETTINGFACT(ntripEnableVRS)
 };
