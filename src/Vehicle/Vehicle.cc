@@ -1330,15 +1330,16 @@ QString Vehicle::vehicleUIDStr()
 {
     QString uid;
     uint8_t* pUid = (uint8_t*)(void*)&_uid;
-    uid.asprintf("%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X",
-                 pUid[0] & 0xff,
-            pUid[1] & 0xff,
-            pUid[2] & 0xff,
-            pUid[3] & 0xff,
-            pUid[4] & 0xff,
-            pUid[5] & 0xff,
-            pUid[6] & 0xff,
-            pUid[7] & 0xff);
+    uid = uid.asprintf("%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X",
+          pUid[0] & 0xff,
+          pUid[1] & 0xff,
+          pUid[2] & 0xff,
+          pUid[3] & 0xff,
+          pUid[4] & 0xff,
+          pUid[5] & 0xff,
+          pUid[6] & 0xff,
+          pUid[7] & 0xff);
+
     return uid;
 }
 

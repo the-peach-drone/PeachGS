@@ -150,10 +150,11 @@ MAVLinkLogProcessor::valid()
 bool
 MAVLinkLogProcessor::create(MAVLinkLogManager* manager, const QString path, uint8_t id)
 {
-    QTextStream(&_fileName) << path.toLatin1().data() \
-                            << QString("/%1-").arg(id, 3, 10, QLatin1Char('0')) \
-                            << QDateTime::currentDateTime().toString("yyyy-MM-dd-hh-mm-ss-zzz").toLocal8Bit().data() \
-                            << manager->logExtension().toLocal8Bit().data();
+    _fileName = _fileName.asprintf("%s/%03d-%s%s",
+                          path.toLatin1().data(),
+                          id,
+                          QDateTime::currentDateTime().toString("yyyy-MM-dd-hh-mm-ss-zzz").toLocal8Bit().data(),
+                          manager->logExtension().toLocal8Bit().data());
 
     _fd = fopen(_fileName.toLocal8Bit().data(), "wb");
     if(_fd) {
