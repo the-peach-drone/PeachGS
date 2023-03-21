@@ -520,6 +520,9 @@ void Joystick::_handleButtons()
             int rgButtonValueIndex = hatIndex*numHatButtons + hatButtonIndex + _buttonCount;
             // Get hat value from joystick
             bool newButtonValue = _getHat(hatIndex, hatButtonIndex);
+            if (rgButtonValueIndex < 256) {
+                lastBbuttonValues[rgButtonValueIndex] = _rgButtonValues[rgButtonValueIndex];
+            }
             if (newButtonValue && _rgButtonValues[rgButtonValueIndex] == BUTTON_UP) {
                 _rgButtonValues[rgButtonValueIndex] = BUTTON_DOWN;
                 emit rawButtonPressedChanged(rgButtonValueIndex, newButtonValue);
