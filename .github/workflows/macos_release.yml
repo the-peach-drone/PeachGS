@@ -83,8 +83,9 @@ jobs:
       - name: Build
         working-directory: ${{ runner.temp }}/shadow_build_dir
         run:  |
+              export JOBS=$((`sysctl -n hw.ncpu`+1))
               qmake -r ${SOURCE_DIR}/qgroundcontrol.pro CONFIG+=installer CONFIG+=${BUILD_TYPE}
-              make -j3
+              make -j$JOBS
 
       - name: ccache post-run
         run:  ccache -s
