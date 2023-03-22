@@ -30,11 +30,18 @@ Rectangle {
 
     property bool _first: true
 
+    property bool _commingFromRIDSettings:  false
+
     QGCPalette { id: qgcPal }
 
     Component.onCompleted: {
         //-- Default Settings
-        __rightPanel.source = QGroundControl.corePlugin.settingsPages[QGroundControl.corePlugin.defaultSettings].url
+        if (globals.commingFromRIDIndicator) {
+            __rightPanel.source = "qrc:/qml/RemoteIDSettings.qml"
+            globals.commingFromRIDIndicator = false
+        } else {
+            __rightPanel.source = QGroundControl.corePlugin.settingsPages[QGroundControl.corePlugin.defaultSettings].url
+        }
     }
 
     QGCFlickable {
