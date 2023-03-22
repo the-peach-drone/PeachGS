@@ -69,6 +69,7 @@ Rectangle {
                     text:               modelData.title
                     autoExclusive:      true
                     Layout.fillWidth:   true
+                    visible:            modelData.url != "qrc:/qml/RemoteIDSettings.qml" ? true : QGroundControl.settingsManager.remoteIDSettings.enable.rawValue
 
                     onClicked: {
                         if (mainWindow.preventViewSwitch()) {
@@ -81,9 +82,19 @@ Rectangle {
                     }
 
                     Component.onCompleted: {
+                        if (globals.commingFromRIDIndicator) {
+                            _commingFromRIDSettings = true
+                        }
                         if(_first) {
                             _first = false
                             checked = true
+                        }
+                        if (_commingFromRIDSettings) {
+                            checked = false
+                            _commingFromRIDSettings = false
+                            if (modelData.url == "qrc:/qml/RemoteIDSettings.qml") {
+                                checked = true
+                            }
                         }
                     }
                 }
