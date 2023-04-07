@@ -32,6 +32,8 @@ add_library(Settings
 	UnitsSettings.h
 	VideoSettings.cc
 	VideoSettings.h
+	RemoteIDSettings.h
+	RemoteIDSettings.cc
 )
 
 target_link_libraries(Settings
