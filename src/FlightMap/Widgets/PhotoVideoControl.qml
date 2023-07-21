@@ -100,14 +100,16 @@ Rectangle {
 
     function toggleShooting() {
         console.log("toggleShooting", _anyVideoStreamAvailable)
-        if (_mavlinkCamera && _mavlinkCamera.capturesVideo || _mavlinkCamera.capturesPhotos ) {
-            if(_mavlinkCameraInVideoMode) {
-                _mavlinkCamera.toggleVideo()
-            } else {
-                if(_mavlinkCameraInPhotoMode && !_mavlinkCameraPhotoCaptureIsIdle && _mavlinkCameraElapsedMode) {
-                    _mavlinkCamera.stopTakePhoto()
+        if (_mavlinkCamera) {
+            if (_mavlinkCamera.capturesPhotos || _mavlinkCamera.capturesVideo) {
+                if(_mavlinkCameraInVideoMode) {
+                    _mavlinkCamera.toggleVideo()
                 } else {
-                    _mavlinkCamera.takePhoto()
+                    if(_mavlinkCameraInPhotoMode && !_mavlinkCameraPhotoCaptureIsIdle && _mavlinkCameraElapsedMode) {
+                        _mavlinkCamera.stopTakePhoto()
+                    } else {
+                        _mavlinkCamera.takePhoto()
+                    }
                 }
             }
         } else if (_onlySimpleCameraAvailable || (_simpleCameraAvailable && _anyVideoStreamAvailable && _videoStreamInPhotoMode && !videoGrabRadio.checked)) {
