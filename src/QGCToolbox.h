@@ -32,7 +32,6 @@ class VideoManager;
 class MAVLinkLogManager;
 class QGCCorePlugin;
 class SettingsManager;
-class AirspaceManager;
 class ADSBVehicleManager;
 class NTRIP;
 #if defined(QGC_ENABLE_PAIRING)
@@ -68,7 +67,6 @@ public:
     MAVLinkLogManager*          mavlinkLogManager       () { return _mavlinkLogManager; }
     QGCCorePlugin*              corePlugin              () { return _corePlugin; }
     SettingsManager*            settingsManager         () { return _settingsManager; }
-    AirspaceManager*            airspaceManager         () { return _airspaceManager; }
     ADSBVehicleManager*         adsbVehicleManager      () { return _adsbVehicleManager; }
     NTRIP*                      ntrip                   () { return _ntrip; }
 #if defined(QGC_ENABLE_PAIRING)
@@ -109,7 +107,6 @@ private:
     MAVLinkLogManager*          _mavlinkLogManager      = nullptr;
     QGCCorePlugin*              _corePlugin             = nullptr;
     SettingsManager*            _settingsManager        = nullptr;
-    AirspaceManager*            _airspaceManager        = nullptr;
     ADSBVehicleManager*         _adsbVehicleManager     = nullptr;
     NTRIP*                      _ntrip                  = nullptr;
 #if defined(QGC_ENABLE_PAIRING)

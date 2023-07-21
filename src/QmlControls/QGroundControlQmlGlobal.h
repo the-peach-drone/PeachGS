@@ -15,7 +15,6 @@
 #include "SimulatedPosition.h"
 #include "QGCLoggingCategory.h"
 #include "AppSettings.h"
-#include "AirspaceManager.h"
 #include "ADSBVehicleManager.h"
 #include "QGCPalette.h"
 #include "QmlUnitsConversion.h"
@@ -66,13 +65,11 @@ public:
     Q_PROPERTY(VideoManager*        videoManager            READ    videoManager            CONSTANT)
     Q_PROPERTY(MAVLinkLogManager*   mavlinkLogManager       READ    mavlinkLogManager       CONSTANT)
     Q_PROPERTY(SettingsManager*     settingsManager         READ    settingsManager         CONSTANT)
-    Q_PROPERTY(AirspaceManager*     airspaceManager         READ    airspaceManager         CONSTANT)
     Q_PROPERTY(ADSBVehicleManager*  adsbVehicleManager      READ    adsbVehicleManager      CONSTANT)
     Q_PROPERTY(NTRIP*               ntrip                   READ    ntrip                   CONSTANT)
     Q_PROPERTY(QGCCorePlugin*       corePlugin              READ    corePlugin              CONSTANT)
     Q_PROPERTY(MissionCommandTree*  missionCommandTree      READ    missionCommandTree      CONSTANT)
     Q_PROPERTY(FactGroup*           gpsRtk                  READ    gpsRtkFactGroup         CONSTANT)
-    Q_PROPERTY(bool                 airmapSupported         READ    airmapSupported         CONSTANT)
     Q_PROPERTY(TaisyncManager*      taisyncManager          READ    taisyncManager          CONSTANT)
     Q_PROPERTY(bool                 taisyncSupported        READ    taisyncSupported        CONSTANT)
     Q_PROPERTY(MicrohardManager*    microhardManager        READ    microhardManager        CONSTANT)
@@ -160,7 +157,6 @@ public:
     QGCCorePlugin*          corePlugin          ()  { return _corePlugin; }
     SettingsManager*        settingsManager     ()  { return _settingsManager; }
     FactGroup*              gpsRtkFactGroup     ()  { return _gpsRtkFactGroup; }
-    AirspaceManager*        airspaceManager     ()  { return _airspaceManager; }
     ADSBVehicleManager*     adsbVehicleManager  ()  { return _adsbVehicleManager; }
     NTRIP*                  ntrip               ()  { return _ntrip; }
     QmlUnitsConversion*     unitsConversion     ()  { return &_unitsConversion; }
@@ -227,12 +223,6 @@ public:
 
     QString qgcVersion              (void) const;
 
-#if defined(QGC_AIRMAP_ENABLED)
-    bool    airmapSupported() { return true; }
-#else
-    bool    airmapSupported() { return false; }
-#endif
-
     // Overrides from QGCTool
     virtual void setToolbox(QGCToolbox* toolbox);
 
@@ -257,7 +247,6 @@ private:
     FirmwarePluginManager*  _firmwarePluginManager  = nullptr;
     SettingsManager*        _settingsManager        = nullptr;
     FactGroup*              _gpsRtkFactGroup        = nullptr;
-    AirspaceManager*        _airspaceManager        = nullptr;
     TaisyncManager*         _taisyncManager         = nullptr;
     MicrohardManager*       _microhardManager       = nullptr;
     ADSBVehicleManager*     _adsbVehicleManager     = nullptr;

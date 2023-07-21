@@ -77,7 +77,6 @@ void QGroundControlQmlGlobal::setToolbox(QGCToolbox* toolbox)
     _firmwarePluginManager  = toolbox->firmwarePluginManager();
     _settingsManager        = toolbox->settingsManager();
     _gpsRtkFactGroup        = qgcApp()->gpsRtkFactGroup();
-    _airspaceManager        = toolbox->airspaceManager();
     _adsbVehicleManager     = toolbox->adsbVehicleManager();
     _ntrip                  = toolbox->ntrip();
     _globalPalette          = new QGCPalette(this);
