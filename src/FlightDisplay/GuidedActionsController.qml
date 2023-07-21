@@ -56,6 +56,7 @@ Item {
     readonly property string gotoTitle:                     qsTr("Go To Location")
     readonly property string vtolTransitionTitle:           qsTr("VTOL Transition")
     readonly property string roiTitle:                      qsTr("ROI")
+    readonly property string setHomeTitle:                  qsTr("Set Home")
     readonly property string actionListTitle:               qsTr("Action")
     readonly property string setEkfOriginTitle:             qsTr("Set EKF origin")
 
@@ -82,6 +83,7 @@ Item {
     readonly property string vtolTransitionFwdMessage:          qsTr("Transition VTOL to fixed wing flight.")
     readonly property string vtolTransitionMRMessage:           qsTr("Transition VTOL to multi-rotor flight.")
     readonly property string roiMessage:                        qsTr("Make the specified location a Region Of Interest.")
+    readonly property string setHomeMessage:                    qsTr("Set vehicle home as the specified location. This will affect Return to Home position")
     readonly property string setEkfOriginMessage:               qsTr("Make the specified location the EKF origin.")
 
     readonly property int actionRTL:                        1
@@ -111,6 +113,7 @@ Item {
     readonly property int actionChangeSpeed:                25
     readonly property int actionSetEkfOrigin:               26
     readonly property int actionGripper:                    27
+    readonly property int actionSetHome:                    28
 
     property var    _activeVehicle:             QGroundControl.multiVehicleManager.activeVehicle
     property bool   _useChecklist:              QGroundControl.settingsManager.appSettings.useChecklist.rawValue && QGroundControl.corePlugin.options.preFlightChecklistUrl.toString().length
@@ -137,6 +140,7 @@ Item {
     property bool showROI:              _guidedActionsEnabled && _vehicleFlying && __roiSupported && !_missionActive
     property bool showLandAbort:        _guidedActionsEnabled && _vehicleFlying && _fixedWingOnApproach
     property bool showGotoLocation:     _guidedActionsEnabled && _vehicleFlying
+    property bool showSetHome:          _guidedActionsEnabled
     property bool showSetEkfOrigin:     _activeVehicle && !_vehicleFlying && !_vehicleArmed
     property bool showActionList:       _guidedActionsEnabled && (showStartMission || showResumeMission || showChangeAlt || showLandAbort || actionList.hasCustomActions)
     property bool showGripper:          _initialConnectComplete ? _activeVehicle.hasGripper : false
@@ -517,6 +521,11 @@ Item {
             confirmDialog.message = gripperMessage
             _widgetLayer._gripperMenu.createObject(mainWindow).open()
             break
+        case actionSetHome:
+            confirmDialog.title = setHomeTitle
+            confirmDialog.message = setHomeMessage
+            confirmDialog.hideTrigger = Qt.binding(function() { return !showSetHome })
+            break
         default:
             console.warn("Unknown actionCode", actionCode)
             return
@@ -611,6 +620,9 @@ Item {
             break
         case actionGripper:
             _gripperFunction === undefined ? _activeVehicle.sendGripperAction(Vehicle.Invalid_option) : _activeVehicle.sendGripperAction(_gripperFunction)
+            break
+        case actionSetHome:
+            _activeVehicle.doSetHome(actionData)
             break
         default:
             console.warn(qsTr("Internal error: unknown actionCode"), actionCode)

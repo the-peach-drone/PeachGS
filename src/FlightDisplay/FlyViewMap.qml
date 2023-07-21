@@ -570,6 +570,18 @@ FlightMap {
 
                     QGCButton {
                         Layout.fillWidth: true
+                        text: "Set home here"
+                        visible: globals.guidedControllerFlyView.showSetHome
+                        onClicked: {
+                            if (clickMenu.opened) {
+                                clickMenu.close()
+                            }
+                            globals.guidedControllerFlyView.confirmAction(globals.guidedControllerFlyView.actionSetHome, clickMenu.coord)
+                        }
+                    }
+
+                    QGCButton {
+                        Layout.fillWidth: true
                         text: "Set EKF Origin"
                         visible: globals.guidedControllerFlyView.showSetEkfOrigin
                         onClicked: {
@@ -583,7 +595,7 @@ FlightMap {
             }
 
             onClicked: {
-                if (!globals.guidedControllerFlyView.guidedUIVisible && (globals.guidedControllerFlyView.showGotoLocation || globals.guidedControllerFlyView.showOrbit || globals.guidedControllerFlyView.showROI || globals.guidedControllerFlyView.showSetEkfOrigin)) {
+                if (!globals.guidedControllerFlyView.guidedUIVisible && (globals.guidedControllerFlyView.showGotoLocation || globals.guidedControllerFlyView.showOrbit || globals.guidedControllerFlyView.showROI || globals.guidedControllerFlyView.showSetEkfOrigin || globals.guidedControllerFlyView.showSetHome)) {
                     orbitMapCircle.hide()
                     gotoLocationItem.hide()
                     var clickCoord = _root.toCoordinate(Qt.point(mouse.x, mouse.y), false /* clipToViewPort */)
