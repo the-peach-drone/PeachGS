@@ -39,6 +39,7 @@ Item {
     readonly property string disarmTitle:                   qsTr("Disarm")
     readonly property string rtlTitle:                      qsTr("Return")
     readonly property string takeoffTitle:                  qsTr("Takeoff")
+    readonly property string gripperTitle:                  qsTr("Gripper Function")
     readonly property string landTitle:                     qsTr("Land")
     readonly property string startMissionTitle:             qsTr("Start Mission")
     readonly property string mvStartMissionTitle:           qsTr("Start Mission (MV)")
@@ -63,6 +64,7 @@ Item {
     readonly property string disarmMessage:                     qsTr("Disarm the vehicle")
     readonly property string emergencyStopMessage:              qsTr("WARNING: THIS WILL STOP ALL MOTORS. IF VEHICLE IS CURRENTLY IN THE AIR IT WILL CRASH.")
     readonly property string takeoffMessage:                    qsTr("Takeoff from ground and hold position.")
+    readonly property string gripperMessage:                    qsTr("Grab or Release the cargo")
     readonly property string startMissionMessage:               qsTr("Takeoff from ground and start the current mission.")
     readonly property string continueMissionMessage:            qsTr("Continue the mission from the current waypoint.")
     readonly property string resumeMissionUploadFailMessage:    qsTr("Upload of resume mission failed. Confirm to retry upload")
@@ -108,6 +110,7 @@ Item {
     readonly property int actionForceArm:                   24
     readonly property int actionChangeSpeed:                25
     readonly property int actionSetEkfOrigin:               26
+    readonly property int actionGripper:                    27
 
     property var    _activeVehicle:             QGroundControl.multiVehicleManager.activeVehicle
     property bool   _useChecklist:              QGroundControl.settingsManager.appSettings.useChecklist.rawValue && QGroundControl.corePlugin.options.preFlightChecklistUrl.toString().length
@@ -116,6 +119,7 @@ Item {
     property bool   _canArm:                    _activeVehicle ? (_checklistPassed && (!_activeVehicle.healthAndArmingCheckReport.supported || _activeVehicle.healthAndArmingCheckReport.canArm)) : false
     property bool   _canTakeoff:                _activeVehicle ? (_checklistPassed && (!_activeVehicle.healthAndArmingCheckReport.supported || _activeVehicle.healthAndArmingCheckReport.canTakeoff)) : false
     property bool   _canStartMission:           _activeVehicle ? (_checklistPassed && (!_activeVehicle.healthAndArmingCheckReport.supported || _activeVehicle.healthAndArmingCheckReport.canStartMission)) : false
+    property bool   _initialConnectComplete:    _activeVehicle ? _activeVehicle.initialConnectComplete : false
 
     property bool showEmergenyStop:     _guidedActionsEnabled && !_hideEmergenyStop && _vehicleArmed && _vehicleFlying
     property bool showArm:              _guidedActionsEnabled && !_vehicleArmed && _canArm
@@ -135,6 +139,7 @@ Item {
     property bool showGotoLocation:     _guidedActionsEnabled && _vehicleFlying
     property bool showSetEkfOrigin:     _activeVehicle && !_vehicleFlying && !_vehicleArmed
     property bool showActionList:       _guidedActionsEnabled && (showStartMission || showResumeMission || showChangeAlt || showLandAbort || actionList.hasCustomActions)
+    property bool showGripper:          _initialConnectComplete ? _activeVehicle.hasGripper : false
     property string changeSpeedTitle:   _fixedWing ? changeAirspeedTitle : changeCruiseSpeedTitle
     property string changeSpeedMessage: _fixedWing ? changeAirspeedMessage : changeCruiseSpeedMessage
 
@@ -167,6 +172,7 @@ Item {
     property bool   _fixedWingOnApproach:   _activeVehicle ? _activeVehicle.fixedWing && _vehicleLanding : false
     property bool   _fixedWing:             _activeVehicle ? _activeVehicle.fixedWing || _activeVehicle.vtolInFwdFlight : false
     property bool  _speedLimitsAvailable:   _activeVehicle && ((_fixedWing && _activeVehicle.haveFWSpeedLimits) || (!_fixedWing && _activeVehicle.haveMRSpeedLimits))
+    property var   _gripperFunction:        undefined
 
     // You can turn on log output for GuidedActionsController by turning on GuidedActionsControllerLog category
     property bool __guidedModeSupported:    _activeVehicle ? _activeVehicle.guidedModeSupported : false
@@ -505,6 +511,12 @@ Item {
             confirmDialog.message = setEkfOriginMessage
             confirmDialog.hideTrigger = true
             break
+        case actionGripper:
+            confirmDialog.hideTrigger = true
+            confirmDialog.title = gripperTitle
+            confirmDialog.message = gripperMessage
+            _widgetLayer._gripperMenu.createObject(mainWindow).open()
+            break
         default:
             console.warn("Unknown actionCode", actionCode)
             return
@@ -596,6 +608,9 @@ Item {
             break
         case actionSetEkfOrigin:
             _activeVehicle.setEkfOrigin(actionData)
+            break
+        case actionGripper:
+            _gripperFunction === undefined ? _activeVehicle.sendGripperAction(Vehicle.Invalid_option) : _activeVehicle.sendGripperAction(_gripperFunction)
             break
         default:
             console.warn(qsTr("Internal error: unknown actionCode"), actionCode)
