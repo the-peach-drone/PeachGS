@@ -29,6 +29,7 @@
 #include "APMFollowComponent.h"
 #include "ESP8266Component.h"
 #include "APMHeliComponent.h"
+#include "APMRemoteSupportComponent.h"
 #include "QGCApplication.h"
 #include "ParameterManager.h"
 
@@ -53,6 +54,7 @@ APMAutoPilotPlugin::APMAutoPilotPlugin(Vehicle* vehicle, QObject* parent)
     , _tuningComponent          (nullptr)
     , _esp8266Component         (nullptr)
     , _heliComponent            (nullptr)
+    , _apmRemoteSupportComponent(nullptr)
     , _followComponent          (nullptr)
 {
 #if !defined(NO_SERIAL_LINK) && !defined(__android__)
@@ -145,6 +147,10 @@ const QVariantList& APMAutoPilotPlugin::vehicleComponents(void)
                 _esp8266Component->setupTriggerSignals();
                 _components.append(QVariant::fromValue((VehicleComponent*)_esp8266Component));
             }
+
+            _apmRemoteSupportComponent = new APMRemoteSupportComponent(_vehicle, this);
+            _apmRemoteSupportComponent->setupTriggerSignals();
+            _components.append(QVariant::fromValue((VehicleComponent*)_apmRemoteSupportComponent));
         } else {
             qWarning() << "Call to vehicleCompenents prior to parametersReady";
         }
