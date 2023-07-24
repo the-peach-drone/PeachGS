@@ -196,8 +196,9 @@ Item {
         guidedValueSlider.setIsSpeedSlider(false)
 
         if (actionCode === actionTakeoff) {
-            guidedValueSlider.setMinVal(_activeVehicle.minimumTakeoffAltitude())
-            guidedValueSlider.setValue(_activeVehicle ? _activeVehicle.minimumTakeoffAltitude() : 0)
+            //guidedValueSlider.setMinVal(_activeVehicle.minimumTakeoffAltitude())
+            //guidedValueSlider.setValue(_activeVehicle ? _activeVehicle.minimumTakeoffAltitude() : 0)
+            guidedValueSlider.configureAsAbsoluteSimpleTakeoffSlider()
             guidedValueSlider.setDisplayText("Height")
         } else if (actionCode === actionChangeSpeed) {
             guidedValueSlider.setIsSpeedSlider(true)
@@ -214,7 +215,8 @@ Item {
             }
         } else if (actionCode === actionChangeAlt || actionCode === actionOrbit || actionCode === actionGoto || actionCode === actionPause) {
             guidedValueSlider.setDisplayText("New Alt(rel)")
-            guidedValueSlider.configureAsRelativeAltSliderExp()
+            //guidedValueSlider.configureAsRelativeAltSliderExp()
+            guidedValueSlider.configureAsAbsoluteSimpleAltSlider()
         }
     }
 

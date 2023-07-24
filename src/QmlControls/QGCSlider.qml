@@ -20,9 +20,55 @@ Slider {
     implicitHeight: ScreenTools.implicitSliderHeight
 
     // Value indicator starts display from zero instead of min value
-    property bool zeroCentered: false
-    property bool displayValue: false
+    property bool zeroCentered:        false
+    property bool displayValue:        false
     property bool indicatorBarVisible: true
+    property bool tickmarksEnabled:    true
+    property double snapValue:         0
+
+    stepSize: snapValue
+
+    Repeater {
+        id:             ticksrepeater
+        model:          stepSize > 0 ? 1 + (maximumValue - minimumValue) / stepSize : 0
+        anchors.left:   parent.left
+        anchors.right:  parent.horizontalCenter
+        anchors.top:    parent.top
+        anchors.bottom: parent.bottom
+
+        QGCLabel {
+            property real _hw: Math.round(_root.implicitHeight / 2) * 2
+            property string thisheight: (((ticksrepeater.count - 1) - index) * 5).toString() + 'm'
+            color: qgcPal.buttonText
+            text: thisheight
+            font.pointSize: ScreenTools.smallFontPointSize
+            anchors.right: ticksrepeater.right
+            anchors.rightMargin: _hw / 1.5
+            visible: tickmarksEnabled
+
+            y: -ScreenTools.smallFontPointSize+2 + _hw / 2 + index * ((ticksrepeater.height - _hw) / (ticksrepeater.count - 1))
+        }
+    }
+
+    Repeater {
+        id:             leftticksrepeater
+        model:          stepSize > 0 ? 1 + (maximumValue - minimumValue) / stepSize : 0
+        anchors.right:  parent.right
+        anchors.left:   parent.horizontalCenter
+        anchors.top:    parent.top
+        anchors.bottom: parent.bottom
+
+        Rectangle {
+            property real _hw: Math.round(_root.implicitHeight / 2) * 2
+            color: qgcPal.buttonText
+            width: 15 ; height: 1
+            anchors.left: leftticksrepeater.left
+            anchors.leftMargin: _hw / 1.5
+            visible: tickmarksEnabled
+
+            y: -1 + _hw / 2 + index * ((leftticksrepeater.height - _hw) / (leftticksrepeater.count - 1))
+        }
+    }
 
     style: SliderStyle {
         groove: Item {
@@ -58,6 +104,15 @@ Slider {
                     radius:         height/2
                 }
             }
+        }
+
+        Rectangle {
+            radius:         height / 2
+            anchors.left:   parent.left
+            anchors.bottom: parent.bottom
+            anchors.top:    parent.top
+            width:          parent.width / 10
+            color:          "red"
         }
 
         handle: Rectangle {
