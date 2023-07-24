@@ -180,7 +180,7 @@ Item {
         MapLineArrow {
             fromCoord:      _transectPoints[prevTrueTransectIndex - 1]
             toCoord:        _transectPoints[prevTrueTransectIndex]
-            arrowPosition:  13
+            arrowPosition:  3
             visible:        _currentItem && _transectCount > 3
             opacity:        _root.opacity
 
