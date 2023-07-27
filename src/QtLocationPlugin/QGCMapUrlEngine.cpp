@@ -32,8 +32,8 @@ QGC_LOGGING_CATEGORY(QGCMapUrlEngineLog, "QGCMapUrlEngineLog")
 #include <QString>
 #include <QTimer>
 
-const char* UrlFactory::kOnlineElevationProviderKey = "Copernicus Elevation";
-const char* UrlFactory::kOnlineElevationProviderNotice = "© Airbus Defence and Space GmbH";
+const char* UrlFactory::kCopernicusElevationProviderKey = "Copernicus Elevation";
+const char* UrlFactory::kCopernicusElevationProviderNotice = "© Airbus Defence and Space GmbH";
 
 //-----------------------------------------------------------------------------
 UrlFactory::UrlFactory() : _timeout(5 * 1000) {
@@ -78,7 +78,7 @@ UrlFactory::UrlFactory() : _timeout(5 * 1000) {
     _providersTable["VWorld Street Map"] = new VWorldStreetMapProvider(this);
     _providersTable["VWorld Satellite Map"] = new VWorldSatMapProvider(this);
 
-    _providersTable[kOnlineElevationProviderKey] = new AirmapElevationProvider(this);
+    _providersTable[kCopernicusElevationProviderKey] = new CopernicusElevationProvider(this);
 
     _providersTable["Japan-GSI Contour"] = new JapanStdMapProvider(this);
     _providersTable["Japan-GSI Seamless"] = new JapanSeamlessMapProvider(this);

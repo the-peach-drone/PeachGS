@@ -209,8 +209,8 @@ public:
     bool    hasMAVLinkInspector     () { return true; }
 #endif
 
-    QString elevationProviderName   ()  { return UrlFactory::kOnlineElevationProviderKey; }
-    QString elevationProviderNotice () { return UrlFactory::kOnlineElevationProviderNotice; }
+    QString elevationProviderName   () { return UrlFactory::kCopernicusElevationProviderKey; }
+    QString elevationProviderNotice () { return UrlFactory::kCopernicusElevationProviderNotice; }
 
     bool    singleFirmwareSupport   ();
     bool    singleVehicleSupport    ();

@@ -16,18 +16,18 @@ ElevationProvider::ElevationProvider(const QString& imageFormat, quint32 average
     : MapProvider(QStringLiteral("https://terrain-ce.suite.auterion.com/"), imageFormat, averageSize, mapType, parent) {}
 
 //-----------------------------------------------------------------------------
-int AirmapElevationProvider::long2tileX(const double lon, const int z) const {
+int CopernicusElevationProvider::long2tileX(const double lon, const int z) const {
     Q_UNUSED(z)
     return static_cast<int>(floor((lon + 180.0) / TerrainTile::tileSizeDegrees));
 }
 
 //-----------------------------------------------------------------------------
-int AirmapElevationProvider::lat2tileY(const double lat, const int z) const {
+int CopernicusElevationProvider::lat2tileY(const double lat, const int z) const {
     Q_UNUSED(z)
     return static_cast<int>(floor((lat + 90.0) / TerrainTile::tileSizeDegrees));
 }
 
-QString AirmapElevationProvider::_getURL(const int x, const int y, const int zoom, QNetworkAccessManager* networkManager) {
+QString CopernicusElevationProvider::_getURL(const int x, const int y, const int zoom, QNetworkAccessManager* networkManager) {
     Q_UNUSED(networkManager)
     Q_UNUSED(zoom)
     return QString("https://terrain-ce.suite.auterion.com/api/v1/carpet?points=%1,%2,%3,%4")
@@ -37,7 +37,7 @@ QString AirmapElevationProvider::_getURL(const int x, const int y, const int zoo
         .arg(static_cast<double>(x + 1) * TerrainTile::tileSizeDegrees - 180.0);
 }
 
-QGCTileSet AirmapElevationProvider::getTileCount(const int zoom, const double topleftLon,
+QGCTileSet CopernicusElevationProvider::getTileCount(const int zoom, const double topleftLon,
                                                  const double topleftLat, const double bottomRightLon,
                                                  const double bottomRightLat) const {
     QGCTileSet set;

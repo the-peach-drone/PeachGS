@@ -32,7 +32,7 @@ QGC_LOGGING_CATEGORY(TerrainQueryVerboseLog, "TerrainQueryVerboseLog")
 Q_GLOBAL_STATIC(TerrainAtCoordinateBatchManager, _TerrainAtCoordinateBatchManager)
 Q_GLOBAL_STATIC(TerrainTileManager, _terrainTileManager)
 
-static const auto kMapType = UrlFactory::kOnlineElevationProviderKey;
+static const auto kMapType = UrlFactory::kCopernicusElevationProviderKey;
 
 TerrainAirMapQuery::TerrainAirMapQuery(QObject* parent)
     : TerrainQueryInterface(parent)
