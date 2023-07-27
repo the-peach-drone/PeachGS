@@ -35,7 +35,7 @@ Q_DECLARE_METATYPE(QList<QGCTile*>)
 static const char* kDbFileName = "qgcMapCache.db";
 static QLocale kLocale;
 
-#define CACHE_PATH_VERSION  "301"
+#define CACHE_PATH_VERSION  "300"
 
 struct stQGeoTileCacheQGCMapTypes {
     const char* name;

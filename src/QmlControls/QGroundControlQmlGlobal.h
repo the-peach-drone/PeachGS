@@ -106,6 +106,9 @@ public:
     Q_PROPERTY(bool     hasAPMSupport           READ hasAPMSupport              CONSTANT)
     Q_PROPERTY(bool     hasMAVLinkInspector     READ hasMAVLinkInspector        CONSTANT)
 
+    //-------------------------------------------------------------------------
+    // Elevation Provider
+    Q_PROPERTY(QString  elevationProviderName           READ elevationProviderName              CONSTANT)
 
 #if defined(QGC_ENABLE_PAIRING)
     Q_PROPERTY(PairingManager*      pairingManager          READ pairingManager         CONSTANT)
@@ -204,6 +207,8 @@ public:
 #else
     bool    hasMAVLinkInspector     () { return true; }
 #endif
+
+    QString elevationProviderName   ()  { return UrlFactory::kOnlineElevationProviderKey; }
 
     bool    singleFirmwareSupport   ();
     bool    singleVehicleSupport    ();
