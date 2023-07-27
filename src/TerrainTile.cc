@@ -47,7 +47,7 @@ TerrainTile::TerrainTile(const QByteArray& byteArray)
     _cellSizeLon = (_tileInfo.neLon - _tileInfo.swLon) / _tileInfo.gridSizeLon;
 
     qCDebug(TerrainTileLog) << this << "TileInfo: south west:    " << _tileInfo.swLat << _tileInfo.swLon;
-    qCDebug(TerrainTileLog) << this << "TileInfo: north east:    " << _tileInfo.neLat << _tileInfo.gridSizeLon;
+    qCDebug(TerrainTileLog) << this << "TileInfo: north east:    " << _tileInfo.neLat << _tileInfo.neLon;
     qCDebug(TerrainTileLog) << this << "TileInfo: dimensions:    " << _tileInfo.gridSizeLat << "by" << _tileInfo.gridSizeLat;
     qCDebug(TerrainTileLog) << this << "TileInfo: min, max, avg: " << _tileInfo.minElevation << _tileInfo.maxElevation << _tileInfo.avgElevation;
     qCDebug(TerrainTileLog) << this << "TileInfo: cell size:     " << _cellSizeLat << _cellSizeLon;
@@ -105,14 +105,6 @@ double TerrainTile::elevation(const QGeoCoordinate& coordinate) const
     const double latDeltaSw = coordinate.latitude() - _tileInfo.swLat;
     const double lonDeltaSw = coordinate.longitude() - _tileInfo.swLon;
 
-    const bool latOutside = latDeltaSw < 0.0 || latDeltaSw > (_tileInfo.neLat - _tileInfo.swLat);
-    const bool lonOutside = lonDeltaSw < 0.0 || lonDeltaSw > (_tileInfo.neLon - _tileInfo.swLon);
-
-    if (latOutside || lonOutside) {
-        qCWarning(TerrainTileLog) << this << "Internal error: coordinate outside tile bounds:" << coordinate;
-        return qQNaN();
-    }
-
     const int16_t latIndex = qFloor(latDeltaSw / _cellSizeLat);
     const int16_t lonIndex = qFloor(lonDeltaSw / _cellSizeLon);
 
@@ -120,7 +112,7 @@ double TerrainTile::elevation(const QGeoCoordinate& coordinate) const
     const bool lonIndexInvalid = lonIndex < 0 || lonIndex > (_tileInfo.gridSizeLon - 1);
 
     if (latIndexInvalid || lonIndexInvalid) {
-        qCWarning(TerrainTileLog) << this << "Internal error: invalid array indices" << latIndex << lonIndex;
+        qCWarning(TerrainTileLog) << this << "Internal error: coordinate" << coordinate << "outside tile bounds";
         return qQNaN();
     }
 
@@ -198,6 +190,14 @@ QByteArray TerrainTile::serializeFromAirMapJson(const QByteArray& input)
         return QByteArray();
     }
 
+    const double swLat = swArray[0].toDouble();
+    const double swLon = swArray[1].toDouble();
+    const double neLat = neArray[0].toDouble();
+    const double neLon = neArray[1].toDouble();
+
+    qCDebug(TerrainTileLog) << "Serialize: swArray: south west:    " << (40.42 - swLat) << (-3.23 - swLon);
+    qCDebug(TerrainTileLog) << "Serialize: neArray: north east:    " << neLat << neLon;
+
     // Stats
     const QJsonObject& statsObject = dataObject[_jsonStatsKey].toObject();
     QList<JsonHelper::KeyValidateInfo> statsVersionKeyInfoList = {
@@ -223,6 +223,9 @@ QByteArray TerrainTile::serializeFromAirMapJson(const QByteArray& input)
     tileInfo.avgElevation = statsObject[_jsonAvgElevationKey].toDouble();
     tileInfo.gridSizeLat = static_cast<int16_t>(carpetArray.count());
     tileInfo.gridSizeLon = static_cast<int16_t>(carpetArray[0].toArray().count());
+
+    qCDebug(TerrainTileLog) << "Serialize: TileInfo: south west:    " << tileInfo.swLat << tileInfo.swLon;
+    qCDebug(TerrainTileLog) << "Serialize: TileInfo: north east:    " << tileInfo.neLat << tileInfo.neLon;
 
     const auto cTileNumHeaderBytes = static_cast<int>(sizeof(TileInfo_t));
     const auto cTileNumDataBytes = static_cast<int>(sizeof(int16_t)) * tileInfo.gridSizeLat * tileInfo.gridSizeLon;

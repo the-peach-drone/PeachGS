@@ -70,7 +70,7 @@ public:
 
 private:
     typedef struct {
-        double  swLat,swLon, neLat, neLon;
+        double  swLat, swLon, neLat, neLon;
         int16_t minElevation;
         int16_t maxElevation;
         double  avgElevation;
