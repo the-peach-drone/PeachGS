@@ -38,6 +38,19 @@ Rectangle {
     QGCPalette { id: qgcPal }
 
     QGCLabel {
+        // Label in the bottom center of the terrain plot
+        readonly property string _licenseString: QGroundControl.elevationProviderNotice
+
+        id:                         licenseLabel
+        visible:                    _licenseString !== ""
+        anchors.bottom:             parent.bottom
+        anchors.horizontalCenter:   parent.horizontalCenter
+        anchors.bottomMargin:       ScreenTools.defaultFontPixelWidth * 0.5
+        font.pointSize:             ScreenTools.smallFontPointSize
+        text:                       qsTr("Powered by %1").arg(_licenseString)
+    }
+
+    QGCLabel {
         id:                     titleLabel
         anchors.top:            parent.bottom
         width:                  parent.height
@@ -50,9 +63,9 @@ Rectangle {
 
     QGCFlickable {
         id:                 terrainProfileFlickable
-        //anchors.margins:    _margins
         anchors.top:        parent.top
         anchors.bottom:     parent.bottom
+        anchors.bottomMargin: licenseLabel.visible ? ScreenTools.smallFontPointSize : 0
         anchors.leftMargin: titleLabel.contentHeight
         anchors.left:       parent.left
         anchors.right:      parent.right
