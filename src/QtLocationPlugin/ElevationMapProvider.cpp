@@ -6,8 +6,14 @@
 #include "QGCMapEngine.h"
 #include "TerrainTile.h"
 
+/*
+License for the COPERNICUS dataset hosted on https://terrain-ce.suite.auterion.com/:
+© DLR e.V. 2010-2014 and © Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS
+by the European Union and ESA; all rights reserved.
+*/
+
 ElevationProvider::ElevationProvider(const QString& imageFormat, quint32 averageSize, QGeoMapType::MapStyle mapType, QObject* parent)
-    : MapProvider(QStringLiteral("https://api.airmap.com/"), imageFormat, averageSize, mapType, parent) {}
+    : MapProvider(QStringLiteral("https://terrain-ce.suite.auterion.com/"), imageFormat, averageSize, mapType, parent) {}
 
 //-----------------------------------------------------------------------------
 int AirmapElevationProvider::long2tileX(const double lon, const int z) const {
@@ -24,7 +30,7 @@ int AirmapElevationProvider::lat2tileY(const double lat, const int z) const {
 QString AirmapElevationProvider::_getURL(const int x, const int y, const int zoom, QNetworkAccessManager* networkManager) {
     Q_UNUSED(networkManager)
     Q_UNUSED(zoom)
-    return QString("https://api.airmap.com/elevation/v1/ele/carpet?points=%1,%2,%3,%4")
+    return QString("https://terrain-ce.suite.auterion.com/api/v1/carpet?points=%1,%2,%3,%4")
         .arg(static_cast<double>(y) * TerrainTile::tileSizeDegrees - 90.0)
         .arg(static_cast<double>(x) * TerrainTile::tileSizeDegrees - 180.0)
         .arg(static_cast<double>(y + 1) * TerrainTile::tileSizeDegrees - 90.0)
