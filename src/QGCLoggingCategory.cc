@@ -30,6 +30,7 @@ QGC_LOGGING_CATEGORY(ADSBVehicleManagerLog,         "ADSBVehicleManagerLog")
 QGC_LOGGING_CATEGORY(NTRIPLog,                      "NTRIPLog")
 QGC_LOGGING_CATEGORY(LocalizationLog,               "LocalizationLog")
 QGC_LOGGING_CATEGORY(VideoAllLog,                   kVideoAllLogCategory)
+QGC_LOGGING_CATEGORY(JoystickLog,                   "JoystickLog")
 
 QGCLoggingCategoryRegister* _instance = nullptr;
 const char* QGCLoggingCategoryRegister::_filterRulesSettingsGroup = "LoggingFilters";
