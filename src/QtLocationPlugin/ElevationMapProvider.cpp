@@ -8,8 +8,10 @@
 
 /*
 License for the COPERNICUS dataset hosted on https://terrain-ce.suite.auterion.com/:
+
 © DLR e.V. 2010-2014 and © Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS
 by the European Union and ESA; all rights reserved.
+
 */
 
 ElevationProvider::ElevationProvider(const QString& imageFormat, quint32 averageSize, QGeoMapType::MapStyle mapType, QObject* parent)

@@ -79,7 +79,6 @@ private:
     } TileInfo_t;
 
     TileInfo_t          _tileInfo;
-
     int16_t**           _data;                                          /// 2D elevation data array
     double              _cellSizeLat;                                   /// data grid size in latitude direction
     double              _cellSizeLon;                                   /// data grid size in longitude direction
