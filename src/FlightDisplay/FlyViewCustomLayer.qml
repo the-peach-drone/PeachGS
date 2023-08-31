@@ -59,9 +59,6 @@ Item {
     // QGC Map Center Position
     property var _mapCoordinate:            QGroundControl.flightMapPosition
 
-    // Property OpenWeather API Key
-    property string   _openWeatherAPIkey:   QGroundControl.settingsManager ? QGroundControl.settingsManager.appSettings.openWeatherApiKey.value : null
-
     QGCToolInsets {
             id:                         _toolInsets
             leftEdgeCenterInset:        0
@@ -78,61 +75,11 @@ Item {
             bottomEdgeRightInset:       0
         }
 
-    // Weather Function
-    function getWeatherJSON() {
-        if(!_openWeatherAPIkey) {
-            weatherBackground.visible = false
-            return
-        }
-
-        var requestUrl = "http://api.openweathermap.org/data/2.5/weather?lat=" + QGroundControl.flightMapPosition.latitude + "&lon="
-                         + QGroundControl.flightMapPosition.longitude + "&appid=" + _openWeatherAPIkey + "&lang=kr&units=metric"
-
-        var openWeatherRequest = new XMLHttpRequest()
-        openWeatherRequest.open('GET', requestUrl, true);
-        openWeatherRequest.onreadystatechange = function() {
-            if (openWeatherRequest.readyState === XMLHttpRequest.DONE) {
-                if (openWeatherRequest.status && openWeatherRequest.status === 200) {
-                    var openWeatherText = JSON.parse(openWeatherRequest.responseText)
-
-                    // Debug
-                    //console.log(openWeatherRequest.responseText)
-
-                    // Weather Tab
-                    cityText.text       = openWeatherText.name
-                    weatherText.text    = openWeatherText.weather[0].main
-                    windDegreeText.text = getDirection(openWeatherText.wind.deg)
-                    windSpeedText.text  = openWeatherText.wind.speed
-
-                } else {
-                    if(!openWeatherRequest.status) {
-                        // Not Internet
-                        mainWindow.showMessageDialog(qsTr("Internet Not Connect."), qsTr("Check Your Internet Connection."))
-                    }
-                    else if(openWeatherRequest.status === 401) {
-                        // Key error
-                        mainWindow.showMessageDialog(qsTr("OpenWeather Key Error"), qsTr("OpenWeather Key Error. Check Your API Key."))
-                    }
-                    else if(openWeatherRequest.status === 429) {
-                        // Key use excess
-                        mainWindow.showMessageDialog(qsTr("OpenWeather API Use Excess."), qsTr("OpenWeather API Use Excess. Make your request a little bit slower."))
-                    }
-                }
-            }
-        }
-        openWeatherRequest.send()
-    }
-
     // Degree Convert
     function getDirection(angle) {
         var directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
         var index = Math.round(((angle %= 360) < 0 ? angle + 360 : angle) / 45) % 8;
         return directions[index];
-    }
-
-    // Get Weather on Complete
-    Component.onCompleted: {
-        getWeatherJSON()
     }
 
     //-----------------------------------------------------------------------------------------------------
@@ -256,103 +203,5 @@ Item {
         visible:            !ScreenTools.isTinyScreen && QGroundControl.corePlugin.options.flyView.showMapScale && mapControl.pipState.state === mapControl.pipState.fullState
 
         property real centerInset: visible ? parent.height - y : 0
-    }
-
-    //-----------------------------------------------------------------------------------------------------
-    //--Weather Widget------------------------------------------------------==-----------------------------
-    Rectangle {
-        id:                     weatherBackground
-        anchors.left:           parent.left
-        anchors.leftMargin:     _toolsMargin * 13
-        anchors.top:            parent.top
-        anchors.topMargin:      _toolsMargin
-        width:                  -anchors.rightMargin + compassBezel.width + (_toolsMargin * 20)
-        height:                 attitudeIndicator.height * 1.7
-        radius:                 2
-        color:                  qgcPal.window
-
-        MouseArea {
-            anchors.fill: parent
-            onClicked: getWeatherJSON()
-        }
-
-        ColumnLayout {
-            id:         weatherValue
-            spacing:    ScreenTools.defaultFontPixelWidth
-            anchors.centerIn: parent
-
-            // City
-            Row {
-                QGCLabel {
-                    font.pointSize:     ScreenTools.mediumFontPointSize
-                    Layout.alignment:   Qt.AlignHCenter
-                    text:               qsTr("City : ")
-                }
-
-                QGCLabel {
-                    id:                 cityText
-                    font.pointSize:     ScreenTools.mediumFontPointSize
-                    Layout.alignment:   Qt.AlignHCenter
-                }
-            }
-
-            // Weather
-            Row {
-                QGCLabel {
-                    font.pointSize:     ScreenTools.mediumFontPointSize
-                    Layout.alignment:   Qt.AlignHCenter
-                    text:               qsTr("Weather : ")
-                }
-
-                QGCLabel {
-                    id:                 weatherText
-                    font.pointSize:     ScreenTools.mediumFontPointSize
-                    Layout.alignment:   Qt.AlignHCenter
-                }
-            }
-
-            // Wind Degree
-            Row {
-                QGCLabel {
-                    font.pointSize:     ScreenTools.mediumFontPointSize
-                    Layout.alignment:   Qt.AlignHCenter
-                    text:               qsTr("Wind Degree : ")
-                }
-
-                QGCLabel {
-                    id:                 windDegreeText
-                    font.pointSize:     ScreenTools.mediumFontPointSize
-                    Layout.alignment:   Qt.AlignHCenter
-                }
-            }
-
-            // Wind Speed
-            Row {
-                QGCLabel {
-                    font.pointSize:     ScreenTools.mediumFontPointSize
-                    Layout.alignment:   Qt.AlignHCenter
-                    text:               qsTr("Wind Speed : ")
-                }
-
-                QGCLabel {
-                    id:                 windSpeedText
-                    font.pointSize:     ScreenTools.mediumFontPointSize
-                    Layout.alignment:   Qt.AlignHCenter
-                }
-            }
-
-            // Widget Footer
-            QGCLabel {
-                font.pointSize:     ScreenTools.smallFontPointSize
-                Layout.alignment:   Qt.AlignHCenter
-                text:               qsTr("Provide by openweathermap")
-            }
-
-            QGCLabel {
-                font.pointSize:     ScreenTools.smallFontPointSize
-                Layout.alignment:   Qt.AlignHCenter
-                text:               qsTr("(Click to Refresh)")
-            }
-        }//ColumnLayout
     }
 }
